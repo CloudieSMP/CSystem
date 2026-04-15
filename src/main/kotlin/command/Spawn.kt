@@ -24,7 +24,7 @@ class Spawn {
             return
         }
 
-        val x = 377.5
+        val x = -377.5
         val y = 111.0
         val z = -467.5
         val yaw = 90.0f
