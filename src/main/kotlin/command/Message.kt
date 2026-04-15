@@ -34,7 +34,6 @@ class Message {
         if(css.sender is Player) {
             val sender = css.sender as Player
             if (sender == recipient) {
-                System.currentTimeMillis() / 1000
                 sender.sendMessage(Formatting.restrictedTags.deserialize("<i><cloudiecolor>You<white> -> <yellow>Yourself</yellow>: ${text.joinToString(" ")}</i>"))
             } else {
                 sendMessage(sender, recipient, text)

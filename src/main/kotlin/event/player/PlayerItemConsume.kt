@@ -1,5 +1,6 @@
 package event.player
 
+import chat.Formatting.allTags
 import item.booster.BoosterType
 import item.booster.Cards
 import item.crate.CrateType
@@ -26,7 +27,7 @@ class PlayerItemConsume : Listener {
 
             val result = Cards.openBooster(event.player, type)
             if (result == null) {
-                event.player.sendMessage("This booster has no eligible cards configured.")
+                event.player.sendMessage(allTags.deserialize("This booster has no eligible cards configured."))
             }
             return
         }

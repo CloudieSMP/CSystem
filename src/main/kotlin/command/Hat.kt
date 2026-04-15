@@ -21,7 +21,7 @@ class Hat {
                 player.sendMessage(Formatting.allTags.deserialize("<red>You are not holding an item. Idiot...</red>"))
             } else {
                 val helmet = player.inventory.helmet
-                player.inventory.helmet = itemInHand
+                player.inventory.setHelmet(itemInHand)
                 player.inventory.setItemInMainHand(helmet ?: ItemStack(Material.AIR))
             }
         }
