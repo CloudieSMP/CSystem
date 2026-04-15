@@ -133,6 +133,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(CauldronListener(), this)
         server.pluginManager.registerEvents(GamblingWindow, this)
         server.pluginManager.registerEvents(BinderInteract(), this)
+        server.pluginManager.registerEvents(CommandVisibilityListener(), this)
     }
 
     private fun applyConfig(config: Config) {

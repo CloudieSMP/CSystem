@@ -86,6 +86,7 @@ permissions:
       cloudie.cmd.mail: true
       cloudie.cmd.report: true
       cloudie.cmd.showstat: true
+      cloudie.removecmds: true
 
   cloudie.cmd.hat:
     description: Allows the player to use the hat command.
@@ -123,3 +124,5 @@ permissions:
     description: Allows the player to report issues.
   cloudie.cmd.showstat:
     description: Allows the player to show server statistic scoreboards.
+  cloudie.removecmds:
+    description: Removes specific commands from tabcomplete like worldguard and worldedit.
