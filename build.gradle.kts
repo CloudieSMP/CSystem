@@ -23,7 +23,7 @@ plugins {
 }
 
 group = "moe.oof"
-version = "$patch-Build-$commitHash"
+version = "$patch-$commitHash"
 
 kotlin {
     jvmToolchain(25)
