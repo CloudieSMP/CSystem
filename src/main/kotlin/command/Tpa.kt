@@ -198,9 +198,8 @@ class Tpa {
     private fun deleteTpaAfterDelay(player: Player, target: Player, requestTimeout: Int, tpaRequest: TpaRequest) {
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             if (tpaRequests.remove(tpaRequest)) {
-                player.sendMessage(allTags.deserialize("<yellow>TPA Request to ${target.name} has timed out."))
-
-                target.sendMessage(allTags.deserialize("<yellow>TPA Request from <green>${player.name}</green> has timed out."))
+                Bukkit.getPlayer(player.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA request to <green>${target.name}</green> has timed out."))
+                Bukkit.getPlayer(target.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA Request from <green>${player.name}</green> has timed out."))
             }
         }, requestTimeout * 20L)
     }

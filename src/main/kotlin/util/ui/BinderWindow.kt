@@ -5,6 +5,7 @@ import com.noxcrew.interfaces.InterfacesConstants
 import com.noxcrew.interfaces.drawable.Drawable
 import com.noxcrew.interfaces.element.StaticElement
 import com.noxcrew.interfaces.interfaces.buildChestInterface
+import com.noxcrew.interfaces.interfaces.PlayerInventoryType
 import com.noxcrew.interfaces.properties.DelegateTrigger
 import item.binder.BinderItem
 import kotlinx.coroutines.launch
@@ -79,9 +80,9 @@ object BinderWindow {
 
         val iface = buildChestInterface {
             rows = ROWS
-            // Let the player click / pick up items in their own inventory while the binder
-            // is open so they can place cards onto the cursor and insert them.
-            allowClickingOwnInventoryIfClickingEmptySlotsIsPrevented = true
+            // 2.1+ replacement behavior for the removed own-inventory click flag.
+            // DEFAULT keeps player inventory outside the interface mapping, so those clicks are allowed.
+            playerInventoryType = PlayerInventoryType.DEFAULT
             titleSupplier = { _ ->
                 allTags.deserialize("<gradient:#5b9df5:#a78bfa><bold>Card Binder</bold></gradient>")
             }

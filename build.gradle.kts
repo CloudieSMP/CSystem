@@ -15,10 +15,10 @@ val commitHash = Runtime
     }
 
 plugins {
-    kotlin("jvm") version "2.3.20-RC3"
-    kotlin("kapt") version "2.3.20-RC3"
-    id("com.gradleup.shadow") version "9.3.2"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19"
+    kotlin("jvm") version "2.4.0-Beta1"
+    kotlin("kapt") version "2.4.0-Beta1"
+    id("com.gradleup.shadow") version "9.4.1"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
@@ -26,7 +26,7 @@ group = "moe.oof"
 version = "$patch-Build-$commitHash"
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
     compilerOptions {
         javaParameters = true
     }
@@ -44,30 +44,30 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("26.1.2.build.+")
 
-    implementation("org.incendo:cloud-paper:2.0.0-beta.13")
+    implementation("org.incendo:cloud-paper:2.0.0-beta.15")
     implementation("org.incendo:cloud-annotations:2.0.0")
     implementation("org.incendo:cloud-kotlin-extensions:2.0.0")
     implementation("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0")
     kapt("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0")
     implementation("org.incendo:cloud-kotlin-extensions:2.0.0")
     implementation("org.incendo:cloud-processors-confirmation:1.0.0-rc.1")
-    implementation("io.ktor:ktor-client-core:2.3.13")
-    implementation("io.ktor:ktor-client-cio:2.3.5")
-    implementation("io.ktor:ktor-client-logging:2.0.3")
+    implementation("io.ktor:ktor-client-core:3.4.2")
+    implementation("io.ktor:ktor-client-cio:3.4.2")
+    implementation("io.ktor:ktor-client-logging:3.4.2")
     implementation("org.spongepowered:configurate-yaml:4.2.0")
     implementation("org.spongepowered:configurate-extra-kotlin:4.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
     implementation("fr.mrmicky:fastboard:2.1.5")
 
-    implementation("com.noxcrew.interfaces:interfaces:2.0.1-SNAPSHOT")
+    implementation("com.noxcrew.interfaces:interfaces:2.1.0-SNAPSHOT")
 }
 
 tasks {
     compileJava {
-        options.release = 21
+        options.release = 25
     }
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything

@@ -1,6 +1,7 @@
 package command
 
 import chat.Formatting
+import chat.Formatting.allTags
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -23,10 +24,10 @@ class Live {
         val player = css.sender as? Player ?: return
         if (LiveUtil.isLive(player)) {
             LiveUtil.stopLive(player)
-            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<cloudiecolor>${player.name}</cloudiecolor> stopped streaming"))
+            Bukkit.getServer().sendMessage(allTags.deserialize("<cloudiecolor>${player.name}</cloudiecolor> stopped streaming"))
         } else {
             LiveUtil.startLive(player)
-            Bukkit.getServer().sendMessage(Formatting.allTags.deserialize("<cloudiecolor>${player.name}</cloudiecolor> went live"))
+            Bukkit.getServer().sendMessage(allTags.deserialize("<cloudiecolor>${player.name}</cloudiecolor> went live"))
         }
     }
 }
@@ -45,7 +46,7 @@ object LiveUtil {
         pendingTimeouts.remove(playerId)?.cancel()
         livePlayerIds.add(playerId)
         startOrReplaceLiveTask(player)
-        player.sendMessage("Live mode enabled.")
+        player.sendMessage(allTags.deserialize("Live mode enabled."))
     }
 
     fun stopLive(player: Player) {
@@ -54,7 +55,7 @@ object LiveUtil {
         pendingTimeouts.remove(playerId)?.cancel()
         liveTasks.remove(playerId)?.cancel()
         resetPlayerNames(player)
-        player.sendMessage("Live mode disabled.")
+        player.sendMessage(allTags.deserialize("Live mode disabled."))
     }
 
     fun onPlayerQuit(player: Player) {
@@ -79,7 +80,7 @@ object LiveUtil {
         if (!isLive(playerId)) return
 
         startOrReplaceLiveTask(player)
-        player.sendMessage("Live mode enabled.")
+        player.sendMessage(allTags.deserialize("Live mode enabled."))
     }
 
     fun shutdown() {
