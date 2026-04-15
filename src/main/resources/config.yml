@@ -15,8 +15,8 @@ resource-packs:
 
 # Server MOTD displayed in the server list. Supports MiniMessage.
 motd: |-
-  <gradient:#ff530d:#ff77a4>--- Cloudie SMP ☁︎ Season 10! ---</gradient>
-  <gradient:#ff9468:#ffb1c9>         ╰┈➤Join today!</gradient>
+  <gradient:#DF6F69:#C45889:#823BC6>          --- Cloudie SMP ☁ Season 10! ---</gradient>
+  <cloudiecolor>                   ╰┈➤Join today! V26.1</cloudiecolor>
 
 tpa:
   # Time in seconds before a tpa request expires.

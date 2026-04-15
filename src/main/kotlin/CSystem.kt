@@ -34,7 +34,7 @@ import java.time.Duration
 import util.ResourcePacker
 
 @Suppress( "unstableApiUsage")
-class System : JavaPlugin() {
+class CSystem : JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager<CommandSourceStack>
     private lateinit var annotationParser: AnnotationParser<CommandSourceStack>
     lateinit var config: Config
@@ -173,5 +173,5 @@ class System : JavaPlugin() {
     }
 }
 
-val plugin: System get() = JavaPlugin.getPlugin(System::class.java)
+val plugin: CSystem get() = JavaPlugin.getPlugin(CSystem::class.java)
 val logger get() = plugin.logger

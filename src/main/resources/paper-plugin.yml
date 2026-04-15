@@ -1,11 +1,11 @@
-name: System
+name: CSystem
 description: Cloudie SMP S10 System
 api-version: "1.21.11"
 authors: [Sebiann]
 website: https://sebiann.moe
 
 version: "${version}"
-main: System
+main: CSystem
 load: STARTUP
 
 permissions:
