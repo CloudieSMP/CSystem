@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package library
 
 import chat.ChatUtility
@@ -13,11 +14,13 @@ object VanishHelper {
     private val vanishedPlayerIds = mutableSetOf<UUID>()
 
     fun isVanished(player: Player): Boolean = player.uniqueId in vanishedPlayerIds
+    fun isVanished(playerId: UUID): Boolean = playerId in vanishedPlayerIds
+    fun vanishedOnlineCount(): Int = Bukkit.getOnlinePlayers().count { it.uniqueId in vanishedPlayerIds }
 
     fun toggleVanish(player: Player) {
         if (isVanished(player)) {
             vanishedPlayerIds.remove(player.uniqueId)
-            player.removeMetadata(VanishHelper.VANISH_METADATA_KEY, plugin) // clear our vanish marker
+            player.removeMetadata(VANISH_METADATA_KEY, plugin) // clear our vanish marker
             showPlayerToAll(player)
             player.sendMessage(Formatting.allTags.deserialize("<dark_gray><i>You are now unvanished"))
             if (!player.hasPermission("cloudie.silent.join")) {
@@ -25,7 +28,7 @@ object VanishHelper {
             }
         } else {
             vanishedPlayerIds.add(player.uniqueId)
-            player.setMetadata(VanishHelper.VANISH_METADATA_KEY, FixedMetadataValue(plugin, true))
+            player.setMetadata(VANISH_METADATA_KEY, FixedMetadataValue(plugin, true))
             hidePlayerFromAll(player)
             player.sendMessage(Formatting.allTags.deserialize("<dark_gray><i>You are now vanished"))
             if (!player.hasPermission("cloudie.silent.quit")) {
@@ -51,6 +54,7 @@ object VanishHelper {
     fun resetAllVisibility() {
         for (vanishedId in vanishedPlayerIds) {
             val vanishedPlayer = Bukkit.getPlayer(vanishedId) ?: continue
+            vanishedPlayer.removeMetadata(VANISH_METADATA_KEY, plugin)
             showPlayerToAll(vanishedPlayer)
         }
         vanishedPlayerIds.clear()
