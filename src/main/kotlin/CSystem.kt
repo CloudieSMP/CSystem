@@ -6,6 +6,7 @@ import event.block.CauldronListener
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.LiveUtil
+import item.crate.CrateRecipes
 import library.CardPullCounterStorage
 import library.HomeStorage
 import library.MailStorage
@@ -50,6 +51,7 @@ class CSystem : JavaPlugin() {
         } else {
             logger.warning("Resource pack cache could not be populated on startup. Use /pack refresh after fixing the resource pack URLs.")
         }
+        CrateRecipes.registerAll()
         setupEvents()
         registerCommands()
         VisualChat.clearChatEntities()

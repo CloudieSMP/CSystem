@@ -25,7 +25,19 @@ object CrateBrowserWindow {
             title = selectorTitle,
             entries = crateTypes,
             fillerPane = fillerPane,
-            itemForEntry = { crateType -> Crate.create(crateType).clone() },
+            itemForEntry = { crateType ->
+                Crate.create(crateType).clone().apply {
+                    editMeta { meta ->
+                        val ingredientName = crateType.recipeIngredient.name
+                            .lowercase(Locale.US)
+                            .split('_')
+                            .joinToString(" ") { part -> part.replaceFirstChar(Char::uppercaseChar) }
+                        val updatedLore = (meta.lore() ?: emptyList()) +
+                            allTags.deserialize("<!i><gray>Ingredient: <white>$ingredientName")
+                        meta.lore(updatedLore)
+                    }
+                }
+            },
             onEntryClick = { clicker, crateType -> openLootPreview(clicker, crateType) },
         )
     }
