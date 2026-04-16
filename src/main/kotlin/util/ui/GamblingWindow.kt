@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
@@ -27,8 +28,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 private class GamblingWindowSession(
     val crateType: CrateType,
-    val inventory: Inventory,
 ) {
+    var inventory: Inventory? = null
     var spinTask: BukkitRunnable? = null
     var wheelOffset: Int = 0
     var isSpinning: Boolean = false
@@ -76,18 +77,36 @@ object GamblingWindow : Listener {
 
         InterfacesConstants.SCOPE.launch {
             iface.open(player)
-            val topInventory = player.openInventory.topInventory
-            val session = GamblingWindowSession(crateType, topInventory)
-            sessions[player.uniqueId] = session
+            val session = GamblingWindowSession(crateType)
 
-            // Start automatically on next tick so the open inventory is guaranteed to be active.
+            // Wait until the opened top inventory is the expected chest-sized window before writing wheel slots.
             object : BukkitRunnable() {
+                var attempts = 0
+
                 override fun run() {
-                    if (player.isOnline && player.openInventory.topInventory == session.inventory) {
+                    if (!player.isOnline) {
+                        cancel()
+                        return
+                    }
+
+                    val topInventory = player.openInventory.topInventory
+                    val canRenderWheel =
+                        topInventory.type == InventoryType.CHEST && topInventory.size > wheelSlots.maxOrNull()!!
+
+                    if (canRenderWheel) {
+                        session.inventory = topInventory
+                        sessions[player.uniqueId] = session
                         startSpin(session, player)
+                        cancel()
+                        return
+                    }
+
+                    attempts++
+                    if (attempts >= 20) {
+                        cancel()
                     }
                 }
-            }.runTask(plugin)
+            }.runTaskTimer(plugin, 1L, 1L)
         }
     }
 
@@ -95,7 +114,8 @@ object GamblingWindow : Listener {
     fun onClick(e: InventoryClickEvent) {
         val player = e.whoClicked as? Player ?: return
         val session = sessions[player.uniqueId] ?: return
-        if (e.view.topInventory != session.inventory) return
+        val sessionInventory = session.inventory ?: return
+        if (e.view.topInventory != sessionInventory) return
         e.isCancelled = true
     }
 
@@ -104,7 +124,8 @@ object GamblingWindow : Listener {
         val player = e.player as? Player
         if (player == null) return
         val session = sessions[player.uniqueId] ?: return
-        if (e.inventory != session.inventory) return
+        val sessionInventory = session.inventory ?: return
+        if (e.inventory != sessionInventory) return
 
         if (session.isSpinning) {
             awardPendingReward(session, player, "closed early")
@@ -143,7 +164,14 @@ object GamblingWindow : Listener {
 
         val task = object : BukkitRunnable() {
             override fun run() {
-                if (!player.isOnline || player.openInventory.topInventory != session.inventory) {
+                if (!player.isOnline || sessions[player.uniqueId] !== session) {
+                    stopSpin(session)
+                    cancel()
+                    return
+                }
+
+                val sessionInventory = session.inventory
+                if (sessionInventory == null) {
                     stopSpin(session)
                     cancel()
                     return
@@ -155,7 +183,7 @@ object GamblingWindow : Listener {
                 }
 
                 session.wheelOffset = (session.wheelOffset + 1) % pool.size
-                renderWheel(session.inventory, session, session.wheelOffset)
+                renderWheel(sessionInventory, session, session.wheelOffset)
                 player.playSound(GAMBLING_WHEEL_TICK)
                 session.spinStepsDone++
 
@@ -167,7 +195,7 @@ object GamblingWindow : Listener {
 
                 if (session.spinStepsDone >= session.spinTargetSteps) {
                     for (slot in wheelSlots) {
-                        if (slot != winningWheelSlot) session.inventory.setItem(slot, idleWheelItem)
+                        if (slot != winningWheelSlot) sessionInventory.setItem(slot, idleWheelItem)
                     }
                     stopSpin(session)
                     player.playSound(GAMBLING_WHEEL_STOP)
