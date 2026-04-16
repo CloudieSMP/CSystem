@@ -13,6 +13,8 @@ import org.incendo.cloud.annotations.processing.CommandContainer
 import item.crate.Crate
 import item.crate.CrateItem
 import item.crate.CrateType
+import item.treasurebag.BagType
+import item.treasurebag.TreasureBag
 import org.bukkit.entity.EntityType
 import org.incendo.cloud.annotations.Argument
 import util.requirePlayer
@@ -97,4 +99,10 @@ class Debug {
         )
     }
 
+    @Command("debug treasure_bag <type>")
+    @Permission("cloudie.cmd.debug")
+    fun debugTreasureBag(css: CommandSourceStack, @Argument("type") type: BagType) {
+        val player = css.requirePlayer() ?: return
+        player.inventory.addItem(TreasureBag.create(type))
+    }
 }
