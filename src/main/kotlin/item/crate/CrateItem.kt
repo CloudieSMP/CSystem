@@ -78,6 +78,10 @@ enum class CrateItem(
     LEVI(10, "Levi Plushie", COMMON, "Levi from Attack on Titan", "plushies/character/levi_wide"),
     SPARROW(10, "Sparrow Plushie", COMMON, "Sparrow from Identity V", "plushies/character/sparrow_wide"),
     SPIDERMAN(10, "Spiderman Plushie", COMMON, "Spiderman from Marvel Comics", "plushies/character/spiderman_slim"),
+    LEONARDO(10, "Leonardo Plushie", COMMON, "Leonardo from Teenage Mutant Ninja Turtles", "plushies/character/blue_turtle_slim"),
+    RAPHAEL(10, "Raphael Plushie", COMMON, "Raphael from Teenage Mutant Ninja Turtles", "plushies/character/red_turtle_slim"),
+    MICHELANGELO(10, "Michelangelo Plushie", COMMON, "Michelangelo from Teenage Mutant Ninja Turtles", "plushies/character/orange_turtle_slim"),
+    DONATELLO(10, "Donatello Plushie", COMMON, "Donatello from Teenage Mutant Ninja Turtles", "plushies/character/purple_turtle_slim"),
 
     // Wearables
     CAT_EARS(10, "Cat Ears", COMMON, "Cute cat ears", "wearables/cat_ears"),
