@@ -18,6 +18,7 @@ object TreasureBag {
             bagMeta.addItem(stack)
         }
 
+        @Suppress("DEPRECATION")
         bagMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
         bagMeta.displayName(type.displayName)
         bagMeta.lore(type.loreLines)

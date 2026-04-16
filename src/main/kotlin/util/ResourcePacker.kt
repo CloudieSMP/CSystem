@@ -131,7 +131,7 @@ object ResourcePacker {
             ?: deriveGitHubReleaseFromUri(effectiveUri)
 
         return DownloadedPack(
-            bytes = response.readBytes(),
+            bytes = response.readRawBytes(),
             releaseLabel = releaseLabel
         )
     }

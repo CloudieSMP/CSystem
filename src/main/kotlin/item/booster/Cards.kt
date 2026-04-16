@@ -258,6 +258,7 @@ object Cards {
      *   - How many times this card has been pulled globally
      *   - Enchantment glint if the card is SHINY
      */
+    @Suppress("DEPRECATION")
     private fun createCardItem(
         pullerName: String,
         definition: CardDefinition,
