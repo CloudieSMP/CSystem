@@ -7,12 +7,15 @@ import item.booster.BoosterType
 import item.booster.Cards
 import item.booster.CardCatalog
 import item.binder.BinderItem
+import item.SubRarity
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 import item.crate.Crate
 import item.crate.CrateItem
 import item.crate.CrateType
+import item.treasurebag.BagItem
+import item.treasurebag.BagLootPool
 import item.treasurebag.BagType
 import item.treasurebag.TreasureBag
 import org.bukkit.entity.EntityType
@@ -54,10 +57,63 @@ class Debug {
     fun debugPull(css: CommandSourceStack, @Argument("type") type: BoosterType) {
         val player = css.requirePlayer() ?: return
 
-        val pull = Cards.openBooster(player, type)
+        val pull = Cards.openBooster(player, type, useDebugSubRarityOverride = true)
         if (pull == null) {
             player.sendMessage(allTags.deserialize("<red>No eligible cards were found for this booster."))
         }
+    }
+
+    @Command("debug subrarity set <noneWeight> <shinyWeight> <shadowWeight> <obfuscatedWeight>")
+    @Permission("cloudie.cmd.debug")
+    fun debugSubRaritySet(
+        css: CommandSourceStack,
+        @Argument("noneWeight") noneWeight: Double,
+        @Argument("shinyWeight") shinyWeight: Double,
+        @Argument("shadowWeight") shadowWeight: Double,
+        @Argument("obfuscatedWeight") obfuscatedWeight: Double,
+    ) {
+        val player = css.requirePlayer() ?: return
+        if (noneWeight < 0 || shinyWeight < 0 || shadowWeight < 0 || obfuscatedWeight < 0) {
+            player.sendMessage(allTags.deserialize("<red>Weights must be 0 or higher."))
+            return
+        }
+
+        val applied = SubRarity.setDebugWeights(noneWeight, shinyWeight, shadowWeight, obfuscatedWeight)
+        if (!applied) {
+            player.sendMessage(allTags.deserialize("<red>At least one weight must be greater than 0."))
+            return
+        }
+
+        player.sendMessage(
+            allTags.deserialize(
+                "<cloudiecolor>Debug subrarity weights set: <white>NONE=$noneWeight<gray>, <white>SHINY=$shinyWeight<gray>, <white>SHADOW=$shadowWeight<gray>, <white>OBFUSCATED=$obfuscatedWeight"
+            )
+        )
+    }
+
+    @Command("debug subrarity show")
+    @Permission("cloudie.cmd.debug")
+    fun debugSubRarityShow(css: CommandSourceStack) {
+        val player = css.requirePlayer() ?: return
+        val weights = SubRarity.debugWeights()
+        if (weights == null) {
+            player.sendMessage(allTags.deserialize("<gray>No debug subrarity override is active. Using normal rates."))
+            return
+        }
+
+        player.sendMessage(
+            allTags.deserialize(
+                "<cloudiecolor>Active debug weights: <white>NONE=${weights[SubRarity.NONE]}<gray>, <white>SHINY=${weights[SubRarity.SHINY]}<gray>, <white>SHADOW=${weights[SubRarity.SHADOW]}<gray>, <white>OBFUSCATED=${weights[SubRarity.OBFUSCATED]}"
+            )
+        )
+    }
+
+    @Command("debug subrarity clear")
+    @Permission("cloudie.cmd.debug")
+    fun debugSubRarityClear(css: CommandSourceStack) {
+        val player = css.requirePlayer() ?: return
+        SubRarity.clearDebugWeights()
+        player.sendMessage(allTags.deserialize("<cloudiecolor>Cleared debug subrarity weights. Normal rates restored."))
     }
 
     @Command("debug binder")
@@ -88,7 +144,7 @@ class Debug {
             return
         }
 
-        val result = Cards.openBoosterForced(player, boosterType, card)
+        val result = Cards.openBoosterForced(player, boosterType, card, useDebugSubRarityOverride = true)
         if (result == null) {
             player.sendMessage(allTags.deserialize("<red>Could not open forced debug pull."))
             return
@@ -103,6 +159,12 @@ class Debug {
     @Permission("cloudie.cmd.debug")
     fun debugTreasureBag(css: CommandSourceStack, @Argument("type") type: BagType) {
         val player = css.requirePlayer() ?: return
-        player.inventory.addItem(TreasureBag.create(type))
+        player.inventory.addItem(TreasureBag.create(type, useDebugSubRarityOverride = true))
+    }
+    @Command("debug treasure_bag item <loot>")
+    @Permission("cloudie.cmd.debug")
+    fun debugTreasureBagItem(css: CommandSourceStack, @Argument("loot") loot: BagItem) {
+        val player = css.requirePlayer() ?: return
+        player.inventory.addItem(loot.createItemStack(useDebugSubRarityOverride = true))
     }
 }

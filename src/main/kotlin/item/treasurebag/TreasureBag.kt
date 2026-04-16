@@ -6,14 +6,14 @@ import org.bukkit.inventory.meta.BundleMeta
 import kotlin.random.Random
 
 object TreasureBag {
-    fun create(type: BagType): ItemStack {
+    fun create(type: BagType, useDebugSubRarityOverride: Boolean = false): ItemStack {
         val treasureBag = ItemStack(type.bagMaterial)
         val bagMeta = treasureBag.itemMeta as BundleMeta
 
         for (item in type.lootPool.possibleItems) {
             if (!itemRollSuccess(item.pctChanceToRoll)) continue
             val amount = item.amountRange.random()
-            val stack = item.itemStack.clone()
+            val stack = item.createItemStack(useDebugSubRarityOverride)
             stack.amount = amount
             bagMeta.addItem(stack)
         }

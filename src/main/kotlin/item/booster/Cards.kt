@@ -58,8 +58,8 @@ object Cards {
      * gives the item to the player, plays effects, and sends chat messages.
      * Returns null if no eligible cards are configured for this booster type.
      */
-    fun openBooster(player: Player, boosterType: BoosterType): CardPullResult? {
-        val rolled = rollCard(boosterType) ?: return null
+    fun openBooster(player: Player, boosterType: BoosterType, useDebugSubRarityOverride: Boolean = false): CardPullResult? {
+        val rolled = rollCard(boosterType, useDebugSubRarityOverride) ?: return null
         return completePull(player, boosterType, rolled.definition, rolled.rarity, rolled.subRarity)
     }
 
@@ -68,9 +68,18 @@ object Cards {
      * Used by the /debug card command. Validates that the card is actually allowed in this booster first.
      * Returns null if the card/booster combination is invalid.
      */
-    fun openBoosterForced(player: Player, boosterType: BoosterType, definition: CardDefinition): CardPullResult? {
+    fun openBoosterForced(
+        player: Player,
+        boosterType: BoosterType,
+        definition: CardDefinition,
+        useDebugSubRarityOverride: Boolean = false,
+    ): CardPullResult? {
         if (validationErrorFor(boosterType, definition) != null) return null
-        val subRarity = if (definition.canHaveSubRarity) SubRarity.getRandomSubRarity() else SubRarity.NONE
+        val subRarity = if (definition.canHaveSubRarity) {
+            SubRarity.getRandomSubRarity(useDebugSubRarityOverride)
+        } else {
+            SubRarity.NONE
+        }
         return completePull(player, boosterType, definition, definition.baseRarity, subRarity)
     }
 
@@ -189,7 +198,7 @@ object Cards {
      *   4. Pick a random card within that rarity.
      *   5. Roll the sub-rarity (only if the card allows it).
      */
-    private fun rollCard(boosterType: BoosterType): RolledCard? {
+    private fun rollCard(boosterType: BoosterType, useDebugSubRarityOverride: Boolean): RolledCard? {
         val eligible = CardCatalog.eligibleCards(boosterType)
         if (eligible.isEmpty()) return null
 
@@ -202,7 +211,11 @@ object Cards {
 
         val rolledRarity = pickRarity(availableRarities, boosterType)
         val card = byRarity[rolledRarity]?.random() ?: eligible.random()
-        val subRarity = if (card.canHaveSubRarity) SubRarity.getRandomSubRarity() else SubRarity.NONE
+        val subRarity = if (card.canHaveSubRarity) {
+            SubRarity.getRandomSubRarity(useDebugSubRarityOverride)
+        } else {
+            SubRarity.NONE
+        }
 
         return RolledCard(card, rolledRarity, subRarity)
     }
