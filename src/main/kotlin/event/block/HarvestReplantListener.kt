@@ -2,11 +2,14 @@ package event.block
 
 import org.bukkit.Material
 import org.bukkit.block.data.Ageable
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.Damageable
 
 class HarvestReplantListener : Listener {
 
@@ -19,6 +22,15 @@ class HarvestReplantListener : Listener {
             Material.BEETROOTS to Material.BEETROOT_SEEDS,
             Material.TORCHFLOWER_CROP to Material.TORCHFLOWER_SEEDS,
             Material.NETHER_WART to Material.NETHER_WART,
+        )
+
+        private val HOE_MATERIALS = setOf(
+            Material.WOODEN_HOE,
+            Material.STONE_HOE,
+            Material.IRON_HOE,
+            Material.GOLDEN_HOE,
+            Material.DIAMOND_HOE,
+            Material.NETHERITE_HOE,
         )
     }
 
@@ -34,23 +46,65 @@ class HarvestReplantListener : Listener {
         val ageable = block.blockData as? Ageable ?: return
         if (ageable.age < ageable.maximumAge) return
 
+        val player = event.player
+        val hoe = player.inventory.itemInMainHand
+        if (hoe.type !in HOE_MATERIALS) return
+
         event.isCancelled = true
 
         // Collect natural drops, then try to consume one seed (the crop stays planted).
-        val drops = block.getDrops().toMutableList()
+        val drops = block.getDrops(hoe).toMutableList()
         val seedDrop = drops.firstOrNull { it.type == seedMaterial }
-        if (seedDrop != null) {
-            // Seed available: consume it and reset the crop to age 0 (replant).
-            if (seedDrop.amount > 1) seedDrop.amount -= 1 else drops.remove(seedDrop)
+
+        val replanted = when {
+            seedDrop != null -> {
+                // Seed available in drops: consume it and replant.
+                if (seedDrop.amount > 1) seedDrop.amount -= 1 else drops.remove(seedDrop)
+                true
+            }
+            else -> {
+                // No seed in drops: try to take one from the player's inventory.
+                val invSeed = player.inventory.firstOrNull { it?.type == seedMaterial }
+                if (invSeed != null) {
+                    if (invSeed.amount > 1) invSeed.amount -= 1 else player.inventory.remove(invSeed)
+                    true
+                } else {
+                    false
+                }
+            }
+        }
+
+        if (replanted) {
             ageable.age = 0
             block.blockData = ageable
         } else {
-            // No seed in drops (e.g. unlucky wheat / beetroot roll): harvest only, leave farmland bare.
+            // No seed anywhere — harvest only, leave farmland bare.
             block.type = Material.AIR
         }
+
+        // Apply 1 durability to the hoe (respects Unbreaking enchantment).
+        damageHoe(player, hoe)
 
         // Drop remaining items at the block location.
         val location = block.location.add(0.5, 0.5, 0.5)
         drops.forEach { block.world.dropItem(location, it) }
+    }
+
+    /** Applies 1 point of durability damage to [hoe], respecting Unbreaking, and breaks it if needed. */
+    private fun damageHoe(player: org.bukkit.entity.Player, hoe: ItemStack) {
+        val unbreakingLevel = hoe.getEnchantmentLevel(Enchantment.UNBREAKING)
+        // Unbreaking reduces damage chance: probability = 1 / (level + 1)
+        if (unbreakingLevel > 0 && Math.random() < unbreakingLevel / (unbreakingLevel + 1.0)) return
+
+        val meta = hoe.itemMeta as? Damageable ?: return
+        val maxDurability = hoe.type.maxDurability.toInt()
+        val newDamage = meta.damage + 1
+        if (newDamage >= maxDurability) {
+            player.playSound(player.location, org.bukkit.Sound.ENTITY_ITEM_BREAK, 1f, 1f)
+            hoe.amount = 0
+        } else {
+            meta.damage = newDamage
+            hoe.itemMeta = meta
+        }
     }
 }
