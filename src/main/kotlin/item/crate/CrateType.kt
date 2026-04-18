@@ -30,7 +30,7 @@ enum class CrateType(
         "A crate containing everything",
         LEGENDARY,
         "crates/gold",
-        Material.GOLD_BLOCK,
+        Material.YELLOW_WOOL,
         CrateLootPool.MASTER,
     ),
     PLUSHIE(
@@ -46,7 +46,7 @@ enum class CrateType(
         "A crate containing wearables",
         COMMON,
         "crates/default",
-        Material.YELLOW_WOOL,
+        Material.BLUE_WOOL,
         CrateLootPool.WEARABLES,
     ),
     PLAYER(

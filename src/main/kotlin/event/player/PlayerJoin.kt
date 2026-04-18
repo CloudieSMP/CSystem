@@ -2,6 +2,8 @@ package event.player
 
 import chat.Formatting
 import command.LiveUtil
+import item.crate.CrateMetadataRefresher
+import item.crate.CrateRecipes
 import library.HomeStorage
 import library.MailStorage
 import library.Translation
@@ -21,8 +23,10 @@ class PlayerJoin : Listener {
 
     @EventHandler
     fun onPlayerJoin(e: PlayerJoinEvent) {
+        CrateRecipes.discoverAll(e.player)
         HomeStorage.preload(e.player.uniqueId)
         MailStorage.preload(e.player.uniqueId)
+        CrateMetadataRefresher.refreshPlayerInventories(e.player)
         sendTabList(e.player)
 
         val brand = e.player.clientBrandName

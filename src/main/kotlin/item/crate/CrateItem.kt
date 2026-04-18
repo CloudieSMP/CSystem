@@ -14,34 +14,21 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
+import util.Keys.CRATE_ITEM
 import util.Keys.GENERIC_RARITY
 
-@Suppress("UnstableApiUsage")
-private fun createCrateItem(
-    displayName: String,
-    rarity: ItemRarity,
-    description: String,
-    modelPath: String,
-): ItemStack {
-    return ItemStack(Material.PAPER).apply {
-        editMeta { meta ->
-            meta.displayName(
-                Component.text(displayName)
-                    .color(TextColor.color(rarity.color.asRGB()))
-                    .decoration(TextDecoration.ITALIC, false)
-            )
-            meta.lore(
-                buildList {
-                    add(allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.PLUSHIE.typeGlyph}"))
-                    description.split("\n").forEach { line ->
-                        add(Component.text(line).decoration(TextDecoration.ITALIC, false))
-                    }
-                }
-            )
-            meta.persistentDataContainer.set(GENERIC_RARITY, STRING, rarity.name)
+private fun createDisplayName(displayName: String, rarity: ItemRarity): Component {
+    return Component.text(displayName)
+        .color(TextColor.color(rarity.color.asRGB()))
+        .decoration(TextDecoration.ITALIC, false)
+}
+
+private fun createLore(description: String, rarity: ItemRarity): List<Component> {
+    return buildList {
+        add(allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.PLUSHIE.typeGlyph}"))
+        description.split("\n").forEach { line ->
+            add(Component.text(line).decoration(TextDecoration.ITALIC, false))
         }
-        setData(DataComponentTypes.ITEM_MODEL, NamespacedKey("cloudie", modelPath))
-        setData(DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HEAD).build())
     }
 }
 
@@ -81,7 +68,7 @@ enum class CrateItem(
 
     // Character plushies
     N(100, "N Plushie", COMMON, "N from Pokemon", "plushies/character/n_slim"),
-    ASTARION(100, "Astarion Plushie", COMMON, "Astarion from Baldur's Gate 3", "plushies/character/astarion_wide"),
+    ASTARION(100, "Astarion Plushie", COMMON, "Careful darling, I bite.", "plushies/character/astarion_wide"),
     BATMAN(100, "Batman Plushie", COMMON, "Batman from DC Comics", "plushies/character/batman_wide"),
     DAZAI(100, "Dazai Plushie", COMMON, "Dazai from Bungou Stray Dogs", "plushies/character/dazai_slim"),
     LEVI(100, "Levi Plushie", COMMON, "Levi from Attack on Titan", "plushies/character/levi_wide"),
@@ -102,5 +89,57 @@ enum class CrateItem(
     ORCHID_CROWN(80, "Orchid Crown", UNCOMMON, "A crown of orchids", "wearables/orchid_crown"),
     HEART_GLASSES(100, "Heart Glasses", COMMON, "Glasses with heart lenses", "wearables/heart_glasses");
 
-    fun createItemStack(): ItemStack = createCrateItem(itemName, rarity, itemDescription, modelPath)
+    val storedId: String
+        get() = name
+
+    fun createItemStack(amount: Int = 1): ItemStack {
+        return ItemStack(Material.PAPER, amount).apply {
+            applyMetadata(this)
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    private fun applyMetadata(itemStack: ItemStack) {
+        itemStack.editMeta { meta ->
+            meta.displayName(createDisplayName(itemName, rarity))
+            meta.lore(createLore(itemDescription, rarity))
+            meta.persistentDataContainer.set(CRATE_ITEM, STRING, storedId)
+            meta.persistentDataContainer.set(GENERIC_RARITY, STRING, rarity.name)
+        }
+        itemStack.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey("cloudie", modelPath))
+        itemStack.setData(DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HEAD).build())
+    }
+
+    companion object {
+        private val byStoredId = entries.associateBy(CrateItem::storedId)
+        private val byLegacyModelPath = entries.associateBy { it.modelPath }
+
+        fun fromStoredId(storedId: String?): CrateItem? {
+            return storedId?.let(byStoredId::get)
+        }
+
+        fun resolve(item: ItemStack?): CrateItem? {
+            if (item == null || item.isEmpty) return null
+
+            val meta = item.itemMeta ?: return null
+            fromStoredId(meta.persistentDataContainer.get(CRATE_ITEM, STRING))?.let { return it }
+
+            val itemModel = meta.itemModel ?: return null
+            if (itemModel.namespace != "cloudie") return null
+
+            return byLegacyModelPath[itemModel.key]
+        }
+
+        fun refresh(item: ItemStack?): ItemStack? {
+            val current = item ?: return null
+            val resolved = resolve(current) ?: return null
+            val refreshed = resolved.createItemStack(current.amount)
+
+            return if (current.type == refreshed.type && current.itemMeta == refreshed.itemMeta) {
+                null
+            } else {
+                refreshed
+            }
+        }
+    }
 }

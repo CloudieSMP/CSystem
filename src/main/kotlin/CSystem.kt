@@ -52,6 +52,7 @@ class CSystem : JavaPlugin() {
             logger.warning("Resource pack cache could not be populated on startup. Use /pack refresh after fixing the resource pack URLs.")
         }
         CrateRecipes.registerAll()
+        server.onlinePlayers.forEach(CrateRecipes::discoverAll)
         setupEvents()
         registerCommands()
         VisualChat.clearChatEntities()
@@ -129,6 +130,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(ServerListEvent(), this)
         server.pluginManager.registerEvents(PlayerJoin(), this)
         server.pluginManager.registerEvents(PlayerQuit(), this)
+        server.pluginManager.registerEvents(InventoryOpenRefresh(), this)
         server.pluginManager.registerEvents(ChatEvent(), this)
         server.pluginManager.registerEvents(PlayerInteractEntity(), this)
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
