@@ -147,6 +147,11 @@ object HelpHelper {
             listOf("/height <cm> <player>", "/height reset <player>"),
             listOf("Set another player's height.", "Reset another player's height."),
             "Manage other players' heights."
+        ),
+        "trash" to CommandHelp(
+            listOf("/trash"),
+            listOf("Open a trash inventory — items left inside are deleted on close."),
+            "Open a trash inventory."
         )
     )
 
