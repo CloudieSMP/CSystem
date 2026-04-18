@@ -94,7 +94,7 @@ class HarvestReplantListener : Listener {
     private fun damageHoe(player: org.bukkit.entity.Player, hoe: ItemStack) {
         val unbreakingLevel = hoe.getEnchantmentLevel(Enchantment.UNBREAKING)
         // Unbreaking reduces damage chance: probability = 1 / (level + 1)
-        if (unbreakingLevel > 0 && Math.random() < unbreakingLevel / (unbreakingLevel + 1.0)) return
+        if (unbreakingLevel > 0 && kotlin.random.Random.nextDouble() < unbreakingLevel / (unbreakingLevel + 1.0)) return
 
         val meta = hoe.itemMeta as? Damageable ?: return
         val maxDurability = hoe.type.maxDurability.toInt()
