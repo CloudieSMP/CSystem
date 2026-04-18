@@ -25,6 +25,14 @@ enum class CrateType(
     val recipeIngredient: Material,
     val lootPool: CrateLootPool,
 ) {
+    MASTER(
+        "Master Crate",
+        "A crate containing everything",
+        LEGENDARY,
+        "crates/gold",
+        Material.GOLD_BLOCK,
+        CrateLootPool.MASTER,
+    ),
     PLUSHIE(
         "Plushie Crate",
         "A crate containing plushies",
