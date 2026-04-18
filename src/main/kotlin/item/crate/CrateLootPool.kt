@@ -30,6 +30,15 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
     )),
     CHARACTER(listOf(
         N,
-        ASTARION
+        ASTARION,
+        BATMAN,
+        DAZAI,
+        LEVI,
+        SPARROW,
+        SPIDERMAN,
+        LEONARDO,
+        RAPHAEL,
+        MICHELANGELO,
+        DONATELLO
     ))
 }

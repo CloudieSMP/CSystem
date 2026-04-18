@@ -22,7 +22,7 @@ class Hat {
             } else {
                 val helmet = player.inventory.helmet
                 player.inventory.setHelmet(itemInHand)
-                player.inventory.setItemInMainHand(helmet ?: ItemStack(Material.AIR))
+                player.inventory.setItemInMainHand(helmet)
             }
         }
 }

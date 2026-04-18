@@ -22,6 +22,7 @@ enum class CrateType(
     private val crateDescription: String,
     val crateRarity: ItemRarity,
     val crateMaterial: String,
+    val recipeIngredient: Material,
     val lootPool: CrateLootPool,
 ) {
     PLUSHIE(
@@ -29,6 +30,7 @@ enum class CrateType(
         "A crate containing plushies",
         COMMON,
         "crates/blue",
+        Material.WHITE_WOOL,
         CrateLootPool.PLUSHIE,
     ),
     WEARABLES(
@@ -36,6 +38,7 @@ enum class CrateType(
         "A crate containing wearables",
         COMMON,
         "crates/default",
+        Material.YELLOW_WOOL,
         CrateLootPool.WEARABLES,
     ),
     PLAYER(
@@ -43,6 +46,7 @@ enum class CrateType(
         "A crate containing player plushies",
         UNCOMMON,
         "crates/default",
+        Material.RED_WOOL,
         CrateLootPool.PLAYER,
     ),
     CHARACTER(
@@ -50,6 +54,7 @@ enum class CrateType(
         "A crate containing character plushies",
         RARE,
         "crates/default",
+        Material.BLACK_WOOL,
         CrateLootPool.CHARACTER,
     );
 

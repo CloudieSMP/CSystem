@@ -5,6 +5,7 @@ import item.booster.BoosterType
 import item.booster.Cards
 import item.crate.CrateType
 import logger
+import plugin
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemConsumeEvent
@@ -39,7 +40,12 @@ class PlayerItemConsume : Listener {
                 logger.warning("Unknown crate type '$crateType' on consumed item from ${event.player.name}")
                 return
             }
-            GamblingWindow.open(event.player, type)
+            val player = event.player
+            plugin.server.scheduler.runTask(plugin, Runnable {
+                if (player.isOnline) {
+                    GamblingWindow.open(player, type)
+                }
+            })
         }
     }
 }

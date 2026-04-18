@@ -64,10 +64,9 @@ object BoosterPackBrowserWindow {
                         allTags.deserialize("<!i><gray>Rarity bucket chance: <white>$rarityChanceText%"),
                     )
                 )
+                @Suppress("DEPRECATION")
                 meta.setCustomModelData(card.modelDataFor(SubRarity.NONE))
             }
         }
     }
 }
-
-

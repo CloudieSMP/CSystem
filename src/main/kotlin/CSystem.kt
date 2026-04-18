@@ -6,6 +6,7 @@ import event.block.CauldronListener
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.LiveUtil
+import item.crate.CrateRecipes
 import library.CardPullCounterStorage
 import library.HomeStorage
 import library.MailStorage
@@ -34,7 +35,7 @@ import java.time.Duration
 import util.ResourcePacker
 
 @Suppress( "unstableApiUsage")
-class System : JavaPlugin() {
+class CSystem : JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager<CommandSourceStack>
     private lateinit var annotationParser: AnnotationParser<CommandSourceStack>
     lateinit var config: Config
@@ -50,6 +51,7 @@ class System : JavaPlugin() {
         } else {
             logger.warning("Resource pack cache could not be populated on startup. Use /pack refresh after fixing the resource pack URLs.")
         }
+        CrateRecipes.registerAll()
         setupEvents()
         registerCommands()
         VisualChat.clearChatEntities()
@@ -133,6 +135,7 @@ class System : JavaPlugin() {
         server.pluginManager.registerEvents(CauldronListener(), this)
         server.pluginManager.registerEvents(GamblingWindow, this)
         server.pluginManager.registerEvents(BinderInteract(), this)
+        server.pluginManager.registerEvents(CommandVisibilityListener(), this)
     }
 
     private fun applyConfig(config: Config) {
@@ -173,5 +176,5 @@ class System : JavaPlugin() {
     }
 }
 
-val plugin: System get() = JavaPlugin.getPlugin(System::class.java)
+val plugin: CSystem get() = JavaPlugin.getPlugin(CSystem::class.java)
 val logger get() = plugin.logger

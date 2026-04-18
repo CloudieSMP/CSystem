@@ -23,7 +23,7 @@ plugins {
 }
 
 group = "moe.oof"
-version = "$patch-Build-$commitHash"
+version = "$patch-$commitHash"
 
 kotlin {
     jvmToolchain(25)
@@ -74,7 +74,7 @@ tasks {
     }
 
     shadowJar {
-        val shadowPkg = "moe.oof.system.shade"
+        val shadowPkg = "moe.oof.csystem.shade"
 
         relocate("org.incendo", "${shadowPkg}.org.incendo")
         relocate("org.spongepowered", "${shadowPkg}.org.spongepowered")

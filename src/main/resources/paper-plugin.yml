@@ -1,11 +1,11 @@
-name: System
+name: CSystem
 description: Cloudie SMP S10 System
 api-version: "1.21.11"
 authors: [Sebiann]
 website: https://sebiann.moe
 
 version: "${version}"
-main: System
+main: CSystem
 load: STARTUP
 
 permissions:
@@ -27,12 +27,14 @@ permissions:
     default: op
     children:
       cloudie.cmd.reload: true
+      cloudie.cmd.help.staff: true
       cloudie.cmd.admin_chat: true
       cloudie.cmd.dev_chat: true
       cloudie.cmd.vanish: true
       cloudie.cmd.debug: true
       cloudie.cmd.announce: true
       cloudie.cmd.timer: true
+      cloudie.cmd.pack: true
       cloudie.cmd.height.others: true
 
   cloudie.group.dev:
@@ -43,6 +45,8 @@ permissions:
 
   cloudie.cmd.reload:
     description: Allows the player to reload the plugin.
+  cloudie.cmd.help.staff:
+    description: Allows the player to use the staff help command.
   cloudie.cmd.admin_chat:
     description: Allows the player to use the admin chat command.
   cloudie.cmd.dev_chat:
@@ -55,6 +59,8 @@ permissions:
     description: Allows the player to use the announce command.
   cloudie.cmd.timer:
     description: Allows the player to use the timer command.
+  cloudie.cmd.pack:
+    description: Allows the player to manage resource packs.
   cloudie.cmd.height.others:
     description: Allows the player to check height of other players.
 
@@ -78,6 +84,9 @@ permissions:
       cloudie.cmd.tpa: true
       cloudie.cmd.echo: true
       cloudie.cmd.mail: true
+      cloudie.cmd.report: true
+      cloudie.cmd.showstat: true
+      cloudie.removecmds: true
 
   cloudie.cmd.hat:
     description: Allows the player to use the hat command.
@@ -111,3 +120,9 @@ permissions:
     description: Allows the player to use the echo command.
   cloudie.cmd.mail:
     description: Allows the player to use mailbox commands.
+  cloudie.cmd.report:
+    description: Allows the player to report issues.
+  cloudie.cmd.showstat:
+    description: Allows the player to show server statistic scoreboards.
+  cloudie.removecmds:
+    description: Removes specific commands from tabcomplete like worldguard and worldedit.

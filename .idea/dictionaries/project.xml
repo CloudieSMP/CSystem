@@ -7,8 +7,10 @@
       <w>announcerestart</w>
       <w>beauver</w>
       <w>cloudiecolor</w>
+      <w>desel</w>
       <w>notifcolor</w>
       <w>ramenbowl</w>
+      <w>removecmds</w>
       <w>renameitem</w>
       <w>resetitemname</w>
       <w>sebiann</w>
@@ -16,7 +18,10 @@
       <w>showstat</w>
       <w>staffhelp</w>
       <w>streamermode</w>
+      <w>toggleplace</w>
       <w>tpahere</w>
+      <w>worldedit</w>
+      <w>worldguard</w>
     </words>
   </dictionary>
 </component>

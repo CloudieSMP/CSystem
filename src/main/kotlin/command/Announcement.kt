@@ -29,4 +29,15 @@ class Announcement {
             "In $time minute${if (time > 1) "s" else ""}."
         )
     }
+
+    @Command("announcerestart <time> funny")
+    @CommandDescription("Broadcasts when the next restart will be.")
+    @Permission("cloudie.cmd.announce")
+    fun announceRestartFunny(css: CommandSourceStack, @Argument("time") time: Int) {
+        Notification.announceServer(
+            "<red><b>Server Restarting<reset>",
+            "In $time minute${if (time > 1) "s" else ""}."
+        )
+        Notification.announceActionbar("This a sign to sleep europeans.")
+    }
 }
