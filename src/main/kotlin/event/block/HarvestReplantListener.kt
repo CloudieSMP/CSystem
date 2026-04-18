@@ -3,39 +3,35 @@ package event.block
 import org.bukkit.Material
 import org.bukkit.block.data.Ageable
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
 
-class HarvestReplantListener : Listener {
+object HarvestReplantListener {
 
-    companion object {
-        /** Maps a fully-grown crop block material to the seed material used to replant it. */
-        private val CROP_SEEDS = mapOf(
-            Material.WHEAT to Material.WHEAT_SEEDS,
-            Material.CARROTS to Material.CARROT,
-            Material.POTATOES to Material.POTATO,
-            Material.BEETROOTS to Material.BEETROOT_SEEDS,
-            Material.TORCHFLOWER_CROP to Material.TORCHFLOWER_SEEDS,
-            Material.NETHER_WART to Material.NETHER_WART,
-        )
+    /** Maps a fully-grown crop block material to the seed material used to replant it. */
+    private val CROP_SEEDS = mapOf(
+        Material.WHEAT to Material.WHEAT_SEEDS,
+        Material.CARROTS to Material.CARROT,
+        Material.POTATOES to Material.POTATO,
+        Material.BEETROOTS to Material.BEETROOT_SEEDS,
+        Material.TORCHFLOWER_CROP to Material.TORCHFLOWER_SEEDS,
+        Material.NETHER_WART to Material.NETHER_WART,
+    )
 
-        private val HOE_MATERIALS = setOf(
-            Material.WOODEN_HOE,
-            Material.STONE_HOE,
-            Material.IRON_HOE,
-            Material.GOLDEN_HOE,
-            Material.DIAMOND_HOE,
-            Material.NETHERITE_HOE,
-        )
-    }
+    private val HOE_MATERIALS = setOf(
+        Material.WOODEN_HOE,
+        Material.STONE_HOE,
+        Material.IRON_HOE,
+        Material.GOLDEN_HOE,
+        Material.DIAMOND_HOE,
+        Material.NETHERITE_HOE,
+    )
 
-    @EventHandler(ignoreCancelled = true)
-    fun onRightClickCrop(event: PlayerInteractEvent) {
+    fun harvestReplantEvent(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         if (event.hand != EquipmentSlot.HAND) return
 
@@ -91,7 +87,7 @@ class HarvestReplantListener : Listener {
     }
 
     /** Applies 1 point of durability damage to [hoe], respecting Unbreaking, and breaks it if needed. */
-    private fun damageHoe(player: org.bukkit.entity.Player, hoe: ItemStack) {
+    private fun damageHoe(player: Player, hoe: ItemStack) {
         val unbreakingLevel = hoe.getEnchantmentLevel(Enchantment.UNBREAKING)
         // Unbreaking reduces damage chance: probability = 1 / (level + 1)
         if (unbreakingLevel > 0 && kotlin.random.Random.nextDouble() < unbreakingLevel / (unbreakingLevel + 1.0)) return
