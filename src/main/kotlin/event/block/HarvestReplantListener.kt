@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 
 class HarvestReplantListener : Listener {
 
@@ -24,7 +25,7 @@ class HarvestReplantListener : Listener {
     @EventHandler(ignoreCancelled = true)
     fun onRightClickCrop(event: PlayerInteractEvent) {
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
-        if (event.hand != org.bukkit.inventory.EquipmentSlot.HAND) return
+        if (event.hand != EquipmentSlot.HAND) return
 
         val block = event.clickedBlock ?: return
         val cropMaterial = block.type
@@ -35,16 +36,18 @@ class HarvestReplantListener : Listener {
 
         event.isCancelled = true
 
-        // Collect natural drops, then remove one seed item (the crop stays planted).
+        // Collect natural drops, then try to consume one seed (the crop stays planted).
         val drops = block.getDrops().toMutableList()
         val seedDrop = drops.firstOrNull { it.type == seedMaterial }
         if (seedDrop != null) {
+            // Seed available: consume it and reset the crop to age 0 (replant).
             if (seedDrop.amount > 1) seedDrop.amount -= 1 else drops.remove(seedDrop)
+            ageable.age = 0
+            block.blockData = ageable
+        } else {
+            // No seed in drops (e.g. unlucky wheat / beetroot roll): harvest only, leave farmland bare.
+            block.type = Material.AIR
         }
-
-        // Reset the crop to age 0 (replant).
-        ageable.age = 0
-        block.blockData = ageable
 
         // Drop remaining items at the block location.
         val location = block.location.add(0.5, 0.5, 0.5)
