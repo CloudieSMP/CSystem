@@ -3,6 +3,7 @@ import chat.VisualChat
 import com.noxcrew.interfaces.InterfacesListeners
 import event.ServerListEvent
 import event.block.CauldronListener
+import event.block.HarvestReplantListener
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.LiveUtil
@@ -135,6 +136,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlayerInteractEntity(), this)
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
         server.pluginManager.registerEvents(CauldronListener(), this)
+        server.pluginManager.registerEvents(HarvestReplantListener(), this)
         server.pluginManager.registerEvents(GamblingWindow, this)
         server.pluginManager.registerEvents(BinderInteract(), this)
         server.pluginManager.registerEvents(CommandVisibilityListener(), this)
