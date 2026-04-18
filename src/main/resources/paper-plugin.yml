@@ -36,6 +36,7 @@ permissions:
       cloudie.cmd.timer: true
       cloudie.cmd.pack: true
       cloudie.cmd.height.others: true
+      cloudie.cmd.trash: true
 
   cloudie.group.dev:
     description: Allows the player to use developer chat and receive developer messages.
@@ -63,6 +64,8 @@ permissions:
     description: Allows the player to manage resource packs.
   cloudie.cmd.height.others:
     description: Allows the player to check height of other players.
+  cloudie.cmd.trash:
+    description: Allows the player to open the trash inventory.
 
   cloudie.group.default:
     description: Allows the player to use all default commands.
