@@ -32,19 +32,6 @@ object AfkHelper {
         }
     }
 
-    /** Updates the last-activity timestamp only (thread-safe, callable from async context). */
-    fun recordActivityTimestamp(player: Player) {
-        lastActivity[player.uniqueId] = System.currentTimeMillis()
-    }
-
-    /** Clears AFK state on the main thread (must be called synchronously). */
-    fun clearAfkState(player: Player) {
-        recordActivityTimestamp(player)
-        if (isAfk(player)) {
-            setAfk(player, false)
-        }
-    }
-
     fun recordActivity(player: Player) {
         lastActivity[player.uniqueId] = System.currentTimeMillis()
         if (isAfk(player)) {
