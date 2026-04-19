@@ -89,6 +89,7 @@ permissions:
       cloudie.cmd.mail: true
       cloudie.cmd.report: true
       cloudie.cmd.showstat: true
+      cloudie.cmd.afk: true
       cloudie.removecmds: true
 
   cloudie.cmd.hat:
@@ -127,5 +128,7 @@ permissions:
     description: Allows the player to report issues.
   cloudie.cmd.showstat:
     description: Allows the player to show server statistic scoreboards.
+  cloudie.cmd.afk:
+    description: Allows the player to toggle their AFK status.
   cloudie.removecmds:
     description: Removes specific commands from tabcomplete like worldguard and worldedit.

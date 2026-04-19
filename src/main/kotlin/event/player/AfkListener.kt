@@ -1,0 +1,70 @@
+package event.player
+
+import library.AfkHelper
+import org.bukkit.Bukkit
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerCommandPreprocessEvent
+import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.inventory.EquipmentSlot
+import io.papermc.paper.event.player.AsyncChatEvent
+import plugin
+
+class AfkListener : Listener {
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onJoin(event: PlayerJoinEvent) {
+        AfkHelper.initPlayer(event.player)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun onQuit(event: PlayerQuitEvent) {
+        AfkHelper.cleanup(event.player)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onMove(event: PlayerMoveEvent) {
+        // Only trigger on actual position change, not just head rotation
+        if (event.from.blockX != event.to.blockX ||
+            event.from.blockY != event.to.blockY ||
+            event.from.blockZ != event.to.blockZ
+        ) {
+            AfkHelper.recordActivity(event.player)
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onInteract(event: PlayerInteractEvent) {
+        if (event.hand == EquipmentSlot.HAND) {
+            AfkHelper.recordActivity(event.player)
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onInteractEntity(event: PlayerInteractEntityEvent) {
+        if (event.hand == EquipmentSlot.HAND) {
+            AfkHelper.recordActivity(event.player)
+        }
+    }
+
+    // AsyncChatEvent fires off the main thread — dispatch back to sync to safely call Bukkit API
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onChat(event: AsyncChatEvent) {
+        val player = event.player
+        Bukkit.getScheduler().runTask(plugin, Runnable { AfkHelper.recordActivity(player) })
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onCommand(event: PlayerCommandPreprocessEvent) {
+        // Don't count /afk itself as activity — it's handled directly in the command
+        if (!event.message.equals("/afk", ignoreCase = true)) {
+            AfkHelper.recordActivity(event.player)
+        }
+    }
+}
+

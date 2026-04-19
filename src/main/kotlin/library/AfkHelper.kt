@@ -1,0 +1,80 @@
+package library
+
+import chat.ChatUtility
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
+import plugin
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+
+object AfkHelper {
+    private val afkPlayers = mutableSetOf<UUID>()
+    private val lastActivity = ConcurrentHashMap<UUID, Long>()
+
+    fun isAfk(player: Player): Boolean = player.uniqueId in afkPlayers
+    fun isAfk(uuid: UUID): Boolean = uuid in afkPlayers
+
+    fun setAfk(player: Player, afk: Boolean, silent: Boolean = false) {
+        if (afk == isAfk(player)) return
+        if (afk) {
+            afkPlayers.add(player.uniqueId)
+            player.isSleepingIgnored = true
+            if (!silent) {
+                ChatUtility.broadcastAll("<cloudiecolor>${player.name}</cloudiecolor><gray> is now AFK")
+            }
+        } else {
+            afkPlayers.remove(player.uniqueId)
+            player.isSleepingIgnored = false
+            if (!silent) {
+                ChatUtility.broadcastAll("<cloudiecolor>${player.name}</cloudiecolor><gray> is no longer AFK")
+            }
+        }
+    }
+
+    fun recordActivity(player: Player) {
+        lastActivity[player.uniqueId] = System.currentTimeMillis()
+        if (isAfk(player)) {
+            setAfk(player, false)
+        }
+    }
+
+    fun initPlayer(player: Player) {
+        lastActivity[player.uniqueId] = System.currentTimeMillis()
+        player.isSleepingIgnored = false
+    }
+
+    fun cleanup(player: Player) {
+        afkPlayers.remove(player.uniqueId)
+        lastActivity.remove(player.uniqueId)
+        player.isSleepingIgnored = false
+    }
+
+    fun resetAll() {
+        for (uuid in afkPlayers.toSet()) {
+            Bukkit.getPlayer(uuid)?.isSleepingIgnored = false
+        }
+        afkPlayers.clear()
+        lastActivity.clear()
+    }
+
+    fun startIdleChecker(pluginInstance: Plugin) {
+        object : BukkitRunnable() {
+            override fun run() {
+                val timeoutMs = plugin.config.afk.idleTimeoutSeconds * 1000L
+                val now = System.currentTimeMillis()
+                for (player in Bukkit.getOnlinePlayers()) {
+                    if (isAfk(player)) continue
+                    val last = lastActivity[player.uniqueId] ?: run {
+                        lastActivity[player.uniqueId] = now
+                        return@run
+                    }
+                    if (now - last >= timeoutMs) {
+                        setAfk(player, true)
+                    }
+                }
+            }
+        }.runTaskTimer(pluginInstance, 600L, 600L) // check every 30 seconds
+    }
+}

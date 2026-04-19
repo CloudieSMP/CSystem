@@ -21,6 +21,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import util.ui.GamblingWindow
 import util.ui.TrashWindow
 import library.VanishHelper
+import library.AfkHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
@@ -56,6 +57,7 @@ class CSystem : JavaPlugin() {
         server.onlinePlayers.forEach(CrateRecipes::discoverAll)
         setupEvents()
         registerCommands()
+        AfkHelper.startIdleChecker(this)
         VisualChat.clearChatEntities()
     }
 
@@ -66,6 +68,7 @@ class CSystem : JavaPlugin() {
         MailStorage.flushAllSync()
         CardPullCounterStorage.flushAllSync()
         VanishHelper.resetAllVisibility()
+        AfkHelper.resetAll()
         VisualChat.clearChatEntities()
     }
 
@@ -141,6 +144,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(TrashWindow, this)
         server.pluginManager.registerEvents(BinderInteract(), this)
         server.pluginManager.registerEvents(CommandVisibilityListener(), this)
+        server.pluginManager.registerEvents(AfkListener(), this)
     }
 
     private fun applyConfig(config: Config) {
