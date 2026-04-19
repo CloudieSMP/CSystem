@@ -8,7 +8,8 @@ data class Config(
     val motd: String = "Bro forgot to set the motd, laugh at this user",
     val tpa: TpaConfig = TpaConfig(),
     val home: HomeConfig = HomeConfig(),
-    val discord: DiscordConfig = DiscordConfig()
+    val discord: DiscordConfig = DiscordConfig(),
+    val afk: AfkConfig = AfkConfig()
 )
 
 @ConfigSerializable
@@ -25,6 +26,11 @@ data class HomeConfig(
 @ConfigSerializable
 data class DiscordConfig(
     val reportWebhookUrl: String = ""
+)
+
+@ConfigSerializable
+data class AfkConfig(
+    val idleTimeoutSeconds: Long = 300
 )
 
 @ConfigSerializable

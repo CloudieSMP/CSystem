@@ -29,3 +29,7 @@ home:
 discord:
   # Webhook URL for player reports. Leave empty to disable.
   report-webhook-url: ""
+
+afk:
+  # Time in seconds before a player is automatically marked as AFK.
+  idle-timeout-seconds: 300
