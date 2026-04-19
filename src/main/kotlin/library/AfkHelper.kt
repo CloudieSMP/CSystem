@@ -10,7 +10,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 object AfkHelper {
-    private val afkPlayers = mutableSetOf<UUID>()
+    private val afkPlayers: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
     private val lastActivity = ConcurrentHashMap<UUID, Long>()
 
     fun isAfk(player: Player): Boolean = player.uniqueId in afkPlayers
@@ -66,10 +66,8 @@ object AfkHelper {
                 val now = System.currentTimeMillis()
                 for (player in Bukkit.getOnlinePlayers()) {
                     if (isAfk(player)) continue
-                    val last = lastActivity[player.uniqueId] ?: run {
-                        lastActivity[player.uniqueId] = now
-                        return@run
-                    }
+                    val last = lastActivity.getOrPut(player.uniqueId) { now }
+                    if (last == now) continue // just initialised, skip this cycle
                     if (now - last >= timeoutMs) {
                         setAfk(player, true)
                     }

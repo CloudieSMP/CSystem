@@ -62,7 +62,7 @@ class AfkListener : Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onCommand(event: PlayerCommandPreprocessEvent) {
         // Don't count /afk itself as activity — it's handled directly in the command
-        if (!event.message.equals("/afk", ignoreCase = true)) {
+        if (!event.message.trim().equals("/afk", ignoreCase = true)) {
             AfkHelper.recordActivity(event.player)
         }
     }

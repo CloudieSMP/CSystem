@@ -16,8 +16,9 @@ class Afk {
     @Permission("cloudie.cmd.afk")
     fun afk(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
-        AfkHelper.setAfk(player, !AfkHelper.isAfk(player))
-        if (!AfkHelper.isAfk(player)) {
+        val goingAfk = !AfkHelper.isAfk(player)
+        AfkHelper.setAfk(player, goingAfk)
+        if (!goingAfk) {
             AfkHelper.recordActivity(player)
         }
     }
