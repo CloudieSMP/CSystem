@@ -1,12 +1,13 @@
 package library
 
-import chat.ChatUtility
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import plugin
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 
 object AfkHelper {
     private val afkPlayers: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
@@ -15,21 +16,17 @@ object AfkHelper {
     fun isAfk(player: Player): Boolean = player.uniqueId in afkPlayers
     fun isAfk(uuid: UUID): Boolean = uuid in afkPlayers
 
-    fun setAfk(player: Player, afk: Boolean, silent: Boolean = false) {
+    fun setAfk(player: Player, afk: Boolean) {
         if (afk == isAfk(player)) return
         if (afk) {
             afkPlayers.add(player.uniqueId)
             player.isSleepingIgnored = true
-            if (!silent) {
-                ChatUtility.broadcastAll("<cloudiecolor>${player.name}</cloudiecolor><gray> is now AFK")
-            }
+            player.playerListName(Component.text(player.name, NamedTextColor.GRAY))
         } else {
             afkPlayers.remove(player.uniqueId)
             lastActivity[player.uniqueId] = System.currentTimeMillis()
             player.isSleepingIgnored = false
-            if (!silent) {
-                ChatUtility.broadcastAll("<cloudiecolor>${player.name}</cloudiecolor><gray> is no longer AFK")
-            }
+            player.playerListName(null)
         }
     }
 
@@ -43,17 +40,21 @@ object AfkHelper {
     fun initPlayer(player: Player) {
         lastActivity[player.uniqueId] = System.currentTimeMillis()
         player.isSleepingIgnored = false
+        player.playerListName(null)
     }
 
     fun cleanup(player: Player) {
         afkPlayers.remove(player.uniqueId)
         lastActivity.remove(player.uniqueId)
         player.isSleepingIgnored = false
+        player.playerListName(null)
     }
 
     fun resetAll() {
         for (uuid in afkPlayers.toSet()) {
-            Bukkit.getPlayer(uuid)?.isSleepingIgnored = false
+            val player = Bukkit.getPlayer(uuid) ?: continue
+            player.isSleepingIgnored = false
+            player.playerListName(null)
         }
         afkPlayers.clear()
         lastActivity.clear()
