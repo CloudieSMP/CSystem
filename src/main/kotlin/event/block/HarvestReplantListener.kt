@@ -96,7 +96,7 @@ object HarvestReplantListener {
         val newDamage = meta.damage + 1
         if (newDamage >= maxDurability) {
             player.playSound(player.location, org.bukkit.Sound.ENTITY_ITEM_BREAK, 1f, 1f)
-            hoe.amount = 0
+            player.inventory.setItemInMainHand(ItemStack(Material.AIR))
         } else {
             meta.damage = newDamage
             hoe.itemMeta = meta
