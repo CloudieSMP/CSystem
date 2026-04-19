@@ -31,6 +31,7 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         RIVEN,
         SABINE,
         YANN,
+        ROAST,
         N,
         ASTARION,
         BATMAN,
@@ -41,7 +42,7 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         LEONARDO,
         RAPHAEL,
         MICHELANGELO,
-        DONATELLO
+        DONATELLO,
     )),
     PLUSHIE(listOf(
         PENGUIN,
@@ -50,7 +51,7 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         STAR,
         HEART,
         RAMEN_BOWL,
-        COFFEE_CUP
+        COFFEE_CUP,
     )),
     WEARABLES(listOf(
         CAT_EARS,
@@ -60,7 +61,7 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         HALO,
         HEART_CROWN,
         ORCHID_CROWN,
-        HEART_GLASSES
+        HEART_GLASSES,
     )),
     PLAYER(listOf(
         SEBIANN,
@@ -73,7 +74,8 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         MEGAN,
         RIVEN,
         SABINE,
-        YANN
+        YANN,
+        ROAST,
     )),
     CHARACTER(listOf(
         N,
@@ -86,6 +88,6 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         LEONARDO,
         RAPHAEL,
         MICHELANGELO,
-        DONATELLO
+        DONATELLO,
     ))
 }

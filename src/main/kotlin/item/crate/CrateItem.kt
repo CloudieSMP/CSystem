@@ -58,13 +58,14 @@ enum class CrateItem(
     SEBIANN(100, "Sebiann Plushie", COMMON, "A cute Sebiann plushie", "plushies/player/sebiann"),
     COOKIE(100, "Cookie Plushie", COMMON, "A cute Cookie plushie", "plushies/player/cookie"),
     BEAUVER(100, "Beauver Plushie", COMMON, "A cute Beauver plushie", "plushies/player/beauver"),
-    CARSON(100, "Carson Plushie", COMMON, "A cute Carson plushie", "plushies/player/carson_wide"),
+    CARSON(100, "Carson Plushie", COMMON, "Some people's kids these days", "plushies/player/carson_wide"),
     LESHY(100, "Leshy Plushie", COMMON, "Blob Blob", "plushies/player/leshy_slim"),
     MAI(100, "Mai Plushie", COMMON, "A cute Mai plushie", "plushies/player/mai_cheerleader_slim"),
     MEGAN(100, "Megan Plushie", COMMON, "A cute Megan plushie", "plushies/player/megan_cheerleader_slim"),
     RIVEN(100, "Riven Plushie", COMMON, "MEOW", "plushies/player/riven_slim"),
     SABINE(100, "Sabine Plushie", COMMON, "Just Cheering you on", "plushies/player/sabine_cheerleader_slim"),
     YANN(100, "Yann Plushie", COMMON, "A cute Yann plushie", "plushies/player/yann_wide"),
+    ROAST(100, "Roast Plushie", COMMON, "A cute Roast plushie", "plushies/player/roast_wide"),
 
     // Character plushies
     N(100, "N Plushie", COMMON, "N from Pokemon", "plushies/character/n_slim"),
