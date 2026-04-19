@@ -17,6 +17,10 @@ import plugin
 
 class AfkListener : Listener {
 
+    companion object {
+        private const val AFK_COMMAND = "/afk"
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onJoin(event: PlayerJoinEvent) {
         AfkHelper.initPlayer(event.player)
@@ -52,18 +56,23 @@ class AfkListener : Listener {
         }
     }
 
-    // AsyncChatEvent fires off the main thread — dispatch back to sync to safely call Bukkit API
+    // AsyncChatEvent fires off the main thread. Update lastActivity directly (ConcurrentHashMap is
+    // thread-safe), and only dispatch to the main thread when the player was actually AFK, to
+    // avoid the overhead of a scheduled task on every chat message.
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onChat(event: AsyncChatEvent) {
         val player = event.player
-        Bukkit.getScheduler().runTask(plugin, Runnable { AfkHelper.recordActivity(player) })
+        AfkHelper.recordActivityTimestamp(player)
+        if (AfkHelper.isAfk(player)) {
+            Bukkit.getScheduler().runTask(plugin, Runnable { AfkHelper.clearAfkState(player) })
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onCommand(event: PlayerCommandPreprocessEvent) {
         // Don't count /afk (with or without args) as activity — it's handled directly in the command
         val cmd = event.message.trim()
-        if (!cmd.equals("/afk", ignoreCase = true) && !cmd.startsWith("/afk ", ignoreCase = true)) {
+        if (!cmd.equals(AFK_COMMAND, ignoreCase = true) && !cmd.startsWith("$AFK_COMMAND ", ignoreCase = true)) {
             AfkHelper.recordActivity(event.player)
         }
     }

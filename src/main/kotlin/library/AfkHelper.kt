@@ -12,6 +12,8 @@ import net.kyori.adventure.text.format.NamedTextColor
 object AfkHelper {
     private val afkPlayers: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
     private val lastActivity = ConcurrentHashMap<UUID, Long>()
+    // Tracks UUIDs whose lastActivity was initialised this checker cycle, to skip them once
+    private val justInitialised: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
 
     fun isAfk(player: Player): Boolean = player.uniqueId in afkPlayers
     fun isAfk(uuid: UUID): Boolean = uuid in afkPlayers
@@ -27,6 +29,19 @@ object AfkHelper {
             lastActivity[player.uniqueId] = System.currentTimeMillis()
             player.isSleepingIgnored = false
             player.playerListName(null)
+        }
+    }
+
+    /** Updates the last-activity timestamp only (thread-safe, callable from async context). */
+    fun recordActivityTimestamp(player: Player) {
+        lastActivity[player.uniqueId] = System.currentTimeMillis()
+    }
+
+    /** Clears AFK state on the main thread (must be called synchronously). */
+    fun clearAfkState(player: Player) {
+        recordActivityTimestamp(player)
+        if (isAfk(player)) {
+            setAfk(player, false)
         }
     }
 
@@ -46,6 +61,7 @@ object AfkHelper {
     fun cleanup(player: Player) {
         afkPlayers.remove(player.uniqueId)
         lastActivity.remove(player.uniqueId)
+        justInitialised.remove(player.uniqueId)
         player.isSleepingIgnored = false
         player.playerListName(null)
     }
@@ -58,6 +74,7 @@ object AfkHelper {
         }
         afkPlayers.clear()
         lastActivity.clear()
+        justInitialised.clear()
     }
 
     fun startIdleChecker() {
@@ -67,8 +84,13 @@ object AfkHelper {
                 val now = System.currentTimeMillis()
                 for (player in Bukkit.getOnlinePlayers()) {
                     if (isAfk(player)) continue
-                    val last = lastActivity.getOrPut(player.uniqueId) { now }
-                    if (last == now) continue // just initialised, skip this cycle
+                    if (!lastActivity.containsKey(player.uniqueId)) {
+                        lastActivity[player.uniqueId] = now
+                        justInitialised.add(player.uniqueId)
+                        continue
+                    }
+                    if (justInitialised.remove(player.uniqueId)) continue
+                    val last = lastActivity[player.uniqueId] ?: continue
                     if (now - last >= timeoutMs) {
                         setAfk(player, true)
                     }
