@@ -33,16 +33,19 @@ object AfkHelper {
     }
 
     fun recordActivity(player: Player) {
-        lastActivity[player.uniqueId] = System.currentTimeMillis()
         if (isAfk(player)) {
             setAfk(player, false)
+        } else {
+            lastActivity[player.uniqueId] = System.currentTimeMillis()
         }
     }
 
     fun initPlayer(player: Player) {
-        lastActivity[player.uniqueId] = System.currentTimeMillis()
-        player.isSleepingIgnored = false
-        player.playerListName(null)
+        if (isAfk(player)) {
+            setAfk(player, false)
+        } else {
+            lastActivity[player.uniqueId] = System.currentTimeMillis()
+        }
     }
 
     fun cleanup(player: Player) {
