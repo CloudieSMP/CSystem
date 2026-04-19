@@ -45,6 +45,7 @@ object HarvestReplantListener {
         if (hoe.type !in HOE_MATERIALS) return
 
         event.isCancelled = true
+        player.swingMainHand()
 
         // Collect natural drops, then try to consume one seed (the crop stays planted).
         val drops = block.getDrops(hoe).toMutableList()
