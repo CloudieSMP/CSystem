@@ -19,6 +19,7 @@ import org.spongepowered.configurate.kotlin.extensions.get
 import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import util.ui.GamblingWindow
+import util.ui.TrashWindow
 import library.VanishHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -137,6 +138,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(CauldronListener(), this)
         server.pluginManager.registerEvents(PlayerInteract(), this)
         server.pluginManager.registerEvents(GamblingWindow, this)
+        server.pluginManager.registerEvents(TrashWindow, this)
         server.pluginManager.registerEvents(BinderInteract(), this)
         server.pluginManager.registerEvents(CommandVisibilityListener(), this)
     }
