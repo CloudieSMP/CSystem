@@ -11,7 +11,8 @@ import org.bukkit.inventory.EquipmentSlot
 class PlayerInteract : Listener {
     @EventHandler(ignoreCancelled = true)
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (event.action == Action.RIGHT_CLICK_BLOCK && event.hand != EquipmentSlot.HAND) {
+        val hand = event.hand ?: return
+        if (event.action == Action.RIGHT_CLICK_BLOCK && hand == EquipmentSlot.HAND) {
             harvestReplantEvent(event)
         }
     }
