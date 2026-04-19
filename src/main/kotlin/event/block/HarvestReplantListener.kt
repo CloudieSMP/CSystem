@@ -25,6 +25,7 @@ object HarvestReplantListener {
     private val HOE_MATERIALS = setOf(
         Material.WOODEN_HOE,
         Material.STONE_HOE,
+        Material.COPPER_HOE,
         Material.IRON_HOE,
         Material.GOLDEN_HOE,
         Material.DIAMOND_HOE,
@@ -32,9 +33,6 @@ object HarvestReplantListener {
     )
 
     fun harvestReplantEvent(event: PlayerInteractEvent) {
-        if (event.action != Action.RIGHT_CLICK_BLOCK) return
-        if (event.hand != EquipmentSlot.HAND) return
-
         val block = event.clickedBlock ?: return
         val cropMaterial = block.type
         val seedMaterial = CROP_SEEDS[cropMaterial] ?: return
