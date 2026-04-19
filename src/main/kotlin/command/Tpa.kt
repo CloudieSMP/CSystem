@@ -41,20 +41,15 @@ class Tpa {
         createRequest(css, targetPlayer, TpaType.TPA_HERE)
     }
 
-    @Command("tpaccept|tpyes <player>")
+    @Command("tpaccept|tpyes [player]")
     @CommandDescription("Accept a tpa request.")
     @Permission("cloudie.cmd.tpa")
     fun tpaccept(
         css: CommandSourceStack,
-        @Argument(value = "player", suggestions = "incoming-tpa-requesters") requesterName: String
+        @Argument(value = "player", suggestions = "incoming-tpa-requesters") requesterName: String?
     ) {
         val player = css.requirePlayer() ?: return
-
-        val tpaRequest = findIncomingRequest(player.uniqueId, requesterName)
-        if (tpaRequest == null) {
-            player.sendMessage(allTags.deserialize("<yellow>You don't have an incoming TPA request from <green>${requesterName}</green>."))
-            return
-        }
+        val tpaRequest = resolveIncomingRequest(player, requesterName) ?: return
 
         val targetPlayer: Player = Bukkit.getPlayer(tpaRequest.requester) ?: run {
             player.sendMessage(allTags.deserialize("<yellow>Player is no longer online."))
@@ -66,10 +61,10 @@ class Tpa {
 
         if (tpaRequest.type == TpaType.TPA_THERE) {
             player.sendMessage(allTags.deserialize(
-                "<yellow>TPA request from <green>${targetPlayer.name}</green> accepted.\nThey will be teleported in <green>$tpaDelay</green> seconds."
+                "<yellow>TPA request from <white>${targetPlayer.name}</white> accepted.\nThey will be teleported in <white>$tpaDelay</white> seconds."
             ))
             targetPlayer.sendMessage(allTags.deserialize(
-                "<yellow>TPA request to <green>${player.name}</green> accepted.\nYou will be teleported to them in <green>$tpaDelay</green> seconds."
+                "<yellow>TPA request to <white>${player.name}</white> accepted.\nYou will be teleported to them in <white>$tpaDelay</white> seconds."
             ))
 
             scheduleDelayedTeleport(
@@ -80,10 +75,10 @@ class Tpa {
             )
         } else {
             player.sendMessage(allTags.deserialize(
-                "<yellow>TPA request from <green>${targetPlayer.name}</green> accepted.\nYou will be teleported in <green>$tpaDelay</green> seconds."
+                "<yellow>TPA request from <white>${targetPlayer.name}</white> accepted.\nYou will be teleported in <white>$tpaDelay</white> seconds."
             ))
             targetPlayer.sendMessage(allTags.deserialize(
-                "<yellow>TPA request to <green>${player.name}</green> accepted.\nThey will be teleported to you in <green>$tpaDelay</green> seconds."
+                "<yellow>TPA request to <white>${player.name}</white> accepted.\nThey will be teleported to you in <white>$tpaDelay</white> seconds."
             ))
 
             scheduleDelayedTeleport(
@@ -95,20 +90,15 @@ class Tpa {
         }
     }
 
-    @Command("tpdeny|tpno <player>")
+    @Command("tpdeny|tpno [player]")
     @CommandDescription("Deny a tpa request.")
     @Permission("cloudie.cmd.tpa")
     fun tpdeny(
         css: CommandSourceStack,
-        @Argument(value = "player", suggestions = "incoming-tpa-requesters") requesterName: String
+        @Argument(value = "player", suggestions = "incoming-tpa-requesters") requesterName: String?
     ) {
         val player = css.requirePlayer() ?: return
-
-        val tpaRequest = findIncomingRequest(player.uniqueId, requesterName)
-        if (tpaRequest == null) {
-            player.sendMessage(allTags.deserialize("<yellow>You don't have an incoming TPA request from <green>${requesterName}</green>."))
-            return
-        }
+        val tpaRequest = resolveIncomingRequest(player, requesterName) ?: return
 
         val target = Bukkit.getPlayer(tpaRequest.requester)
         val targetOffline = Bukkit.getOfflinePlayer(tpaRequest.requester)
@@ -141,10 +131,12 @@ class Tpa {
         deleteTpaAfterDelay(player, targetPlayer, requestExpireTime, tpaRequest)
 
         player.sendMessage(allTags.deserialize(
-            "<yellow>Teleport request sent to <green>${targetPlayer.name}</green>.\nRequest will time out in <green>$requestExpireTime</green> seconds."
+            "<yellow>Teleport request sent to <white>${targetPlayer.name}</white>.\nRequest will time out in <white>$requestExpireTime</white> seconds."
         ))
         targetPlayer.sendMessage(allTags.deserialize(
-            "<yellow>You have an incoming TPA request from <green>${player.name}</green>. Type <click:run_command:'/tpaccept ${player.name}'><hover:show_text:'Accepts the TPA request.'><white>/tpaccept ${player.name}</white></hover></click> to accept or <click:run_command:'/tpdeny ${player.name}'><hover:show_text:'Denies the TPA request.'><white>/tpdeny ${player.name}</white></hover></click> to deny."
+            "<yellow>You have an incoming TPA request from <b><white>${player.name}</white></b>:\n" +
+                    "Type <click:run_command:'/tpaccept ${player.name}'><hover:show_text:'Accepts the TPA request.'><b><green>/tpaccept ${player.name}</green></b></hover></click> to accept\n" +
+                    "Type <click:run_command:'/tpdeny ${player.name}'><hover:show_text:'Denies the TPA request.'><b><red>/tpdeny ${player.name}</red></b></hover></click> to deny."
         ))
     }
 
@@ -156,6 +148,29 @@ class Tpa {
         return tpaRequests.firstOrNull {
             it.target == targetId && it.requesterName.equals(requesterName, ignoreCase = true)
         }
+    }
+
+    private fun resolveIncomingRequest(player: Player, requesterName: String?): TpaRequest? {
+        val resolvedRequesterName = requesterName
+            ?.takeIf { it.isNotBlank() }
+            ?: findMostRecentIncomingRequest(player.uniqueId)?.requesterName.orEmpty()
+
+        if (resolvedRequesterName.isBlank()) {
+            player.sendMessage(allTags.deserialize("<yellow>You don't have any incoming TPA requests."))
+            return null
+        }
+
+        val tpaRequest = findIncomingRequest(player.uniqueId, resolvedRequesterName)
+        if (tpaRequest == null) {
+            player.sendMessage(allTags.deserialize("<yellow>You don't have an incoming TPA request from <white>${resolvedRequesterName}</white>."))
+            return null
+        }
+
+        return tpaRequest
+    }
+
+    private fun findMostRecentIncomingRequest(targetId: UUID): TpaRequest? {
+        return tpaRequests.lastOrNull { it.target == targetId }
     }
 
     @Suggestions("incoming-tpa-requesters")
@@ -189,8 +204,8 @@ class Tpa {
 
             val success = teleportingPlayer.teleport(destinationPlayer)
             if (!success) {
-                teleportingPlayer.sendMessage(allTags.deserialize("<red>Teleport to <yellow>$destinationName</yellow> failed.</red>"))
-                destinationPlayer.sendMessage(allTags.deserialize("<red>Teleport for <yellow>$requesterName</yellow> failed.</red>"))
+                teleportingPlayer.sendMessage(allTags.deserialize("<red>Teleport to <white>$destinationName</white> failed.</red>"))
+                destinationPlayer.sendMessage(allTags.deserialize("<red>Teleport for <white>$requesterName</white> failed.</red>"))
             }
         }, tpaDelay * 20L)
     }
@@ -198,8 +213,8 @@ class Tpa {
     private fun deleteTpaAfterDelay(player: Player, target: Player, requestTimeout: Int, tpaRequest: TpaRequest) {
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             if (tpaRequests.remove(tpaRequest)) {
-                Bukkit.getPlayer(player.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA request to <green>${target.name}</green> has timed out."))
-                Bukkit.getPlayer(target.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA Request from <green>${player.name}</green> has timed out."))
+                Bukkit.getPlayer(player.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA request to <white>${target.name}</white> has timed out."))
+                Bukkit.getPlayer(target.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA Request from <white>${player.name}</white> has timed out."))
             }
         }, requestTimeout * 20L)
     }
