@@ -52,9 +52,14 @@ enum class CrateItem(
     HEART(100, "Heart Plushie", COMMON, "A cute heart plushie", "plushies/heart"),
     COFFEE_CUP(100, "Coffee Cup Plushie", COMMON, "A cute coffee cup plushie", "plushies/coffee_cup"),
     RAMEN_BOWL(100, "Ramen Bowl Plushie", COMMON, "A cute ramen bowl plushie", "plushies/ramen_bowl"),
+    AXOLOTL_WILD(100, "Axolotl Plushie (Wild)", COMMON, "A cute wild axolotl plushie", "plushies/axolotl_wild"),
+    AXOLOTL_LUCY(100, "Axolotl Plushie (Lucy)", COMMON, "A cute Lucy axolotl plushie", "plushies/axolotl_lucy"),
+    AXOLOTL_GOLD(100, "Axolotl Plushie (Gold)", COMMON, "A cute gold axolotl plushie", "plushies/axolotl_gold"),
+    AXOLOTL_CYAN(100, "Axolotl Plushie (Cyan)", COMMON, "A cute cyan axolotl plushie", "plushies/axolotl_cyan"),
+    AXOLOTL_BLUE(1, "Axolotl Plushie (Blue)", COMMON, "A cute blue axolotl plushie", "plushies/axolotl_blue"),
 
     // Player plushies
-    SEBIANN_CLASSIC(1, "Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
+    SEBIANN_CLASSIC(1, "Sebiann Classic Plushie", MYTHIC, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
     SEBIANN(100, "Sebiann Plushie", COMMON, "A cute Sebiann plushie", "plushies/player/sebiann"),
     COOKIE(100, "Cookie Plushie", COMMON, "A cute Cookie plushie", "plushies/player/cookie"),
     BEAUVER(100, "Beauver Plushie", COMMON, "A cute Beauver plushie", "plushies/player/beauver"),

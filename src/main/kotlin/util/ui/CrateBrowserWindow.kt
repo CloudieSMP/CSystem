@@ -6,6 +6,8 @@ import item.crate.CrateType
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.Locale
 
 object CrateBrowserWindow {
@@ -15,6 +17,16 @@ object CrateBrowserWindow {
         editMeta { meta ->
             meta.displayName(allTags.deserialize("<yellow><bold>Back to Crates"))
         }
+    }
+
+    private fun formatChancePercent(itemRollWeight: Int, totalRollWeight: Int): String {
+        if (itemRollWeight <= 0 || totalRollWeight <= 0) return "0"
+
+        val percent = BigDecimal.valueOf(itemRollWeight.toLong())
+            .multiply(BigDecimal("100"))
+            .divide(BigDecimal.valueOf(totalRollWeight.toLong()), 12, RoundingMode.HALF_UP)
+
+        return percent.stripTrailingZeros().toPlainString()
     }
 
     fun openSelector(player: Player) {
@@ -54,12 +66,7 @@ object CrateBrowserWindow {
             backButton = backButton,
             itemForEntry = { crateItem ->
                 val itemRollWeight = crateItem.rollWeight.coerceAtLeast(0)
-                val actualChance = if (totalRollWeight > 0) {
-                    itemRollWeight.toDouble() / totalRollWeight * 100.0
-                } else {
-                    0.0
-                }
-                val chancePercentText = String.format(Locale.US, "%.1f", actualChance)
+                val chancePercentText = formatChancePercent(itemRollWeight, totalRollWeight)
 
                 crateItem.createItemStack().apply {
                     editMeta { meta ->
@@ -73,4 +80,3 @@ object CrateBrowserWindow {
         )
     }
 }
-
