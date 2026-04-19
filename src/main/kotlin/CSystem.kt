@@ -57,7 +57,7 @@ class CSystem : JavaPlugin() {
         server.onlinePlayers.forEach(CrateRecipes::discoverAll)
         setupEvents()
         registerCommands()
-        AfkHelper.startIdleChecker(this)
+        AfkHelper.startIdleChecker()
         VisualChat.clearChatEntities()
     }
 

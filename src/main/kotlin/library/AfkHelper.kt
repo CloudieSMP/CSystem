@@ -3,7 +3,6 @@ package library
 import chat.ChatUtility
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
 import plugin
 import java.util.UUID
@@ -26,6 +25,7 @@ object AfkHelper {
             }
         } else {
             afkPlayers.remove(player.uniqueId)
+            lastActivity[player.uniqueId] = System.currentTimeMillis()
             player.isSleepingIgnored = false
             if (!silent) {
                 ChatUtility.broadcastAll("<cloudiecolor>${player.name}</cloudiecolor><gray> is no longer AFK")
@@ -59,7 +59,7 @@ object AfkHelper {
         lastActivity.clear()
     }
 
-    fun startIdleChecker(pluginInstance: Plugin) {
+    fun startIdleChecker() {
         object : BukkitRunnable() {
             override fun run() {
                 val timeoutMs = plugin.config.afk.idleTimeoutSeconds * 1000L
@@ -73,6 +73,6 @@ object AfkHelper {
                     }
                 }
             }
-        }.runTaskTimer(pluginInstance, 600L, 600L) // check every 30 seconds
+        }.runTaskTimer(plugin, 600L, 600L) // check every 30 seconds
     }
 }
