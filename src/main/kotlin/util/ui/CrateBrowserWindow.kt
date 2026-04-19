@@ -6,6 +6,7 @@ import item.crate.CrateType
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.math.RoundingMode
 import java.util.Locale
 
 object CrateBrowserWindow {
@@ -15,6 +16,17 @@ object CrateBrowserWindow {
         editMeta { meta ->
             meta.displayName(allTags.deserialize("<yellow><bold>Back to Crates"))
         }
+    }
+
+    private fun formatChancePercent(itemEffectiveWeight: Double, totalEffectiveWeight: Double): String {
+        if (itemEffectiveWeight <= 0.0 || totalEffectiveWeight <= 0.0) return "0.00"
+        val percent = itemEffectiveWeight * 100 / totalEffectiveWeight
+        val rounded = percent.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+        if (rounded.signum() == 0) {
+            val precise = percent.toBigDecimal().setScale(4, RoundingMode.HALF_UP).stripTrailingZeros()
+            return precise.toPlainString()
+        }
+        return rounded.stripTrailingZeros().toPlainString()
     }
 
     fun openSelector(player: Player) {
@@ -44,7 +56,7 @@ object CrateBrowserWindow {
 
     private fun openLootPreview(player: Player, crateType: CrateType) {
         val loot = crateType.lootPool.possibleItems
-        val totalRollWeight = loot.sumOf { it.rollWeight.coerceAtLeast(0) }
+        val totalEffectiveWeight = loot.sumOf { it.effectiveChanceWeight }
 
         CollectionBrowserWindow.openPreview(
             player = player,
@@ -53,13 +65,7 @@ object CrateBrowserWindow {
             fillerPane = fillerPane,
             backButton = backButton,
             itemForEntry = { crateItem ->
-                val itemRollWeight = crateItem.rollWeight.coerceAtLeast(0)
-                val actualChance = if (totalRollWeight > 0) {
-                    itemRollWeight.toDouble() / totalRollWeight * 100.0
-                } else {
-                    0.0
-                }
-                val chancePercentText = String.format(Locale.US, "%.1f", actualChance)
+                val chancePercentText = formatChancePercent(crateItem.effectiveChanceWeight, totalEffectiveWeight)
 
                 crateItem.createItemStack().apply {
                     editMeta { meta ->
@@ -73,4 +79,3 @@ object CrateBrowserWindow {
         )
     }
 }
-
