@@ -6,7 +6,6 @@ import item.crate.CrateType
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Locale
 
@@ -19,14 +18,15 @@ object CrateBrowserWindow {
         }
     }
 
-    private fun formatChancePercent(itemRollWeight: Int, totalRollWeight: Int): String {
-        if (itemRollWeight <= 0 || totalRollWeight <= 0) return "0"
-
-        val percent = BigDecimal.valueOf(itemRollWeight.toLong())
-            .multiply(BigDecimal("100"))
-            .divide(BigDecimal.valueOf(totalRollWeight.toLong()), 12, RoundingMode.HALF_UP)
-
-        return percent.stripTrailingZeros().toPlainString()
+    private fun formatChancePercent(itemEffectiveWeight: Double, totalEffectiveWeight: Double): String {
+        if (itemEffectiveWeight <= 0.0 || totalEffectiveWeight <= 0.0) return "0.00"
+        val percent = itemEffectiveWeight * 100 / totalEffectiveWeight
+        val rounded = percent.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+        if (rounded.signum() == 0) {
+            val precise = percent.toBigDecimal().setScale(4, RoundingMode.HALF_UP).stripTrailingZeros()
+            return precise.toPlainString()
+        }
+        return rounded.stripTrailingZeros().toPlainString()
     }
 
     fun openSelector(player: Player) {
@@ -56,7 +56,7 @@ object CrateBrowserWindow {
 
     private fun openLootPreview(player: Player, crateType: CrateType) {
         val loot = crateType.lootPool.possibleItems
-        val totalRollWeight = loot.sumOf { it.rollWeight.coerceAtLeast(0) }
+        val totalEffectiveWeight = loot.sumOf { it.effectiveChanceWeight }
 
         CollectionBrowserWindow.openPreview(
             player = player,
@@ -65,8 +65,7 @@ object CrateBrowserWindow {
             fillerPane = fillerPane,
             backButton = backButton,
             itemForEntry = { crateItem ->
-                val itemRollWeight = crateItem.rollWeight.coerceAtLeast(0)
-                val chancePercentText = formatChancePercent(itemRollWeight, totalRollWeight)
+                val chancePercentText = formatChancePercent(crateItem.effectiveChanceWeight, totalEffectiveWeight)
 
                 crateItem.createItemStack().apply {
                     editMeta { meta ->

@@ -229,17 +229,17 @@ object GamblingWindow : Listener {
     }
 
     private fun pickWeightedItem(pool: List<CrateItem>): CrateItem {
-        val sanitizedRollWeights = pool.map { it.rollWeight.coerceAtLeast(0) }
-        val totalRollWeight = sanitizedRollWeights.sum()
+        val effectiveWeights = pool.map(CrateItem::effectiveChanceWeight)
+        val totalEffectiveWeight = effectiveWeights.sum()
 
-        if (totalRollWeight <= 0) {
+        if (totalEffectiveWeight <= 0.0) {
             return pool.random()
         }
 
-        var roll = Random.nextInt(totalRollWeight)
+        var roll = Random.nextDouble(totalEffectiveWeight)
         for (index in pool.indices) {
-            roll -= sanitizedRollWeights[index]
-            if (roll < 0) return pool[index]
+            roll -= effectiveWeights[index]
+            if (roll < 0.0) return pool[index]
         }
 
         return pool.last()

@@ -52,7 +52,7 @@ enum class CrateType(
     PLAYER(
         "Player Crate",
         "A crate containing player plushies",
-        UNCOMMON,
+        RARE,
         "crates/default",
         Material.RED_WOOL,
         CrateLootPool.PLAYER,
@@ -60,7 +60,7 @@ enum class CrateType(
     CHARACTER(
         "Character Crate",
         "A crate containing character plushies",
-        RARE,
+        UNCOMMON,
         "crates/default",
         Material.BLACK_WOOL,
         CrateLootPool.CHARACTER,
