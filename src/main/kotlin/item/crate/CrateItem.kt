@@ -109,7 +109,9 @@ enum class CrateItem(
     HALO("Halo", RARE, "A glowing halo", "wearables/halo"),
     HEART_CROWN("Heart Crown", UNCOMMON, "A crown of hearts", "wearables/heart_crown"),
     ORCHID_CROWN("Orchid Crown", UNCOMMON, "A crown of orchids", "wearables/orchid_crown"),
-    HEART_GLASSES("Heart Glasses", COMMON, "Glasses with heart lenses", "wearables/heart_glasses");
+    KING_CROWN("King Crown", UNCOMMON, "A majestic king's crown", "wearables/king_crown"),
+    HEART_GLASSES("Heart Glasses", COMMON, "Glasses with heart lenses", "wearables/heart_glasses"),
+    STRAWHAT("Strawhat", COMMON, "A simple Mugiwara", "wearables/strawhat"),;
 
     val storedId: String
         get() = name
