@@ -15,7 +15,10 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import util.Keys.CRATE_ITEM
+import util.Keys.CRATE_ROLL_CHANCE_PERCENT
+import util.Keys.CRATE_ROLLED_BY
 import util.Keys.GENERIC_RARITY
+import java.math.RoundingMode
 
 private fun createDisplayName(displayName: String, rarity: ItemRarity): Component {
     return Component.text(displayName)
@@ -23,11 +26,25 @@ private fun createDisplayName(displayName: String, rarity: ItemRarity): Componen
         .decoration(TextDecoration.ITALIC, false)
 }
 
-private fun createLore(description: String, rarity: ItemRarity): List<Component> {
+private fun formatChancePercent(itemEffectiveWeight: Double, totalEffectiveWeight: Double): String {
+    if (itemEffectiveWeight <= 0.0 || totalEffectiveWeight <= 0.0) return "0.00"
+    val percent = itemEffectiveWeight * 100 / totalEffectiveWeight
+    val rounded = percent.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+    if (rounded.signum() == 0) {
+        val precise = percent.toBigDecimal().setScale(4, RoundingMode.HALF_UP).stripTrailingZeros()
+        return precise.toPlainString()
+    }
+    return rounded.stripTrailingZeros().toPlainString()
+}
+
+private fun createLore(description: String, rarity: ItemRarity, chancePercent: String? = null): List<Component> {
     return buildList {
         add(allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.PLUSHIE.typeGlyph}"))
         description.split("\n").forEach { line ->
             add(Component.text(line).decoration(TextDecoration.ITALIC, false))
+        }
+        if (chancePercent != null) {
+            add(allTags.deserialize("<!i><gray>Chance: <white>$chancePercent%"))
         }
     }
 }
@@ -59,16 +76,17 @@ enum class CrateItem(
     COOKIE("Cookie Plushie", COMMON, "A cute Cookie plushie", "plushies/player/cookie"),
     BEAUVER("Beauver Plushie", COMMON, "A cute Beauver plushie", "plushies/player/beauver"),
     CARSON("Carson Plushie", COMMON, "Some people's kids these days", "plushies/player/carson_wide"),
-    LESHY("Leshy Plushie", COMMON, "Blob Blob", "plushies/player/leshy_slim"),
+    LESHY("Leshy Plushie", COMMON, "Blob Blob", "plushies/player/leshy_wide"),
     MAI("Mai Plushie", COMMON, "A cute Mai plushie", "plushies/player/mai_cheerleader_slim"),
     MEGAN("Megan Plushie", COMMON, "A cute Megan plushie", "plushies/player/megan_cheerleader_slim"),
     RIVEN("Riven Plushie", COMMON, "MEOW", "plushies/player/riven_slim"),
     SABINE("Sabine Plushie", COMMON, "Just Cheering you on", "plushies/player/sabine_cheerleader_slim"),
     YANN("Yann Plushie", COMMON, "A cute Yann plushie", "plushies/player/yann_wide"),
     ROAST("Roast Plushie", COMMON, "A cute Roast plushie", "plushies/player/roast_wide"),
+    TURTLE("Turtle Plushie", COMMON, "A cute Turtle plushie", "plushies/player/turtle_wide"),
 
     SEBIANN_CLASSIC("Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
-    CARSON_GRAY("Carson Plushie (Gray)", LEGENDARY, "A cute Carson plushie in gray", "plushies/player/carson_gray_wide"),
+    CARSON_GRAY("Carson Plushie (Gray)", LEGENDARY, "Some people's kids these days", "plushies/player/carson_gray_wide"),
 
     // Character plushies
     N("N Plushie", COMMON, "N from Pokemon", "plushies/character/n_slim"),
@@ -103,18 +121,32 @@ enum class CrateItem(
         get() = rollWeight.coerceAtLeast(0.0)
 
     fun createItemStack(amount: Int = 1): ItemStack {
+        return buildItemStack(amount)
+    }
+
+    fun createItemStack(crateType: CrateType, rolledBy: String? = null, amount: Int = 1): ItemStack {
+        val pool = crateType.lootPool.possibleItems
+        val totalEffectiveWeight = pool.sumOf { it.effectiveChanceWeight }
+        val chancePercent = formatChancePercent(this.effectiveChanceWeight, totalEffectiveWeight)
+
+        return buildItemStack(amount, chancePercent, rolledBy)
+    }
+
+    private fun buildItemStack(amount: Int, chancePercent: String? = null, rolledBy: String? = null): ItemStack {
         return ItemStack(Material.PAPER, amount).apply {
-            applyMetadata(this)
+            applyMetadata(this, chancePercent, rolledBy)
         }
     }
 
     @Suppress("UnstableApiUsage")
-    private fun applyMetadata(itemStack: ItemStack) {
+    private fun applyMetadata(itemStack: ItemStack, chancePercent: String? = null, rolledBy: String? = null) {
         itemStack.editMeta { meta ->
             meta.displayName(createDisplayName(itemName, rarity))
-            meta.lore(createLore(itemDescription, rarity))
+            meta.lore(createLore(itemDescription, rarity, chancePercent))
             meta.persistentDataContainer.set(CRATE_ITEM, STRING, storedId)
             meta.persistentDataContainer.set(GENERIC_RARITY, STRING, rarity.name)
+            chancePercent?.let { meta.persistentDataContainer.set(CRATE_ROLL_CHANCE_PERCENT, STRING, it) }
+            rolledBy?.let { meta.persistentDataContainer.set(CRATE_ROLLED_BY, STRING, it) }
         }
         itemStack.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey("cloudie", modelPath))
         itemStack.setData(DataComponentTypes.EQUIPPABLE, Equippable.equippable(EquipmentSlot.HEAD).build())
@@ -143,7 +175,15 @@ enum class CrateItem(
         fun refresh(item: ItemStack?): ItemStack? {
             val current = item ?: return null
             val resolved = resolve(current) ?: return null
-            val refreshed = resolved.createItemStack(current.amount)
+            val currentMeta = current.itemMeta ?: return null
+            val existingChance = currentMeta.persistentDataContainer.get(CRATE_ROLL_CHANCE_PERCENT, STRING)
+            val existingRolledBy = currentMeta.persistentDataContainer.get(CRATE_ROLLED_BY, STRING)
+
+            val refreshed = if (existingChance != null || existingRolledBy != null) {
+                resolved.buildItemStack(current.amount, existingChance, existingRolledBy)
+            } else {
+                resolved.createItemStack(current.amount)
+            }
 
             return if (current.type == refreshed.type && current.itemMeta == refreshed.itemMeta) {
                 null

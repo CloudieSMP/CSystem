@@ -15,11 +15,11 @@ import item.crate.Crate
 import item.crate.CrateItem
 import item.crate.CrateType
 import item.treasurebag.BagItem
-import item.treasurebag.BagLootPool
 import item.treasurebag.BagType
 import item.treasurebag.TreasureBag
 import org.bukkit.entity.EntityType
 import org.incendo.cloud.annotations.Argument
+import java.util.UUID
 import util.requirePlayer
 
 @Suppress("unused", "unstableApiUsage")
@@ -166,5 +166,25 @@ class Debug {
     fun debugTreasureBagItem(css: CommandSourceStack, @Argument("loot") loot: BagItem) {
         val player = css.requirePlayer() ?: return
         player.inventory.addItem(loot.createItemStack(useDebugSubRarityOverride = true))
+    }
+
+    @Command("debug uuid <x> <y> <z> <a>")
+    @Permission("cloudie.cmd.debug")
+    fun debugUuid(
+        css: CommandSourceStack,
+        @Argument("x") x: Int,
+        @Argument("y") y: Int,
+        @Argument("z") z: Int,
+        @Argument("a") a: Int,
+    ) {
+        val mostSignificantBits = ((x.toLong() and 0xffffffffL) shl 32) or (y.toLong() and 0xffffffffL)
+        val leastSignificantBits = ((z.toLong() and 0xffffffffL) shl 32) or (a.toLong() and 0xffffffffL)
+        val uuidText = UUID(mostSignificantBits, leastSignificantBits).toString()
+
+        css.sender.sendMessage(
+            allTags.deserialize(
+                "<click:copy_to_clipboard:'$uuidText'><hover:show_text:'<gray>Click to copy UUID</gray>'><cloudiecolor>$uuidText</cloudiecolor></hover></click>"
+            )
+        )
     }
 }

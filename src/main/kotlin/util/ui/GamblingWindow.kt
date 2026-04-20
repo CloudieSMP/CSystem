@@ -224,7 +224,7 @@ object GamblingWindow : Listener {
 
         for ((index, slot) in wheelSlots.withIndex()) {
             val crateItem = pool[(offset + index) % pool.size]
-            inventory.setItem(slot, crateItem.createItemStack())
+            inventory.setItem(slot, crateItem.createItemStack(session.crateType))
         }
     }
 
@@ -264,7 +264,7 @@ object GamblingWindow : Listener {
             return
         }
 
-        val rewardStack = winner.createItemStack()
+        val rewardStack = winner.createItemStack(session.crateType, rolledBy = player.uniqueId.toString())
         val leftovers = player.inventory.addItem(rewardStack)
         for (leftover in leftovers.values) {
             player.world.dropItemNaturally(player.location, leftover)

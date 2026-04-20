@@ -12,6 +12,8 @@ object Keys {
     val GENERIC_SUB_RARITY = NamespacedKey(plugin, "item.rarity.sub_rarity")
     val CRATE_TYPE = NamespacedKey(plugin, "crate.type")
     val CRATE_ITEM = NamespacedKey(plugin, "crate.item")
+    val CRATE_ROLL_CHANCE_PERCENT = NamespacedKey(plugin, "crate.roll_chance_percent")
+    val CRATE_ROLLED_BY = NamespacedKey(plugin, "crate.rolled_by")
     val BOOSTER_TYPE = NamespacedKey(plugin, "booster.type")
 
     /**
