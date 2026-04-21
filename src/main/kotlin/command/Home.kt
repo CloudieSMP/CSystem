@@ -87,15 +87,15 @@ class Home {
                 return@snapshotHomesAsync
             }
             if (existingHome && !forced) {
-                onlinePlayer.sendMessage(allTags.deserialize("<yellow>Home <aqua>$sanitizedName</aqua> already exists. Use <white>/sethome $sanitizedName --force</white> to overwrite it.</yellow>"))
+                onlinePlayer.sendMessage(allTags.deserialize("<yellow>Home <white>$sanitizedName</white> already exists.</yellow>\n<white><click:run_command:'/sethome $sanitizedName --force'><hover:show_text:'Confirm overwriting home.'><b>Click Here</b></hover></click></white><yellow> to overwrite home.</yellow>"))
                 return@snapshotHomesAsync
             }
 
             HomeStorage.saveHomeAsync(playerId, sanitizedName, homeLocation) { outcome ->
                 val refreshedPlayer = Bukkit.getPlayer(playerId) ?: return@saveHomeAsync
                 when (outcome) {
-                    HomeStorage.SaveOutcome.CREATED -> refreshedPlayer.sendMessage(allTags.deserialize("<green>Home <aqua>$sanitizedName</aqua> created."))
-                    HomeStorage.SaveOutcome.UPDATED -> refreshedPlayer.sendMessage(allTags.deserialize("<yellow>Home <aqua>$sanitizedName</aqua> updated."))
+                    HomeStorage.SaveOutcome.CREATED -> refreshedPlayer.sendMessage(allTags.deserialize("<green>Home <white>$sanitizedName</white> created."))
+                    HomeStorage.SaveOutcome.UPDATED -> refreshedPlayer.sendMessage(allTags.deserialize("<yellow>Home <white>$sanitizedName</white> updated."))
                     HomeStorage.SaveOutcome.FAILED -> refreshedPlayer.sendMessage(allTags.deserialize("<red>Could not save home right now. Please try again.</red>"))
                 }
             }
@@ -116,13 +116,13 @@ class Home {
         HomeStorage.loadHomeAsync(playerId, sanitizedName) { home ->
             val onlinePlayer = Bukkit.getPlayer(playerId) ?: return@loadHomeAsync
             val targetHome = home ?: run {
-                onlinePlayer.sendMessage(allTags.deserialize("<red>Home <aqua>$sanitizedName</aqua> does not exist.</red>"))
+                onlinePlayer.sendMessage(allTags.deserialize("<red>Home <white>$sanitizedName</white> does not exist.</red>"))
                 return@loadHomeAsync
             }
 
             val success = onlinePlayer.teleport(targetHome)
             if (success) {
-                onlinePlayer.sendMessage(allTags.deserialize("<green>Teleported to <aqua>$sanitizedName</aqua>."))
+                onlinePlayer.sendMessage(allTags.deserialize("<green>Teleported to <white>$sanitizedName</white>."))
             } else {
                 onlinePlayer.sendMessage(allTags.deserialize("<red>Teleport failed. The location may be invalid.</red>"))
             }
@@ -143,16 +143,16 @@ class Home {
             return
         }
         if (!forced) {
-            player.sendMessage(allTags.deserialize("<yellow>Are you sure you want to delete <aqua>$sanitizedName</aqua>? Use <white>/delhome $sanitizedName --force</white> to confirm.</yellow>"))
+            player.sendMessage(allTags.deserialize("<yellow>Are you sure you want to delete <white>$sanitizedName</white>?\n<white><click:run_command:'/delhome $sanitizedName --force'><hover:show_text:'Confirm deleting home.'><b>Click Here</b></hover></click></white><yellow> to delete home.</yellow>"))
             return
         }
 
         HomeStorage.deleteHomeAsync(playerId, sanitizedName) { deleted ->
             val onlinePlayer = Bukkit.getPlayer(playerId) ?: return@deleteHomeAsync
             if (deleted) {
-                onlinePlayer.sendMessage(allTags.deserialize("<green>Deleted home <aqua>$sanitizedName</aqua>."))
+                onlinePlayer.sendMessage(allTags.deserialize("<green>Deleted home <white>$sanitizedName</white>."))
             } else {
-                onlinePlayer.sendMessage(allTags.deserialize("<red>Home <aqua>$sanitizedName</aqua> does not exist.</red>"))
+                onlinePlayer.sendMessage(allTags.deserialize("<red>Home <white>$sanitizedName</white> does not exist.</red>"))
             }
         }
     }
