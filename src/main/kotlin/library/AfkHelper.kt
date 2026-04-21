@@ -1,13 +1,12 @@
 package library
 
+import chat.Formatting.allTags
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import plugin
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 
 object AfkHelper {
     private val afkPlayers: MutableSet<UUID> = ConcurrentHashMap.newKeySet()
@@ -23,12 +22,15 @@ object AfkHelper {
         if (afk) {
             afkPlayers.add(player.uniqueId)
             player.isSleepingIgnored = true
-            player.playerListName(Component.text(player.name, NamedTextColor.GRAY))
+            PlayerListNameHelper.apply(player)
+            player.sendMessage(allTags.deserialize("<yellow>You are now AFK. Move to return."))
         } else {
             afkPlayers.remove(player.uniqueId)
             lastActivity[player.uniqueId] = System.currentTimeMillis()
             player.isSleepingIgnored = false
-            player.playerListName(null)
+            PlayerListNameHelper.apply(player)
+            player.sendMessage(allTags.deserialize("<yellow>You are not AFK anymore."))
+
         }
     }
 
@@ -53,14 +55,14 @@ object AfkHelper {
         lastActivity.remove(player.uniqueId)
         justInitialised.remove(player.uniqueId)
         player.isSleepingIgnored = false
-        player.playerListName(null)
+        PlayerListNameHelper.apply(player)
     }
 
     fun resetAll() {
         for (uuid in afkPlayers.toSet()) {
             val player = Bukkit.getPlayer(uuid) ?: continue
             player.isSleepingIgnored = false
-            player.playerListName(null)
+            PlayerListNameHelper.apply(player)
         }
         afkPlayers.clear()
         lastActivity.clear()

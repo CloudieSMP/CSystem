@@ -3,6 +3,7 @@ package command
 import chat.Formatting
 import chat.Formatting.allTags
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import library.PlayerListNameHelper
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -54,7 +55,8 @@ object LiveUtil {
         livePlayerIds.remove(playerId)
         pendingTimeouts.remove(playerId)?.cancel()
         liveTasks.remove(playerId)?.cancel()
-        resetPlayerNames(player)
+        resetLiveDisplayName(player)
+        PlayerListNameHelper.apply(player)
         player.sendMessage(allTags.deserialize("Live mode disabled."))
     }
 
@@ -90,7 +92,10 @@ object LiveUtil {
         pendingTimeouts.clear()
 
         for (playerId in livePlayerIds) {
-            Bukkit.getPlayer(playerId)?.let(::resetPlayerNames)
+            Bukkit.getPlayer(playerId)?.let {
+                resetLiveDisplayName(it)
+                PlayerListNameHelper.apply(it)
+            }
         }
         livePlayerIds.clear()
     }
@@ -107,11 +112,10 @@ object LiveUtil {
                     return
                 }
 
-                resetPlayerNames(player)
                 val newName = Formatting.allTags.deserialize("\uE010 ")
-                    .append(player.displayName().color(TextColor.color(255, 156, 237)))
+                    .append(net.kyori.adventure.text.Component.text(player.name, TextColor.color(255, 156, 237)))
                 player.displayName(newName)
-                player.playerListName(newName)
+                PlayerListNameHelper.apply(player)
             }
         }
 
@@ -119,8 +123,7 @@ object LiveUtil {
         liveTasks[playerId] = timerRunnable
     }
 
-    private fun resetPlayerNames(player: Player) {
+    private fun resetLiveDisplayName(player: Player) {
         player.displayName(null)
-        player.playerListName(null)
     }
 }
