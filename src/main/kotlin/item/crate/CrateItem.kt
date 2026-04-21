@@ -18,6 +18,8 @@ import util.Keys.CRATE_ITEM
 import util.Keys.CRATE_ROLL_CHANCE_PERCENT
 import util.Keys.CRATE_ROLLED_BY
 import util.Keys.GENERIC_RARITY
+import util.isDebug
+import util.setIsDebug
 import java.math.RoundingMode
 
 private fun createDisplayName(displayName: String, rarity: ItemRarity): Component {
@@ -82,7 +84,7 @@ enum class CrateItem(
     RIVEN("Riven Plushie", COMMON, "MEOW", "plushies/player/riven_slim"),
     SABINE("Sabine Plushie", COMMON, "Just Cheering you on", "plushies/player/sabine_cheerleader_slim"),
     YANN("Yann Plushie", COMMON, "A cute Yann plushie", "plushies/player/yann_wide"),
-    ROAST("Roast Plushie", COMMON, "A cute Roast plushie", "plushies/player/roast_wide"),
+    ROAST("Roast Plushie", COMMON, "Hasn’t slept in 3 in-game nights. Still smiling.", "plushies/player/roast_wide"),
     TURTLE("Turtle Plushie", COMMON, "A cute Turtle plushie", "plushies/player/turtle_wide"),
 
     SEBIANN_CLASSIC("Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
@@ -100,6 +102,10 @@ enum class CrateItem(
     RAPHAEL("Raphael Plushie", COMMON, "Raphael from Teenage Mutant Ninja Turtles", "plushies/character/red_turtle_slim"),
     MICHELANGELO("Michelangelo Plushie", COMMON, "Michelangelo from Teenage Mutant Ninja Turtles", "plushies/character/orange_turtle_slim"),
     DONATELLO("Donatello Plushie", COMMON, "Donatello from Teenage Mutant Ninja Turtles", "plushies/character/purple_turtle_slim"),
+    ROBOT("Robot Plushie", COMMON, "Beep boop", "plushies/character/robot_wide"),
+    DARTH_VADER("Darth Vader Plushie", UNCOMMON, "Darth Vader from Star Wars", "plushies/character/darth_vader_wide"),
+    STORMTROOPER("Stormtrooper Plushie", COMMON, "Stormtrooper from Star Wars", "plushies/character/stormtrooper_wide"),
+    BOBA_FETT("Boba Fett Plushie", UNCOMMON, "Boba Fett from Star Wars", "plushies/character/boba_fett_slim"),
 
     // Wearables
     CAT_EARS("Cat Ears", COMMON, "Cute cat ears", "wearables/cat_ears"),
@@ -180,11 +186,19 @@ enum class CrateItem(
             val currentMeta = current.itemMeta ?: return null
             val existingChance = currentMeta.persistentDataContainer.get(CRATE_ROLL_CHANCE_PERCENT, STRING)
             val existingRolledBy = currentMeta.persistentDataContainer.get(CRATE_ROLLED_BY, STRING)
+                ?.takeUnless { it == "DEBUG" }
+            val existingIsDebug = currentMeta.persistentDataContainer.isDebug()
 
             val refreshed = if (existingChance != null || existingRolledBy != null) {
                 resolved.buildItemStack(current.amount, existingChance, existingRolledBy)
             } else {
                 resolved.createItemStack(current.amount)
+            }
+
+            if (existingIsDebug) {
+                refreshed.editMeta { meta ->
+                    meta.persistentDataContainer.setIsDebug(true)
+                }
             }
 
             return if (current.type == refreshed.type && current.itemMeta == refreshed.itemMeta) {

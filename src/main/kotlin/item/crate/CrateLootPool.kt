@@ -52,6 +52,10 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         RAPHAEL,
         MICHELANGELO,
         DONATELLO,
+        ROBOT,
+        DARTH_VADER,
+        STORMTROOPER,
+        BOBA_FETT,
     )),
     PLUSHIE(listOf(
         PENGUIN,
@@ -107,5 +111,9 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         RAPHAEL,
         MICHELANGELO,
         DONATELLO,
+        ROBOT,
+        DARTH_VADER,
+        STORMTROOPER,
+        BOBA_FETT,
     ))
 }

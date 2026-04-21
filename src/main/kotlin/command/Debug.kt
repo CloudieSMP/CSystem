@@ -21,6 +21,7 @@ import org.bukkit.entity.EntityType
 import org.incendo.cloud.annotations.Argument
 import java.util.UUID
 import util.requirePlayer
+import util.setIsDebug
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
@@ -30,7 +31,7 @@ class Debug {
     fun debugCrate(css: CommandSourceStack, @Argument("type") type: CrateType) {
         val player = css.requirePlayer() ?: return
 
-        player.inventory.addItem(Crate.create(type))
+        player.inventory.addItem(Crate.create(type, isDebug = true))
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a crate!"))
     }
 
@@ -39,7 +40,12 @@ class Debug {
     fun debugCrateItem(css: CommandSourceStack, @Argument("type") crateItem: CrateItem) {
         val player = css.requirePlayer() ?: return
 
-        player.inventory.addItem(crateItem.createItemStack())
+        val item = crateItem.createItemStack().apply {
+            editMeta { meta ->
+                meta.persistentDataContainer.setIsDebug(true)
+            }
+        }
+        player.inventory.addItem(item)
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a crate item!"))
     }
 
