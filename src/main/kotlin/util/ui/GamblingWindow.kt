@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import plugin
 import util.Sounds.GAMBLING_WHEEL_STOP
 import util.Sounds.GAMBLING_WHEEL_TICK
+import util.setIsDebug
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import java.util.UUID
@@ -28,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 private class GamblingWindowSession(
     val crateType: CrateType,
+    val isDebug: Boolean,
 ) {
     var inventory: Inventory? = null
     var spinTask: BukkitRunnable? = null
@@ -50,7 +52,7 @@ object GamblingWindow : Listener {
     private val winningFillerPane = ItemStack(Material.LIME_STAINED_GLASS_PANE)
     private val sessions = ConcurrentHashMap<UUID, GamblingWindowSession>()
 
-    fun open(player: Player, crateType: CrateType) {
+    fun open(player: Player, crateType: CrateType, isDebug: Boolean = false) {
         sessions.remove(player.uniqueId)?.let { existing ->
             if (existing.isSpinning) {
                 awardPendingReward(existing, player, "closed early")
@@ -77,7 +79,7 @@ object GamblingWindow : Listener {
 
         InterfacesConstants.SCOPE.launch {
             iface.open(player)
-            val session = GamblingWindowSession(crateType)
+            val session = GamblingWindowSession(crateType, isDebug)
 
             // Wait until the opened top inventory is the expected chest-sized window before writing wheel slots.
             object : BukkitRunnable() {
@@ -265,6 +267,11 @@ object GamblingWindow : Listener {
         }
 
         val rewardStack = winner.createItemStack(session.crateType, rolledBy = player.uniqueId.toString())
+        if (session.isDebug) {
+            rewardStack.editMeta { meta ->
+                meta.persistentDataContainer.setIsDebug(true)
+            }
+        }
         val leftovers = player.inventory.addItem(rewardStack)
         for (leftover in leftovers.values) {
             player.world.dropItemNaturally(player.location, leftover)

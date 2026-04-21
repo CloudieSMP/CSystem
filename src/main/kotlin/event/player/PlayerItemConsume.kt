@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.persistence.PersistentDataType
 import util.Keys.BOOSTER_TYPE
 import util.Keys.CRATE_TYPE
+import util.isDebug
 import util.ui.GamblingWindow
 
 class PlayerItemConsume : Listener {
@@ -41,9 +42,10 @@ class PlayerItemConsume : Listener {
                 return
             }
             val player = event.player
+            val isDebugCrate = event.item.itemMeta?.persistentDataContainer?.isDebug() == true
             plugin.server.scheduler.runTask(plugin, Runnable {
                 if (player.isOnline) {
-                    GamblingWindow.open(player, type)
+                    GamblingWindow.open(player, type, isDebug = isDebugCrate)
                 }
             })
         }

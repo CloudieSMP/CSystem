@@ -18,6 +18,8 @@ import util.Keys.CRATE_ITEM
 import util.Keys.CRATE_ROLL_CHANCE_PERCENT
 import util.Keys.CRATE_ROLLED_BY
 import util.Keys.GENERIC_RARITY
+import util.isDebug
+import util.setIsDebug
 import java.math.RoundingMode
 
 private fun createDisplayName(displayName: String, rarity: ItemRarity): Component {
@@ -184,11 +186,19 @@ enum class CrateItem(
             val currentMeta = current.itemMeta ?: return null
             val existingChance = currentMeta.persistentDataContainer.get(CRATE_ROLL_CHANCE_PERCENT, STRING)
             val existingRolledBy = currentMeta.persistentDataContainer.get(CRATE_ROLLED_BY, STRING)
+                ?.takeUnless { it == "DEBUG" }
+            val existingIsDebug = currentMeta.persistentDataContainer.isDebug()
 
             val refreshed = if (existingChance != null || existingRolledBy != null) {
                 resolved.buildItemStack(current.amount, existingChance, existingRolledBy)
             } else {
                 resolved.createItemStack(current.amount)
+            }
+
+            if (existingIsDebug) {
+                refreshed.editMeta { meta ->
+                    meta.persistentDataContainer.setIsDebug(true)
+                }
             }
 
             return if (current.type == refreshed.type && current.itemMeta == refreshed.itemMeta) {
