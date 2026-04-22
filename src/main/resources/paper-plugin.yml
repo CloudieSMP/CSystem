@@ -132,6 +132,9 @@ permissions:
     description: Allows the player to report issues.
   cloudie.cmd.showstat:
     description: Allows the player to show server statistic scoreboards.
+  cloudie.dontshowstatscreen:
+    description: Hides the /showstat scoreboard from this player's screen.
+    default: false
   cloudie.cmd.afk:
     description: Allows the player to toggle their AFK status.
   cloudie.cmd.cratestats:

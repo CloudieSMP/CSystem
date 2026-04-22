@@ -28,7 +28,7 @@ import java.util.*
 class ShowStat {
 
     val pageSize = 14
-    val secondsPerPage = 7 // TODO: config rewrite, make this accessible in config
+    val secondsPerPage get() = plugin.config.showStat.secondsPerPage
     var isActive = false
 
     @Command("showstat|sb <stat>")
@@ -37,7 +37,9 @@ class ShowStat {
                  stat: Statistic,
                  @Flag("material", aliases = ["m"]) material: Material?,
                  @Flag("entity", aliases = ["e"]) entityType: EntityType?,
-                 @Flag("online", aliases = ["o"]) onlineOnly: Boolean = false) {
+                 @Flag("online", aliases = ["o"]) onlineOnly: Boolean = false,
+                 @Flag("alts", aliases = ["a"]) includeAlts: Boolean = false,
+                 @Flag("page", aliases = ["p"]) page: Int? = null) {
         val player = css.sender as? Player ?: return
 
         if (isActive) {
@@ -50,6 +52,14 @@ class ShowStat {
             Bukkit.getOnlinePlayers().map { it as OfflinePlayer }.toTypedArray()
         } else {
             Bukkit.getServer().offlinePlayers
+        }.let { all ->
+            if (includeAlts) all
+            else all.filter { p ->
+                // For online players we can check live; for offline we rely on the cached set.
+                val onlineHandle = p.player
+                if (onlineHandle != null) !onlineHandle.hasPermission("cloudie.group.alt")
+                else p.uniqueId !in altUuids
+            }.toTypedArray()
         }
 
         val sbEntries = mutableListOf<Pair<Component, Int>>()
@@ -85,9 +95,19 @@ class ShowStat {
         isActive = true
         val formatter = formatterFor(stat)
         val statScoreboardRunnable = object : BukkitRunnable() {
-            var pageIndex = 0
+            var pageIndex = if (page != null) (page - 1).coerceAtLeast(0) else 0
+            val singlePage = page != null
             override fun run() {
                 val pages = sorted.chunked(pageSize)
+
+                if (singlePage && pageIndex > pages.lastIndex) {
+                    player.sendMessage(allTags.deserialize("<red>Page $page does not exist. There ${if (pages.size == 1) "is" else "are"} only ${pages.size} page${if (pages.size == 1) "" else "s"}."))
+                    player.playSound(ERROR_DIDGERIDOO)
+                    isActive = false
+                    this.cancel()
+                    return
+                }
+
                 if (pageIndex <= pages.lastIndex) {
                     val page = pages[pageIndex].toMutableList()
 
@@ -100,7 +120,13 @@ class ShowStat {
                     } <#4E56C0>[<#FDCFFA>${pageIndex+1}/${pages.size}<#4E56C0>]")
 
                     broadcastScoreboardLines(title, page, formatter)
-                    pageIndex++
+                    if (singlePage) {
+                        clearScoreboards(secondsPerPage * 20L)
+                        isActive = false
+                        this.cancel()
+                    } else {
+                        pageIndex++
+                    }
                 } else {
                     clearScoreboards(20L)
                     isActive = false
@@ -113,6 +139,7 @@ class ShowStat {
 
     private fun broadcastScoreboardLines(title: Component, lines: List<Pair<Component, Int>>, formatter: (Int) -> Component = ::formatInteger) {
         for (player in Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission("cloudie.dontshowstatscreen")) continue
             val board = FastBoard(player)
             board.updateTitle(title)
             val names = lines.map { it.first }
@@ -125,6 +152,7 @@ class ShowStat {
         object : BukkitRunnable() {
             override fun run() {
                 for (player in Bukkit.getOnlinePlayers()) {
+                    if (player.hasPermission("cloudie.dontshowstatscreen")) continue
                     val board = FastBoard(player)
                     board.delete()
                 }
@@ -143,6 +171,29 @@ class ShowStat {
     }
 
     companion object {
+        /** UUIDs of players with the `cloudie.group.alt` permission, populated on join. */
+        val altUuids: MutableSet<UUID> = Collections.newSetFromMap(java.util.concurrent.ConcurrentHashMap())
+
+        private val altFile get() = plugin.dataFolder.resolve("alts.txt")
+
+        /** Load alt UUIDs from disk. Call on plugin enable. */
+        fun loadSync() {
+            val file = altFile
+            if (!file.exists()) return
+            altUuids.clear()
+            file.forEachLine { line ->
+                val trimmed = line.trim()
+                if (trimmed.isNotEmpty()) runCatching { altUuids.add(UUID.fromString(trimmed)) }
+            }
+        }
+
+        /** Persist alt UUIDs to disk. Call on plugin disable and after every update. */
+        fun saveSync() {
+            val file = altFile
+            file.parentFile?.mkdirs()
+            file.writeText(altUuids.joinToString("\n"))
+        }
+
         /** Statistics whose raw value is in ticks (20 ticks = 1 second). */
         val TIME_STATS = setOf(
             Statistic.PLAY_ONE_MINUTE,

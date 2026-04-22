@@ -39,3 +39,6 @@ rain-crop-growth:
   # during rain. Set to 0.0 to disable.
   boost-chance: 0.5
 
+show-stat:
+  # How long each scoreboard page is shown, in seconds.
+  seconds-per-page: 7

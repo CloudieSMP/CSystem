@@ -8,6 +8,7 @@ import event.block.RainCropGrowthListener
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.LiveUtil
+import command.ShowStat
 import item.crate.CrateRecipes
 import library.CardPullCounterStorage
 import library.CrateRollStatsStorage
@@ -52,6 +53,7 @@ class CSystem : JavaPlugin() {
         reloadConfig()
         CardPullCounterStorage.loadSync()
         CrateRollStatsStorage.loadSync()
+        ShowStat.loadSync()
         if (ResourcePacker.refreshFromUrl()) {
             logger.info("Resource pack cache populated on startup.")
         } else {
@@ -72,6 +74,7 @@ class CSystem : JavaPlugin() {
         MailStorage.flushAllSync()
         CardPullCounterStorage.flushAllSync()
         CrateRollStatsStorage.flushAllSync()
+        ShowStat.saveSync()
         VanishHelper.resetAllVisibility()
         AfkHelper.resetAll()
         VisualChat.clearChatEntities()

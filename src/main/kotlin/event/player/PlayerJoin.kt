@@ -2,6 +2,7 @@ package event.player
 
 import chat.Formatting
 import command.LiveUtil
+import command.ShowStat
 import item.crate.CrateMetadataRefresher
 import item.crate.CrateRecipes
 import library.HomeStorage
@@ -47,6 +48,14 @@ class PlayerJoin : Listener {
 
         LiveUtil.onPlayerJoin(e.player)
         VanishHelper.syncVisibilityForJoin(e.player)
+
+        // Keep the alt-account cache up to date for /showstat filtering.
+        if (e.player.hasPermission("cloudie.group.alt")) {
+            ShowStat.altUuids.add(e.player.uniqueId)
+        } else {
+            ShowStat.altUuids.remove(e.player.uniqueId)
+        }
+        ShowStat.saveSync()
 
         e.player.sendLinks(Bukkit.getServerLinks())
         MailStorage.hasNewMailAsync(e.player.uniqueId) { hasNewMail ->

@@ -10,7 +10,8 @@ data class Config(
     val home: HomeConfig = HomeConfig(),
     val discord: DiscordConfig = DiscordConfig(),
     val afk: AfkConfig = AfkConfig(),
-    val rainCropGrowth: RainCropGrowthConfig = RainCropGrowthConfig()
+    val rainCropGrowth: RainCropGrowthConfig = RainCropGrowthConfig(),
+    val showStat: ShowStatConfig = ShowStatConfig()
 )
 
 @ConfigSerializable
@@ -38,6 +39,12 @@ data class AfkConfig(
 data class RainCropGrowthConfig(
     /** Probability (0.0–1.0) that a crop exposed to open sky gains a bonus growth tick during rain. */
     val boostChance: Double = 0.5
+)
+
+@ConfigSerializable
+data class ShowStatConfig(
+    /** How long each scoreboard page is shown, in seconds. */
+    val secondsPerPage: Int = 7
 )
 
 @ConfigSerializable
