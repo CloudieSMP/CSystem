@@ -83,6 +83,7 @@ class ShowStat {
         val sorted = sbEntries.sortedByDescending { it.second }
 
         isActive = true
+        val formatter = formatterFor(stat)
         val statScoreboardRunnable = object : BukkitRunnable() {
             var pageIndex = 0
             override fun run() {
@@ -98,7 +99,7 @@ class ShowStat {
                         }
                     } <#4E56C0>[<#FDCFFA>${pageIndex+1}/${pages.size}<#4E56C0>]")
 
-                    broadcastScoreboardLines(title, page)
+                    broadcastScoreboardLines(title, page, formatter)
                     pageIndex++
                 } else {
                     clearScoreboards(20L)
@@ -110,12 +111,12 @@ class ShowStat {
         statScoreboardRunnable.runTaskTimer(plugin, 0L, secondsPerPage * 20L)
     }
 
-    private fun broadcastScoreboardLines(title: Component, lines: List<Pair<Component, Int>>) {
+    private fun broadcastScoreboardLines(title: Component, lines: List<Pair<Component, Int>>, formatter: (Int) -> Component = ::formatInteger) {
         for (player in Bukkit.getOnlinePlayers()) {
             val board = FastBoard(player)
             board.updateTitle(title)
             val names = lines.map { it.first }
-            val scores = lines.map { formatInteger(it.second) }
+            val scores = lines.map { formatter(it.second) }
             board.updateLines(names, scores)
         }
     }
@@ -141,11 +142,73 @@ class ShowStat {
         }
     }
 
+    companion object {
+        /** Statistics whose raw value is in ticks (20 ticks = 1 second). */
+        val TIME_STATS = setOf(
+            Statistic.PLAY_ONE_MINUTE,
+            Statistic.TIME_SINCE_DEATH,
+            Statistic.TIME_SINCE_REST,
+            Statistic.TOTAL_WORLD_TIME,
+        )
+
+        /** Statistics whose raw value is in centimetres. */
+        val DISTANCE_STATS = setOf(
+            Statistic.WALK_ONE_CM,
+            Statistic.SPRINT_ONE_CM,
+            Statistic.CROUCH_ONE_CM,
+            Statistic.SWIM_ONE_CM,
+            Statistic.FALL_ONE_CM,
+            Statistic.CLIMB_ONE_CM,
+            Statistic.FLY_ONE_CM,
+            Statistic.WALK_ON_WATER_ONE_CM,
+            Statistic.WALK_UNDER_WATER_ONE_CM,
+            Statistic.MINECART_ONE_CM,
+            Statistic.BOAT_ONE_CM,
+            Statistic.PIG_ONE_CM,
+            Statistic.HORSE_ONE_CM,
+            Statistic.AVIATE_ONE_CM,
+            Statistic.STRIDER_ONE_CM,
+        )
+    }
+
+    /** Choose the right formatter for [stat]. */
+    fun formatterFor(stat: Statistic): (Int) -> Component = when (stat) {
+        in TIME_STATS -> ::formatTicks
+        in DISTANCE_STATS -> ::formatCentimetres
+        else -> ::formatInteger
+    }
+
     private fun formatInteger(number: Int): Component {
         val symbols = DecimalFormatSymbols(Locale.forLanguageTag("de-CH"))
         symbols.groupingSeparator = '\''
         val formatter = DecimalFormat("#,##0", symbols)
         return allTags.deserialize("<red><shadow:black>${formatter.format(number)}")
+    }
+
+    /** Converts ticks to a human-readable duration, e.g. `3d 2h 15m`. */
+    private fun formatTicks(ticks: Int): Component {
+        val totalSeconds = ticks / 20
+        val days    = totalSeconds / 86400
+        val hours   = (totalSeconds % 86400) / 3600
+        val minutes = (totalSeconds % 3600) / 60
+
+        val parts = buildList {
+            if (days > 0)    add("${days}d")
+            if (hours > 0)   add("${hours}h")
+            if (minutes > 0 || (days == 0 && hours == 0)) add("${minutes}m")
+        }
+        return allTags.deserialize("<red><shadow:black>${parts.joinToString(" ")}")
+    }
+
+    /** Converts centimetres to km (≥ 1 000 m) or m. */
+    private fun formatCentimetres(cm: Int): Component {
+        val metres = cm / 100.0
+        val text = if (metres >= 1000) {
+            "%.2f km".format(metres / 1000.0)
+        } else {
+            "%.1f m".format(metres)
+        }
+        return allTags.deserialize("<red><shadow:black>$text")
     }
 
     private fun snakeCaseToSpaced(snakeCaseStr: String): String {
