@@ -1,6 +1,7 @@
 package event.block
 
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.block.data.Ageable
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
@@ -20,7 +21,7 @@ object HarvestReplantListener {
         Material.NETHER_WART to Material.NETHER_WART,
     )
 
-    private val HOE_MATERIALS = setOf(
+    val HOE_MATERIALS = setOf(
         Material.WOODEN_HOE,
         Material.STONE_HOE,
         Material.COPPER_HOE,
@@ -32,8 +33,7 @@ object HarvestReplantListener {
 
     fun harvestReplantEvent(event: PlayerInteractEvent) {
         val block = event.clickedBlock ?: return
-        val cropMaterial = block.type
-        val seedMaterial = CROP_SEEDS[cropMaterial] ?: return
+        if (CROP_SEEDS[block.type] == null) return
 
         val ageable = block.blockData as? Ageable ?: return
         if (ageable.age < ageable.maximumAge) return
@@ -44,6 +44,34 @@ object HarvestReplantListener {
 
         event.isCancelled = true
         player.swingMainHand()
+
+        harvestBlock(player, block)
+
+        // Sweeping Edge: harvest surrounding fully-grown crops in a square of radius = enchantment level.
+        val sweepingLevel = hoe.getEnchantmentLevel(Enchantment.SWEEPING_EDGE)
+        if (sweepingLevel > 0) {
+            outer@ for (dx in -sweepingLevel..sweepingLevel) {
+                for (dz in -sweepingLevel..sweepingLevel) {
+                    if (dx == 0 && dz == 0) continue
+                    if (player.inventory.itemInMainHand.type !in HOE_MATERIALS) break@outer
+                    harvestBlock(player, block.world.getBlockAt(block.x + dx, block.y, block.z + dz))
+                }
+            }
+        }
+    }
+
+    /**
+     * Harvests a single fully-grown crop [block]: drops items, replants if a seed is available,
+     * and applies durability to the hoe. Does nothing if the block is not a recognised,
+     * fully-grown crop or the player no longer holds a hoe.
+     */
+    private fun harvestBlock(player: Player, block: Block) {
+        val seedMaterial = CROP_SEEDS[block.type] ?: return
+        val hoe = player.inventory.itemInMainHand
+        if (hoe.type !in HOE_MATERIALS) return
+
+        val ageable = block.blockData as? Ageable ?: return
+        if (ageable.age < ageable.maximumAge) return
 
         // Collect natural drops, then try to consume one seed (the crop stays planted).
         val drops = block.getDrops(hoe).toMutableList()
@@ -83,7 +111,7 @@ object HarvestReplantListener {
         drops.forEach { block.world.dropItem(location, it) }
     }
 
-    /** Applies 1 point of durability damage to [hoe], respecting Unbreaking, and breaks it if needed. */
+    /** Applies 1 point of durability damage to the held hoe, respecting Unbreaking, and breaks it if needed. */
     private fun damageHoe(player: Player, hoe: ItemStack) {
         val unbreakingLevel = hoe.getEnchantmentLevel(Enchantment.UNBREAKING)
         // Unbreaking reduces damage chance: probability = 1 / (level + 1)
