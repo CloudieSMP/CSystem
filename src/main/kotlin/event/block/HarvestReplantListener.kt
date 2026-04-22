@@ -21,7 +21,7 @@ object HarvestReplantListener {
         Material.NETHER_WART to Material.NETHER_WART,
     )
 
-    private val HOE_MATERIALS = setOf(
+    val HOE_MATERIALS = setOf(
         Material.WOODEN_HOE,
         Material.STONE_HOE,
         Material.COPPER_HOE,
@@ -50,10 +50,10 @@ object HarvestReplantListener {
         // Sweeping Edge: harvest surrounding fully-grown crops in a square of radius = enchantment level.
         val sweepingLevel = hoe.getEnchantmentLevel(Enchantment.SWEEPING_EDGE)
         if (sweepingLevel > 0) {
-            for (dx in -sweepingLevel..sweepingLevel) {
+            outer@ for (dx in -sweepingLevel..sweepingLevel) {
                 for (dz in -sweepingLevel..sweepingLevel) {
                     if (dx == 0 && dz == 0) continue
-                    if (player.inventory.itemInMainHand.type !in HOE_MATERIALS) return
+                    if (player.inventory.itemInMainHand.type !in HOE_MATERIALS) break@outer
                     harvestBlock(player, block.world.getBlockAt(block.x + dx, block.y, block.z + dz))
                 }
             }
