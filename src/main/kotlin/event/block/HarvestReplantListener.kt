@@ -73,8 +73,8 @@ object HarvestReplantListener {
         val ageable = block.blockData as? Ageable ?: return
         if (ageable.age < ageable.maximumAge) return
 
-        // Collect natural drops, then try to consume one seed (the crop stays planted).
-        val drops = block.getDrops(hoe).toMutableList()
+        // Use player-aware drops so Fortune on the held hoe is included consistently.
+        val drops = block.getDrops(hoe, player).toMutableList()
         val seedDrop = drops.firstOrNull { it.type == seedMaterial }
 
         val replanted = when {

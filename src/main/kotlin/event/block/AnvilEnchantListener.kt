@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareAnvilEvent
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
+import org.bukkit.inventory.meta.Repairable
 
 class AnvilEnchantListener : Listener {
 
@@ -35,6 +36,28 @@ class AnvilEnchantListener : Listener {
         }
 
         result.addUnsafeEnchantment(Enchantment.SWEEPING_EDGE, newLevel)
+
+        // Keep survival pickup valid by ensuring the anvil has a non-zero level cost.
+        // If vanilla already had a cost, we build on top of it; otherwise we provide one.
+        val currentCost = event.view.repairCost
+        val extraCost = when {
+            existingLevel == 0 -> sweepingLevel * 2
+            existingLevel == sweepingLevel -> newLevel * 2
+            else -> (newLevel - existingLevel).coerceAtLeast(1) * 2
+        }
+        val totalCost = maxOf(1, currentCost + extraCost)
+
+        event.view.repairCost = totalCost
+        event.view.repairItemCountCost = 1
+        event.view.maximumRepairCost = maxOf(event.view.maximumRepairCost, totalCost)
+
+        // Vanilla increases the prior-work penalty each time an item is produced in an anvil.
+        result.editMeta { meta ->
+            val repairableMeta = meta as? Repairable ?: return@editMeta
+            val prior = (base.itemMeta as? Repairable)?.getRepairCost() ?: 0
+            repairableMeta.setRepairCost(prior * 2 + 1)
+        }
+
         event.result = result
     }
 }
