@@ -41,7 +41,9 @@ class RenameItem {
             return
         }
 
-        player.inventory.removeItem(ItemStack.of(LAPIS_LAZULI))
+        if (player.gameMode !== org.bukkit.GameMode.CREATIVE) {
+            player.inventory.removeItem(ItemStack.of(LAPIS_LAZULI))
+        }
         val itemMeta = player.inventory.itemInMainHand.itemMeta
         itemMeta.displayName(nameComponent)
         player.inventory.itemInMainHand.setItemMeta(itemMeta)

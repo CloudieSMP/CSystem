@@ -93,7 +93,7 @@ class Pack {
     @Command("pack pop <player>")
     @Confirmation
     fun packPop(css: CommandSourceStack, player: Player) {
-        ChatUtility.broadcastDev("<yellow>${css.sender.name} <green>popped<reset> the <notifcolor>resource packs<reset> from ${player.name}.", false)
+        ChatUtility.broadcastDev("<yellow>${css.sender.name} <red>popped<reset> the <notifcolor>resource packs<reset> from ${player.name}.", false)
         ResourcePacker.removePackPlayer(player)
     }
 

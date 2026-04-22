@@ -47,7 +47,7 @@ object LiveUtil {
         pendingTimeouts.remove(playerId)?.cancel()
         livePlayerIds.add(playerId)
         startOrReplaceLiveTask(player)
-        player.sendMessage(allTags.deserialize("Live mode enabled."))
+        player.sendMessage(allTags.deserialize("<yellow>Live mode enabled."))
     }
 
     fun stopLive(player: Player) {
@@ -57,7 +57,7 @@ object LiveUtil {
         liveTasks.remove(playerId)?.cancel()
         resetLiveDisplayName(player)
         PlayerListNameHelper.apply(player)
-        player.sendMessage(allTags.deserialize("Live mode disabled."))
+        player.sendMessage(allTags.deserialize("<yellow>Live mode disabled."))
     }
 
     fun onPlayerQuit(player: Player) {
@@ -82,7 +82,7 @@ object LiveUtil {
         if (!isLive(playerId)) return
 
         startOrReplaceLiveTask(player)
-        player.sendMessage(allTags.deserialize("Live mode enabled."))
+        player.sendMessage(allTags.deserialize("<yellow>Live mode enabled."))
     }
 
     fun shutdown() {

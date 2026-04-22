@@ -34,7 +34,7 @@ class Spawn {
         val success = player.teleport(location)
 
         if (success) {
-            player.sendMessage(allTags.deserialize("<green>Warped to <aqua>Spawn</aqua>"))
+            player.sendMessage(allTags.deserialize("<green>Warped to <aqua>Spawn</aqua></green>"))
         } else {
             player.sendMessage(allTags.deserialize("<red>Teleportation failed. Location may be unsafe."))
         }

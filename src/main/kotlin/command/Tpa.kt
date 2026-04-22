@@ -214,7 +214,7 @@ class Tpa {
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
             if (tpaRequests.remove(tpaRequest)) {
                 Bukkit.getPlayer(player.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA request to <white>${target.name}</white> has timed out."))
-                Bukkit.getPlayer(target.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA Request from <white>${player.name}</white> has timed out."))
+                Bukkit.getPlayer(target.uniqueId)?.sendMessage(allTags.deserialize("<yellow>TPA request from <white>${player.name}</white> has timed out."))
             }
         }, requestTimeout * 20L)
     }

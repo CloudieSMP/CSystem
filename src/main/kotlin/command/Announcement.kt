@@ -38,6 +38,6 @@ class Announcement {
             "<red><b>Server Restarting<reset>",
             "In $time minute${if (time > 1) "s" else ""}."
         )
-        Notification.announceActionbar("This a sign to sleep europeans.")
+        Notification.announceActionbar("This is a sign to sleep, europeans.")
     }
 }

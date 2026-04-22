@@ -29,7 +29,7 @@ class PlayerItemConsume : Listener {
 
             val result = Cards.openBooster(event.player, type)
             if (result == null) {
-                event.player.sendMessage(allTags.deserialize("This booster has no eligible cards configured."))
+                event.player.sendMessage(allTags.deserialize("<red>This booster has no eligible cards configured."))
             }
             return
         }

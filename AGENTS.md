@@ -5,25 +5,25 @@ A Paper 1.21.11 plugin for Cloudie SMP Season 10, written in Kotlin. It acts as 
 ## Build & Run
 
 ```bash
-./gradlew shadowJar          # Build fat JAR → build/libs/system-INDEV-Build-<hash>-all.jar
+./gradlew shadowJar          # Build fat JAR → build/libs/csystem-INDEV-<hash>-all.jar
 ./gradlew runServer          # Spin up a local Paper test server under run/
 ```
 
-- Version is auto-derived from the short git commit hash (`INDEV-Build-<hash>`).
-- The shadow JAR **must** be used (not the plain JAR) — Cloud, Configurate, and FastBoard are relocated into `moe.oof.system.shade.*`.
+- Version is auto-derived from the short git commit hash (`INDEV-<hash>`).
+- The shadow JAR **must** be used (not the plain JAR) — Cloud, Configurate, and FastBoard are relocated into `moe.oof.csystem.shade.*`.
 - Relocated packages: `org.incendo`, `org.spongepowered`, `fr.mrmicky`.
-- Java toolchain: **JVM 21**.
+- Java toolchain: **JVM 25**.
 
 ## Architecture
 
 ```
-System.kt              — JavaPlugin entry point; wires events, Cloud command manager, config
+CSystem.kt             — JavaPlugin entry point; wires events, Cloud command manager, command confirmation, config
 Config.kt              — Spongepowered Configurate data class (mapped from src/main/resources/config.yml)
 command/               — One class per command, all discovered via Cloud's annotationParser.parseContainers()
 event/                 — Bukkit event listeners (player/, block/, entity/)
-library/               — Stateful singletons: HomeStorage, MailStorage, CardPullCounterStorage, VanishHelper
+library/               — Stateful singletons: HomeStorage, MailStorage, CrateRollStatsStorage, CardPullCounterStorage, VanishHelper
 item/                  — Enums for rarities/types; crate/, booster/, binder/ sub-packages
-util/                  — Extensions, Keys registry, UI windows
+util/                  — Extensions, Keys registry, resource pack/webhook helpers, UI windows
 chat/                  — MiniMessage formatting, notifications, ChatUtility broadcasts
 ```
 
@@ -32,7 +32,7 @@ chat/                  — MiniMessage formatting, notifications, ChatUtility br
 1. Create a class in `command/` annotated with `@CommandContainer`.
 2. Annotate methods with `@Command`, `@Permission`, `@CommandDescription`.
 3. Use `css.requirePlayer()` (extension in `util/CommandSourceStackExtensions.kt`) to guard player-only commands.
-4. No registration needed — `annotationParser.parseContainers()` in `System.kt` auto-discovers all `@CommandContainer` classes via kapt.
+4. No registration needed — `annotationParser.parseContainers()` in `CSystem.kt` auto-discovers all `@CommandContainer` classes via kapt.
 5. Declare the permission node in `src/main/resources/paper-plugin.yml` and add it to the appropriate group.
 
 Example skeleton:
@@ -66,12 +66,13 @@ Hardcoded join/quit message templates live in `library/Translation.kt`.
 
 ## Storage Pattern
 
-`HomeStorage`, `MailStorage`, and `CardPullCounterStorage` all follow the same pattern:
+`HomeStorage`, `MailStorage`, and `CrateRollStatsStorage` all follow the same pattern:
 - In-memory `ConcurrentHashMap` cache per player UUID.
-- **Async reads** via callback: `HomeStorage.listHomeNamesAsync(uuid) { names -> ... }` (runs on a Bukkit async thread, callback on same thread).
+- **Async reads** via callback: `HomeStorage.listHomeNamesAsync(uuid) { names -> ... }` (disk I/O is async, callback is rescheduled onto the Bukkit main thread).
 - **Sync flush** on plugin disable: `HomeStorage.flushAllSync()`.
-- Data files live in `plugins/System/homes/<uuid>.yml`, `plugins/System/mail/<uuid>.yml`, etc.
-- Call `preload(uuid)` on player join to warm the cache early (done in `PlayerJoin.kt`).
+- Data files live in `plugins/System/homes/<uuid>.yml`, `plugins/System/mail/<uuid>.yml`, `plugins/System/crate-roll-stats/<uuid>.yml`, etc.
+- Call `preload(uuid)` on player join to warm the cache early (done in `event/player/PlayerJoin.kt`).
+- `CardPullCounterStorage` is separate: global sync load/save in `plugins/System/card-pulls.yml`.
 
 ## Item System
 
@@ -82,13 +83,13 @@ Hardcoded join/quit message templates live in `library/Translation.kt`.
 
 ## UI Windows
 
-Inventory GUIs use the **Noxcrew Interfaces** library (`util/ui/`) and the `GamblingWindow`/`CrateBrowserWindow`/`BinderWindow` pattern:
-- Each window is an `object : Listener` registered at startup.
-- Uses a custom `InventoryHolder` to attach state to the inventory.
+Inventory GUIs use the **Noxcrew Interfaces** library (`util/ui/`) with `CollectionBrowserWindow` as a shared selector/preview engine (used by `CrateBrowserWindow` and `BoosterPackBrowserWindow`) plus `BinderWindow`.
+- Listener-backed windows are `GamblingWindow` and `TrashWindow` (`object : Listener`, registered at startup).
+- Interface windows keep reactive state in closures/triggers (see `DelegateTrigger` usage in `CollectionBrowserWindow`/`BinderWindow`), while `GamblingWindow` tracks sessions in-memory by player UUID.
 
 ## Config
 
-Config is loaded via Spongepowered Configurate from `src/main/resources/config.yml` into the `Config` data class. Access it via `plugin.config` (the field is named `config` on the `System` class, shadowing `JavaPlugin.getConfig()`). Reload at runtime with `/cloudie reload` (permission `cloudie.cmd.reload`).
+Config is loaded via Spongepowered Configurate from `src/main/resources/config.yml` into the `Config` data class. Access it via `plugin.config` (the field is named `config` on the `CSystem` class, shadowing `JavaPlugin.getConfig()`). Reload at runtime with `/cloudie reload` (permission `cloudie.cmd.reload`).
 
 ## External Integrations
 
@@ -100,4 +101,4 @@ Config is loaded via Spongepowered Configurate from `src/main/resources/config.y
 
 ## Top-level Convenience Accessors
 
-`plugin` and `logger` are top-level `val`s (defined in `System.kt`) that delegate to the plugin instance — use them freely anywhere instead of passing the plugin reference around.
+`plugin` and `logger` are top-level `val`s (defined in `CSystem.kt`) that delegate to the plugin instance — use them freely anywhere instead of passing the plugin reference around.
