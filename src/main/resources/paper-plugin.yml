@@ -37,7 +37,7 @@ permissions:
       cloudie.cmd.pack: true
       cloudie.cmd.height.others: true
       cloudie.cmd.trash: true
-      cloudie.cmd.cratestats.others: true
+      cloudie.cmd.cratestats.other: true
 
   cloudie.group.dev:
     description: Allows the player to use developer chat and receive developer messages.
@@ -67,7 +67,7 @@ permissions:
     description: Allows the player to check height of other players.
   cloudie.cmd.trash:
     description: Allows the player to open the trash inventory.
-  cloudie.cmd.cratestats.others:
+  cloudie.cmd.cratestats.other:
     description: Allows the player to view crate stats for other players.
 
   cloudie.group.default:

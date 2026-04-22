@@ -12,12 +12,17 @@ import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.CommandDescription
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
+import org.incendo.cloud.annotations.suggestion.Suggestions
 import util.requirePlayer
 import java.util.Locale
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class CrateStats {
+    private val wearableItemIds: Set<String> = CrateType.WEARABLES.lootPool.possibleItems
+        .map(CrateItem::storedId)
+        .toSet()
+
     @Command("cratestats")
     @CommandDescription("Show your crate roll stats.")
     @Permission("cloudie.cmd.cratestats")
@@ -26,41 +31,70 @@ class CrateStats {
         renderPlayerStats(player, player)
     }
 
+    @Command("cratestats me <crateName>")
+    @CommandDescription("Show your collectible stats for a specific crate.")
+    @Permission("cloudie.cmd.cratestats")
+    fun selfByCrate(css: CommandSourceStack, @Argument(value = "crateName", suggestions = "crate-names") crateName: String) {
+        val player = css.requirePlayer() ?: return
+        val crateType = resolveCrateType(crateName)
+        if (crateType == null) {
+            player.sendMessage(allTags.deserialize("<gray>Unknown crate <white>$crateName</white>.</gray>"))
+            return
+        }
+        renderPlayerCrateStats(player, player, crateType)
+    }
+
+    @Command("cratestats global")
+    @CommandDescription("Show global collectible roll stats.")
+    @Permission("cloudie.cmd.cratestats")
+    fun global(css: CommandSourceStack) {
+        val player = css.requirePlayer() ?: return
+        val counts = CrateRollStatsStorage.globalPlushieCounts().toList().sortedByDescending { it.second }
+        sendCollectibleCounts(
+            viewer = player,
+            title = "Global Collectible Roll Stats",
+            counts = counts,
+            emptyMessage = "No collectible roll stats available yet.",
+            maxLines = 15,
+        )
+    }
+
+    @Command("cratestats global <crateName>")
+    @CommandDescription("Show global collectible stats for a specific crate.")
+    @Permission("cloudie.cmd.cratestats")
+    fun globalByCrate(css: CommandSourceStack, @Argument(value = "crateName", suggestions = "crate-names") crateName: String) {
+        val player = css.requirePlayer() ?: return
+        val crateType = resolveCrateType(crateName)
+        if (crateType == null) {
+            player.sendMessage(allTags.deserialize("<gray>Unknown crate <white>$crateName</white>.</gray>"))
+            return
+        }
+        renderGlobalCrateStats(player, crateType)
+    }
+
     @Command("cratestats <player>")
     @CommandDescription("Show another player's crate roll stats.")
-    @Permission("cloudie.cmd.cratestats.others")
+    @Permission("cloudie.cmd.cratestats.other")
     fun other(css: CommandSourceStack, @Argument("player") target: Player) {
         val requester = css.requirePlayer() ?: return
         renderPlayerStats(requester, target)
     }
 
-    @Command("cratestats plushies")
-    @CommandDescription("Show globally rolled plushie counts.")
-    @Permission("cloudie.cmd.cratestats")
-    fun plushies(css: CommandSourceStack) {
-        val player = css.requirePlayer() ?: return
-        val counts = CrateRollStatsStorage.globalPlushieCounts().toList().sortedByDescending { it.second }
-        if (counts.isEmpty()) {
-            player.sendMessage(allTags.deserialize("<gray>No plushie roll stats available yet.</gray>"))
+    @Command("cratestats <player> <crateName>")
+    @CommandDescription("Show another player's collectible stats for a specific crate.")
+    @Permission("cloudie.cmd.cratestats.other")
+    fun otherByCrate(
+        css: CommandSourceStack,
+        @Argument("player") target: Player,
+        @Argument(value = "crateName", suggestions = "crate-names") crateName: String,
+    ) {
+        val requester = css.requirePlayer() ?: return
+        val crateType = resolveCrateType(crateName)
+        if (crateType == null) {
+            requester.sendMessage(allTags.deserialize("<gray>Unknown crate <white>$crateName</white>.</gray>"))
             return
         }
-
-        val totalPlushieRolls = counts.sumOf { it.second }
-        player.sendMessage(
-            allTags.deserialize(
-                "<cloudiecolor><b>Global Plushie Roll Stats</b></cloudiecolor> <gray>(total plushie rolls: <white>$totalPlushieRolls</white>)</gray>"
-            )
-        )
-
-        val maxLines = 15
-        counts.take(maxLines).forEachIndexed { index, (itemId, count) ->
-            val itemName = CrateItem.fromStoredId(itemId)?.displayNamePlain ?: humanizeStoredId(itemId)
-            player.sendMessage(allTags.deserialize("<gray>${index + 1}.</gray> <white>$itemName</white> <gray>-</gray> <yellow>$count</yellow>"))
-        }
-
-        if (counts.size > maxLines) {
-            player.sendMessage(allTags.deserialize("<dark_gray>...and ${counts.size - maxLines} more plushies.</dark_gray>"))
-        }
+        renderPlayerCrateStats(requester, target, crateType)
     }
 
     private fun renderPlayerStats(requester: Player, target: Player) {
@@ -90,20 +124,137 @@ class CrateStats {
                     onlineRequester.sendMessage(allTags.deserialize("<gray>-</gray> <white>$crateName</white>: <yellow>$count</yellow>"))
                 }
 
-            val topPlushies = stats.itemCounts
+            val topCollectibles = stats.itemCounts
                 .toList()
-                .filter { (itemId, _) -> CrateItem.fromStoredId(itemId)?.isPlushie == true }
+                .filter { (itemId, _) -> isTrackedCollectible(itemId) }
                 .sortedByDescending { it.second }
                 .take(5)
 
-            if (topPlushies.isNotEmpty()) {
-                onlineRequester.sendMessage(allTags.deserialize("<dark_gray>Top plushies:</dark_gray>"))
-                topPlushies.forEach { (itemId, count) ->
+            if (topCollectibles.isNotEmpty()) {
+                onlineRequester.sendMessage(allTags.deserialize("<dark_gray>Top collectibles:</dark_gray>"))
+                topCollectibles.forEach { (itemId, count) ->
                     val itemName = CrateItem.fromStoredId(itemId)?.displayNamePlain ?: humanizeStoredId(itemId)
                     onlineRequester.sendMessage(allTags.deserialize("<dark_gray>  -</dark_gray> <white>$itemName</white>: <yellow>$count</yellow>"))
                 }
             }
         }
+    }
+
+    private fun renderPlayerCrateStats(requester: Player, target: Player, crateType: CrateType) {
+        val requesterId = requester.uniqueId
+        val targetId = target.uniqueId
+
+        CrateRollStatsStorage.snapshotAsync(targetId) { stats ->
+            val onlineRequester = Bukkit.getPlayer(requesterId) ?: return@snapshotAsync
+            val crateItems = crateCollectibles(crateType)
+
+            if (crateItems.isEmpty()) {
+                onlineRequester.sendMessage(allTags.deserialize("<gray>No collectible items configured for <white>${humanizeStoredId(crateType.storedId)}</white>.</gray>"))
+                return@snapshotAsync
+            }
+
+            val totalRolls = crateItems.sumOf { stats.itemCounts[it.storedId] ?: 0L }
+            val collected = crateItems.count { (stats.itemCounts[it.storedId] ?: 0L) > 0L }
+            val possible = crateItems.size
+
+            onlineRequester.sendMessage(
+                allTags.deserialize(
+                    "<cloudiecolor><b>Collectibles for <white>${target.name}</white> in <white>${humanizeStoredId(crateType.storedId)}</white></b></cloudiecolor> <gray>(total collectible rolls: <white>$totalRolls</white>, Collected <white>$collected/$possible</white>)</gray>"
+                )
+            )
+
+            crateItems
+                .sortedByDescending { stats.itemCounts[it.storedId] ?: 0L }
+                .forEach { item ->
+                    val rolls = stats.itemCounts[item.storedId] ?: 0L
+                    onlineRequester.sendMessage(
+                        allTags.deserialize("<dark_gray>  -</dark_gray> <white>${item.displayNamePlain}</white>: <yellow>$rolls</yellow>")
+                    )
+                }
+        }
+    }
+
+    private fun renderGlobalCrateStats(viewer: Player, crateType: CrateType) {
+        val globalCounts = CrateRollStatsStorage.globalPlushieCounts()
+        val crateItems = crateCollectibles(crateType)
+
+        if (crateItems.isEmpty()) {
+            viewer.sendMessage(allTags.deserialize("<gray>No collectible items configured for <white>${humanizeStoredId(crateType.storedId)}</white>.</gray>"))
+            return
+        }
+
+        val totalRolls = crateItems.sumOf { globalCounts[it.storedId] ?: 0L }
+        val collected = crateItems.count { (globalCounts[it.storedId] ?: 0L) > 0L }
+        val possible = crateItems.size
+
+        viewer.sendMessage(
+            allTags.deserialize(
+                "<cloudiecolor><b>Global Collectibles in <white>${humanizeStoredId(crateType.storedId)}</white></b></cloudiecolor> <gray>(total collectible rolls: <white>$totalRolls</white>, Collected <white>$collected/$possible</white>)</gray>"
+            )
+        )
+
+        crateItems
+            .sortedByDescending { globalCounts[it.storedId] ?: 0L }
+            .forEach { item ->
+                val rolls = globalCounts[item.storedId] ?: 0L
+                viewer.sendMessage(allTags.deserialize("<dark_gray>  -</dark_gray> <white>${item.displayNamePlain}</white>: <yellow>$rolls</yellow>"))
+            }
+    }
+
+    private fun sendCollectibleCounts(
+        viewer: Player,
+        title: String,
+        counts: List<Pair<String, Long>>,
+        emptyMessage: String,
+        maxLines: Int? = null,
+    ) {
+        if (counts.isEmpty()) {
+            viewer.sendMessage(allTags.deserialize("<gray>$emptyMessage</gray>"))
+            return
+        }
+
+        val totalPlushieRolls = counts.sumOf { it.second }
+        viewer.sendMessage(
+            allTags.deserialize(
+                "<cloudiecolor><b>$title</b></cloudiecolor> <gray>(total collectible rolls: <white>$totalPlushieRolls</white>)</gray>"
+            )
+        )
+
+        val displayed = maxLines?.let(counts::take) ?: counts
+        displayed.forEachIndexed { index, (itemId, count) ->
+            val itemName = CrateItem.fromStoredId(itemId)?.displayNamePlain ?: humanizeStoredId(itemId)
+            viewer.sendMessage(allTags.deserialize("<gray>${index + 1}.</gray> <white>$itemName</white> <gray>-</gray> <yellow>$count</yellow>"))
+        }
+
+        if (maxLines != null && counts.size > maxLines) {
+            viewer.sendMessage(allTags.deserialize("<dark_gray>...and ${counts.size - maxLines} more collectibles.</dark_gray>"))
+        }
+    }
+
+    private fun isTrackedCollectible(itemId: String): Boolean {
+        val crateItem = CrateItem.fromStoredId(itemId) ?: return false
+        return crateItem.isPlushie || wearableItemIds.contains(crateItem.storedId)
+    }
+
+    private fun crateCollectibles(crateType: CrateType): List<CrateItem> {
+        return crateType.lootPool.possibleItems
+            .filter { item -> isTrackedCollectible(item.storedId) }
+            .distinctBy(CrateItem::storedId)
+    }
+
+    private fun resolveCrateType(crateName: String): CrateType? {
+        val normalized = normalizeCrateName(crateName)
+        return CrateType.entries.firstOrNull { crateType ->
+            normalizeCrateName(crateType.name) == normalized || normalizeCrateName(crateType.storedId) == normalized
+        }
+    }
+
+    private fun normalizeCrateName(value: String): String {
+        return value
+            .lowercase(Locale.ENGLISH)
+            .replace("_", "")
+            .replace("-", "")
+            .replace(" ", "")
     }
 
     private fun humanizeStoredId(value: String): String {
@@ -116,5 +267,11 @@ class CrateStats {
                 }
             }
     }
-}
 
+    @Suggestions("crate-names")
+    fun suggestCrateNames(): List<String> {
+        return CrateType.entries
+            .map { it.storedId.lowercase(Locale.ENGLISH) }
+            .sorted()
+    }
+}

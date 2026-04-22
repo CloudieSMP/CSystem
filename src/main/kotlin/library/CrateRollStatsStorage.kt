@@ -92,11 +92,20 @@ object CrateRollStatsStorage {
         return synchronized(globalLock) { globalTotalRolls }
     }
 
+    private val wearableItemIds: Set<String> by lazy {
+        CrateType.WEARABLES.lootPool.possibleItems.map(CrateItem::storedId).toSet()
+    }
+
+    private fun isTrackedCollectible(itemId: String): Boolean {
+        val crateItem = CrateItem.fromStoredId(itemId) ?: return false
+        return crateItem.isPlushie || wearableItemIds.contains(crateItem.storedId)
+    }
+
     fun globalPlushieCounts(): Map<String, Long> {
         ensureGlobalLoaded()
         return synchronized(globalLock) {
             globalItemCounts
-                .filterKeys { key -> CrateItem.fromStoredId(key)?.isPlushie == true }
+                .filterKeys(::isTrackedCollectible)
                 .toMap()
         }
     }
@@ -363,4 +372,3 @@ object CrateRollStatsStorage {
         }
     }
 }
-
