@@ -9,9 +9,12 @@ import kotlin.random.Random
 
 class RainCropGrowthListener : Listener {
 
-    companion object {
-        /** Sky light level indicating a block is fully exposed to the open sky. */
-        private const val FULL_SKY_LIGHT = 15
+    /**
+     * Returns true when there are no blocks above this block in its column,
+     * meaning it is genuinely exposed to the open sky.
+     */
+    private fun isExposedToOpenSky(block: org.bukkit.block.Block): Boolean {
+        return block.world.getHighestBlockYAt(block.x, block.z) <= block.y
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -29,7 +32,7 @@ class RainCropGrowthListener : Listener {
         if (newData.age >= newData.maximumAge) return
 
         // The block must be exposed to open sky for rain to reach it.
-        if (world.getBlockAt(block.x, block.y + 1, block.z).lightFromSky < FULL_SKY_LIGHT) return
+        if (!isExposedToOpenSky(block)) return
 
         // Apply a configurable chance for the bonus growth tick.
         if (Random.nextDouble() >= plugin.config.rainCropGrowth.boostChance) return
