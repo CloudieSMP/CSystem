@@ -33,3 +33,9 @@ discord:
 afk:
   # Time in seconds before a player is automatically marked as AFK.
   idle-timeout-seconds: 300
+
+rain-crop-growth:
+  # Chance (0.0–1.0) that a crop exposed to open sky receives an extra growth tick
+  # during rain. Set to 0.0 to disable.
+  boost-chance: 0.5
+
