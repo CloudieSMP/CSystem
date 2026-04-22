@@ -27,7 +27,7 @@ class AnvilEnchantListener : Listener {
         // or fall back to a clone of the base item if vanilla rejected the combination entirely.
         val result = event.result?.clone() ?: base.clone()
 
-        val existingLevel = result.getEnchantmentLevel(Enchantment.SWEEPING_EDGE)
+        val existingLevel = base.getEnchantmentLevel(Enchantment.SWEEPING_EDGE)
         val newLevel = if (existingLevel == sweepingLevel) {
             minOf(existingLevel + 1, Enchantment.SWEEPING_EDGE.maxLevel)
         } else {
