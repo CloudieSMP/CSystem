@@ -30,4 +30,12 @@ object Keys {
      * Binder related
      */
     val BINDER_CARDS = NamespacedKey(plugin, "binder.cards")
+
+    /**
+     * Helmet cosmetic overlay
+     * HELMET_ORIGINAL_MODEL — "namespace:key" of the helmet's original ITEM_MODEL before cosmetic was applied,
+     *                         or absent if the helmet had no custom model.
+     *                         Presence of this key (or CRATE_ITEM on a helmet) indicates a cosmetic is active.
+     */
+    val HELMET_ORIGINAL_MODEL = NamespacedKey(plugin, "helmet.original_model")
 }

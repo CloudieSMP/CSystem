@@ -95,6 +95,7 @@ permissions:
       cloudie.cmd.afk: true
       cloudie.cmd.cratestats: true
       cloudie.removecmds: true
+      cloudie.cmd.stripcosmetic: true
 
   cloudie.cmd.hat:
     description: Allows the player to use the hat command.
@@ -141,3 +142,5 @@ permissions:
     description: Allows the player to view crate roll stats.
   cloudie.removecmds:
     description: Removes specific commands from tabcomplete like worldguard and worldedit.
+  cloudie.cmd.stripcosmetic:
+    description: Allows the player to remove a cosmetic from a cosmetified helmet.
