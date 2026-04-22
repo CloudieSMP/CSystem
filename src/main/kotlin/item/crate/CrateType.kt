@@ -64,6 +64,14 @@ enum class CrateType(
         "crates/black",
         Material.BLACK_WOOL,
         CrateLootPool.CHARACTER,
+    ),
+    SABINE(
+        "Sabine Crate",
+        "A crate containing Sabine plushies",
+        RARE,
+        "crates/default",
+        Material.PINK_WOOL,
+        CrateLootPool.SABINE_LOOTPOOL,
     );
 
     val displayName: Component

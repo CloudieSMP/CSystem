@@ -39,8 +39,12 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         YANN,
         ROAST,
         TURTLE,
+        FIDEOX,
+        COMTRA,
         SEBIANN_CLASSIC,
         CARSON_GRAY,
+        ROAST_MAID,
+        SABINE_CHEER_COOL,
         N,
         ASTARION,
         BATMAN,
@@ -96,8 +100,12 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         YANN,
         ROAST,
         TURTLE,
+        FIDEOX,
+        COMTRA,
         SEBIANN_CLASSIC,
         CARSON_GRAY,
+        ROAST_MAID,
+        SABINE_CHEER_COOL,
     )),
     CHARACTER(listOf(
         N,
@@ -115,5 +123,6 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         DARTH_VADER,
         STORMTROOPER,
         BOBA_FETT,
-    ))
+    )),
+    SABINE_LOOTPOOL(CrateItem.entries.filter { it.name.startsWith("SABINE") }),
 }

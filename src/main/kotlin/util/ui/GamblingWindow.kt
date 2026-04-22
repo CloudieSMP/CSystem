@@ -8,6 +8,7 @@ import com.noxcrew.interfaces.interfaces.buildChestInterface
 import item.crate.CrateItem
 import item.crate.CrateType
 import kotlinx.coroutines.launch
+import library.CrateRollStatsStorage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -267,6 +268,9 @@ object GamblingWindow : Listener {
         }
 
         val rewardStack = winner.createItemStack(session.crateType, rolledBy = player.uniqueId.toString())
+        if (!session.isDebug) {
+            CrateRollStatsStorage.incrementRollAsync(player.uniqueId, session.crateType, winner)
+        }
         if (session.isDebug) {
             rewardStack.editMeta { meta ->
                 meta.persistentDataContainer.setIsDebug(true)

@@ -26,12 +26,16 @@ import util.setIsDebug
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Debug {
-    @Command("debug crate <type>")
+    @Command("debug crate <type> [isDebug]")
     @Permission("cloudie.cmd.debug")
-    fun debugCrate(css: CommandSourceStack, @Argument("type") type: CrateType) {
+    fun debugCrate(css: CommandSourceStack, @Argument("type") type: CrateType, @Argument("isDebug") isDebug: Boolean = true) {
         val player = css.requirePlayer() ?: return
 
-        player.inventory.addItem(Crate.create(type, isDebug = true))
+        if (isDebug) {
+            player.inventory.addItem(Crate.create(type, isDebug = true))
+        } else {
+            player.inventory.addItem(Crate.create(type))
+        }
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a crate!"))
     }
 

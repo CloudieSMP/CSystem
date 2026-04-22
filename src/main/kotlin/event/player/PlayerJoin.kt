@@ -6,6 +6,7 @@ import item.crate.CrateMetadataRefresher
 import item.crate.CrateRecipes
 import library.HomeStorage
 import library.MailStorage
+import library.CrateRollStatsStorage
 import library.Translation
 import logger
 import net.kyori.adventure.audience.Audience
@@ -26,6 +27,7 @@ class PlayerJoin : Listener {
         CrateRecipes.discoverAll(e.player)
         HomeStorage.preload(e.player.uniqueId)
         MailStorage.preload(e.player.uniqueId)
+        CrateRollStatsStorage.preload(e.player.uniqueId)
         CrateMetadataRefresher.refreshPlayerInventories(e.player)
         sendTabList(e.player)
 

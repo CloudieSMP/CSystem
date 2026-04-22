@@ -37,6 +37,7 @@ permissions:
       cloudie.cmd.pack: true
       cloudie.cmd.height.others: true
       cloudie.cmd.trash: true
+      cloudie.cmd.cratestats.others: true
 
   cloudie.group.dev:
     description: Allows the player to use developer chat and receive developer messages.
@@ -66,6 +67,8 @@ permissions:
     description: Allows the player to check height of other players.
   cloudie.cmd.trash:
     description: Allows the player to open the trash inventory.
+  cloudie.cmd.cratestats.others:
+    description: Allows the player to view crate stats for other players.
 
   cloudie.group.default:
     description: Allows the player to use all default commands.
@@ -90,6 +93,7 @@ permissions:
       cloudie.cmd.report: true
       cloudie.cmd.showstat: true
       cloudie.cmd.afk: true
+      cloudie.cmd.cratestats: true
       cloudie.removecmds: true
 
   cloudie.cmd.hat:
@@ -130,5 +134,7 @@ permissions:
     description: Allows the player to show server statistic scoreboards.
   cloudie.cmd.afk:
     description: Allows the player to toggle their AFK status.
+  cloudie.cmd.cratestats:
+    description: Allows the player to view crate roll stats.
   cloudie.removecmds:
     description: Removes specific commands from tabcomplete like worldguard and worldedit.

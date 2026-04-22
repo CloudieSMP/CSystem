@@ -82,13 +82,17 @@ enum class CrateItem(
     MAI("Mai Plushie", COMMON, "A cute Mai plushie", "plushies/player/mai_cheerleader_slim"),
     MEGAN("Megan Plushie", COMMON, "A cute Megan plushie", "plushies/player/megan_cheerleader_slim"),
     RIVEN("Riven Plushie", COMMON, "MEOW", "plushies/player/riven_slim"),
-    SABINE("Sabine Plushie", COMMON, "Just Cheering you on", "plushies/player/sabine_cheerleader_slim"),
+    SABINE("Sabine Plushie", COMMON, "Just Cheering you on.", "plushies/player/sabine_cheerleader_slim"),
     YANN("Yann Plushie", COMMON, "A cute Yann plushie", "plushies/player/yann_wide"),
-    ROAST("Roast Plushie", COMMON, "Hasn’t slept in 3 in-game nights. Still smiling.", "plushies/player/roast_wide"),
+    ROAST("Roast Plushie", COMMON, "Hasn’t slept in 3 in-game nights.\nStill smiling.", "plushies/player/roast_wide"),
     TURTLE("Turtle Plushie", COMMON, "A cute Turtle plushie", "plushies/player/turtle_wide"),
+    FIDEOX("Fideox Plushie", COMMON, "Protects the village, one crop at a time.", "plushies/player/fideox_wide"),
+    COMTRA("Comtra Plushie", COMMON, "Stand ready for my arrival, crops.", "plushies/player/comtra_wide"),
 
     SEBIANN_CLASSIC("Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
     CARSON_GRAY("Carson Plushie (Gray)", LEGENDARY, "Some people's kids these days", "plushies/player/carson_gray_wide"),
+    ROAST_MAID("Roast Plushie (Maid)", LEGENDARY, "Tehee", "plushies/player/roast_maid_wide"),
+    SABINE_CHEER_COOL("Sabine Plushie (Cheer Cool)", LEGENDARY, "Just Cheering you on, but cooler.", "plushies/player/sabine_cheerleader_cool_slim"),
 
     // Character plushies
     N("N Plushie", COMMON, "N from Pokemon", "plushies/character/n_slim"),
@@ -117,10 +121,58 @@ enum class CrateItem(
     ORCHID_CROWN("Orchid Crown", UNCOMMON, "A crown of orchids", "wearables/orchid_crown"),
     KING_CROWN("King Crown", UNCOMMON, "A majestic king's crown", "wearables/king_crown"),
     HEART_GLASSES("Heart Glasses", COMMON, "Glasses with heart lenses", "wearables/heart_glasses"),
-    STRAWHAT("Strawhat", COMMON, "A simple Mugiwara", "wearables/strawhat"),;
+    STRAWHAT("Strawhat", COMMON, "A simple Mugiwara", "wearables/strawhat"),
+
+    SABINE_BABYSHARK("Sabine Plushie (Baby Shark)", UNCOMMON, "Baby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark", "plushies/player/sabine/sabine_babysharkdoodoodoodoobabysharkdoodoodoodoobabysharkdoodoodoodoo_slim"),
+    SABINE_BARMAID("Sabine Plushie (Bar Maid)", COMMON, "Drinking my problems away.", "plushies/player/sabine/sabine_barmaid_slim"),
+    SABINE_BASICBITCH("Sabine Plushie (Basic Bitch)", COMMON, "I'm not like the other girls.", "plushies/player/sabine/sabine_basicbitch_slim"),
+    SABINE_BEEQUEEN("Sabine Plushie (BEE QUEEN)", COMMON, "And you just thought it was going to be a fake dragon egg", "plushies/player/sabine/sabine_beequeen_slim"),
+    SABINE_BOATINNIT("Sabine Plushie (Boat innit)", COMMON, "I'm on a boat, innit.", "plushies/player/sabine/sabine_boatinnit_slim"),
+    SABINE_MCDONALD("Sabine Plushie (McDonald's)", COMMON, "Old MacDonald had a farm. E-I-E-I-O. And on that farm he had a pig. E-I-E-I-O.\nWith an oink oink here. And an oink oink there.", "plushies/player/sabine/sabine_canigeturorder_slim"),
+    SABINE_COPPERGOLEM("Sabine Plushie (Copper Golem)", COMMON, "BEEP BOOP", "plushies/player/sabine/sabine_coppergolem_slim"),
+    SABINE_CREAKING("Sabine Plushie (Creaking)", COMMON, "Always watching you.", "plushies/player/sabine/sabine_creakacreaka_slim"),
+    SABINE_HAZMAT("Sabine Plushie (Hazmat)", COMMON, "Duck called me toxic waste, but in a good way though.", "plushies/player/sabine/sabine_duckcalledmetoxicwastebutinagoodwaythough_slim"),
+    SABINE_FEMBOY("Sabine Plushie (Femboy)", COMMON, "Come on, this really looks like she's a femboy", "plushies/player/sabine/sabine_femboystyle_slim"),
+    SABINE_FISHLEG("Sabine Plushie (Fish Leg)", COMMON, "I also have an egg on my head.", "plushies/player/sabine/sabine_fishlegsegghead_slim"),
+    SABINE_DINONUGGIES("Sabine Plushie (DINO NUGGIES)", COMMON, "DINOSAUR RAWR", "plushies/player/sabine/sabine_gimmesomedinonuggies_slim"),
+    SABINE_MUSHROOM("Sabine Plushie (Mushroom)", COMMON, "I'm high on life.", "plushies/player/sabine/sabine_highonlife_slim"),
+    SABINE_ATTEMPTED_PIRATE("Sabine Plushie (Pirate (attempted))", COMMON, "It looks like a pirate, I guess.", "plushies/player/sabine/sabine_iattemptedtomakeapirate_slim"),
+    SABINE_DUCK("Sabine Plushie (Duck)", COMMON, "Duckismename", "plushies/player/sabine/sabine_imduck_slim"),
+    SABINE_INVENTOR("Sabine Plushie (Inventor)", COMMON, "Look at me, I'm smart.", "plushies/player/sabine/sabine_inventorsteampunkeyimnotsure_slim"),
+    SABINE_PINK("Sabine Plushie (Pink)", COMMON, "Is this one pink?", "plushies/player/sabine/sabine_isitpink_slim"),
+    SABINE_DEADED("Sabine Plushie (Dead)", COMMON, "I think i deaded.", "plushies/player/sabine/sabine_ithinkidied_slim"),
+    SABINE_CLOUDIE("Sabine Plushie (Cloudie)", COMMON, "I mad this for Cloudie.", "plushies/player/sabine/sabine_itlookslikeyouracloud_slim"),
+    SABINE_MATCHING_BASE("Sabine Plushie (Cloudie S7)", COMMON, "Sabina's never ending obsession.", "plushies/player/sabine/sabine_itriedtomatchmybase_slim"),
+    SABINE_HANDSOME("Sabine Plushie (Handsome)", COMMON, "I can get mad bitches ;)", "plushies/player/sabine/sabine_lookinggreatwinkyemojy_slim"),
+    SABINE_LUMBERJACK("Sabine Plushie (Lumberjack)", COMMON, "I can chop your wood ;)", "plushies/player/sabine/sabine_lumberjack_slim"),
+    SABINE_MAID("Sabine Plushie (Maid)", COMMON, "Yes mommy.\nUWU RAWR", "plushies/player/sabine/sabine_maid_slim"),
+    SABINE_NESSED("Sabine Plushie (Nessed)", COMMON, "Why was it that Ness got bored of me?", "plushies/player/sabine/sabine_nessed_slim"),
+    SABINE_OLDMAN("Sabine Plushie (Old man)", COMMON, "Look at me, I'm Carson.", "plushies/player/sabine/sabine_oldman_slim"),
+    SABINE_YOUNGMAN("Sabine Plushie (Young man)", COMMON, "I'm useful", "plushies/player/sabine/sabine_youngman_slim"),
+    SABINE_SCOUT("Sabine Plushie (Scout)", COMMON, "Time to peak it in Minecraft.", "plushies/player/sabine/sabine_peakingitirl_slim"),
+    SABINE_PIRATE("Sabine Plushie (Pirate)", COMMON, "Just a sandstorm pirate.", "plushies/player/sabine/sabine_pirate_slim"),
+    SABINE_SANTASWIFE("Sabine Plushie (Santa's wife)", COMMON, "Merry Christmas ;)", "plushies/player/sabine/sabine_santaswife_slim"),
+    SABINE_SKYCADE("Sabine Plushie (Skycade)", COMMON, "This is how I looked like on skycade.", "plushies/player/sabine/sabine_skycadedays_slim"),
+    SABINE_STAR("Sabine Plushie (STAR BUTTERFLY)", COMMON, "It's gonna get a little weird,\nGonna get a little wild.", "plushies/player/sabine/sabine_starbutterfly_slim"),
+    SABINE_STAR_BROWN("Sabine Plushie (STAR BUTTERFLY BROWN)", COMMON, " I ain't from 'round here,\nI'm from another dimension.", "plushies/player/sabine/sabine_starbutterfly_brown_slim"),
+    SABINE_STOLEN("Sabine Plushie (Stolen)", COMMON, "I stole this from a random girl on hypixel.", "plushies/player/sabine/sabine_stolenfromarandomgirl_slim"),
+    SABINE_SUPERWOMAN("Sabine Plushie (Superwoman)", COMMON, "I believe I can fly.", "plushies/player/sabine/sabine_superwoman_slim"),
+    SABINE_THECLAW("Sabine Plushie (The Claw)", COMMON, "The claw??", "plushies/player/sabine/sabine_theclaw_slim"),
+    SABINE_CLOWN("Sabine Plushie (True Form)", COMMON, "Here you see a wild Sabina in her true form.", "plushies/player/sabine/sabine_trueform_slim"),
+    SABINE_VOTEMOOBLOOM("Sabine Plushie (#VOTEMOOBLOOM)", COMMON, "#VOTEMOOBLOOM", "plushies/player/sabine/sabine_votemoobloom_slim"),
+    SABINE_WINKERFISHER("Sabine Plushie (Winker Fisher)", COMMON, "winka winka.", "plushies/player/sabine/sabine_winkerfisher_slim"),
+    SABINE_WORKER("Sabine Plushie (Worker)", COMMON, "Working hard or hardly working?", "plushies/player/sabine/sabine_workinghardorhardlyworking_slim"),
+    SABINE_ZOOKEEPER("Sabine Plushie (Zoo Keeper)", COMMON, "Gotta catch em all.", "plushies/player/sabine/sabine_zookeeper_slim"),
+    ;
 
     val storedId: String
         get() = name
+
+    val displayNamePlain: String
+        get() = itemName
+
+    val isPlushie: Boolean
+        get() = modelPath.startsWith("plushies/")
 
     val rollWeight: Double
         get() = rarity.crateWeight

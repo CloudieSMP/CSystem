@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.LiveUtil
 import item.crate.CrateRecipes
 import library.CardPullCounterStorage
+import library.CrateRollStatsStorage
 import library.HomeStorage
 import library.MailStorage
 import org.bukkit.Bukkit
@@ -50,6 +51,7 @@ class CSystem : JavaPlugin() {
         InterfacesListeners.install(this)
         reloadConfig()
         CardPullCounterStorage.loadSync()
+        CrateRollStatsStorage.loadSync()
         if (ResourcePacker.refreshFromUrl()) {
             logger.info("Resource pack cache populated on startup.")
         } else {
@@ -69,6 +71,7 @@ class CSystem : JavaPlugin() {
         HomeStorage.flushAllSync()
         MailStorage.flushAllSync()
         CardPullCounterStorage.flushAllSync()
+        CrateRollStatsStorage.flushAllSync()
         VanishHelper.resetAllVisibility()
         AfkHelper.resetAll()
         VisualChat.clearChatEntities()
