@@ -21,7 +21,7 @@ class Help {
         for (featured in HelpHelper.featuredCommands) {
             val shortDescription = HelpHelper.getCommandShortHelp(featured, false)
             if (shortDescription.isEmpty()) continue
-            css.sender.sendMessage(allTags.deserialize("<gold> - <hover:show_text:'Click to get help with /$featured'><click:run_command:/help $featured><white>/$featured - $shortDescription</click></hover>"))
+            css.sender.sendMessage(allTags.deserialize("<gold> - <hover:show_text:'Click to get help with /$featured'><click:run_command:/help $featured>/$featured<white> - $shortDescription</click></hover>"))
         }
     }
 
@@ -38,7 +38,7 @@ class Help {
         for (featured in HelpHelper.featuredStaffCommands) {
             val shortDescription = HelpHelper.getCommandShortHelp(featured, true)
             if (shortDescription.isEmpty()) continue
-            css.sender.sendMessage(allTags.deserialize("<gold> - <hover:show_text:'Click to get help with /$featured'><click:run_command:/staffhelp $featured><white>/$featured - $shortDescription</click></hover>"))
+            css.sender.sendMessage(allTags.deserialize("<gold> - <hover:show_text:'Click to get help with /$featured'><click:run_command:/staffhelp $featured>/$featured<white> - $shortDescription</click></hover>"))
         }
     }
 
