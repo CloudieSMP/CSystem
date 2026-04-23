@@ -41,7 +41,7 @@ object Notification {
         logger.info("Announce Actionbar: $message")
 
         val online = Audience.audience(Bukkit.getOnlinePlayers())
-        online.sendMessage(allTags.deserialize(message))
+        online.sendMessage(allTags.deserialize("<newline>Read this: $message<newline>"))
         online.sendActionBar(allTags.deserialize(message))
     }
 }

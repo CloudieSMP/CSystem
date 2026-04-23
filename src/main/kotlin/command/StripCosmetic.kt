@@ -51,9 +51,10 @@ class StripCosmetic {
             return
         }
 
-        // Reset ITEM_MODEL and EQUIPPABLE back to vanilla defaults
+        // Reset ITEM_MODEL, EQUIPPABLE, and glint override back to vanilla defaults
         item.resetData(DataComponentTypes.ITEM_MODEL)
         item.resetData(DataComponentTypes.EQUIPPABLE)
+        item.resetData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE)
 
         // Build the restored cosmetic first so we know exactly which keys to scrub from the helmet.
         // createItemStack() sets ITEM_MODEL + EQUIPPABLE correctly; copyTo brings back all original

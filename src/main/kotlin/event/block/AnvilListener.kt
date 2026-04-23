@@ -73,6 +73,7 @@ class AnvilListener : Listener {
             .damageOnHurt(baseEquippable.damageOnHurt())
             .build()
         result.setData(DataComponentTypes.EQUIPPABLE, cosmeticEquippable)
+        result.setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false)
 
         event.result = result
         event.view.repairCost = 0
