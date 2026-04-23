@@ -20,6 +20,13 @@ class Announcement {
         Notification.announceServer("<yellow><b>Announcement<reset>", text.joinToString(" "))
     }
 
+    @Command("announcesmall <text>")
+    @CommandDescription("Broadcasts the specified text.")
+    @Permission("cloudie.cmd.announce")
+    fun announceSmall(css: CommandSourceStack, @Argument("text") text: Array<String>) {
+        Notification.announceActionbar(text.joinToString(" "))
+    }
+
     @Command("announcerestart <time>")
     @CommandDescription("Broadcasts when the next restart will be.")
     @Permission("cloudie.cmd.announce")
