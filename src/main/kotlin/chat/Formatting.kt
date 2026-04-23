@@ -15,6 +15,7 @@ object Formatting {
         DEV_PREFIX("dev", "\uE002"),
         ADMIN_PREFIX("admin", "\uE001"),
         LIVE_PREFIX("live", "\uE010"),
+        NOSLEEP_PREFIX("nosleep", "\uE011"),
         WARNING_PREFIX("warning", "⚠"),
         SKULL_PREFIX("skull", "☠");
 

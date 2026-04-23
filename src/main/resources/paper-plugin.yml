@@ -93,6 +93,7 @@ permissions:
       cloudie.cmd.report: true
       cloudie.cmd.showstat: true
       cloudie.cmd.afk: true
+      cloudie.cmd.dontsleep: true
       cloudie.cmd.cratestats: true
       cloudie.removecmds: true
       cloudie.cmd.stripcosmetic: true
@@ -138,6 +139,8 @@ permissions:
     default: false
   cloudie.cmd.afk:
     description: Allows the player to toggle their AFK status.
+  cloudie.cmd.dontsleep:
+    description: Allows the player to toggle the [DONT SLEEP] tab tag.
   cloudie.cmd.cratestats:
     description: Allows the player to view crate roll stats.
   cloudie.removecmds:

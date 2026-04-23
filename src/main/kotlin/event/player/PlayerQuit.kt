@@ -2,6 +2,7 @@ package event.player
 
 import chat.Formatting
 import command.LiveUtil
+import command.NoSleepHelper
 import library.Translation
 
 import org.bukkit.event.EventHandler
@@ -18,5 +19,6 @@ class PlayerQuit: Listener {
 
         }
         LiveUtil.onPlayerQuit(e.player)
+        NoSleepHelper.cleanup(e.player)
     }
 }

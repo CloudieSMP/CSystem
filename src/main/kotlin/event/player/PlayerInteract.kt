@@ -1,5 +1,6 @@
 package event.player
 
+import event.block.BedEvent.onBedClick
 import event.block.HarvestReplantListener.harvestReplantEvent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -14,6 +15,7 @@ class PlayerInteract : Listener {
         val hand = event.hand ?: return
         if (event.action == Action.RIGHT_CLICK_BLOCK && hand == EquipmentSlot.HAND) {
             harvestReplantEvent(event)
+            onBedClick(event)
         }
     }
 }

@@ -2,6 +2,7 @@ package library
 
 import chat.Formatting
 import command.LiveUtil
+import command.NoSleepHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -13,6 +14,7 @@ object PlayerListNameHelper {
     fun apply(player: Player) {
         val isAfk = AfkHelper.isAfk(player)
         val isLive = LiveUtil.isLive(player)
+        val isDontSleep = NoSleepHelper.isDontSleep(player)
 
         val nameColor = when {
             isAfk -> NamedTextColor.GRAY
@@ -22,12 +24,11 @@ object PlayerListNameHelper {
 
         val coloredName = Component.text(player.name)
         val baseName = if (nameColor == null) coloredName else coloredName.color(nameColor)
-        val tabName = if (isLive) {
-            Formatting.allTags.deserialize("\uE010 ").append(baseName)
-        } else if (isAfk) {
-            baseName
-        } else {
-            null
+        val tabName = when {
+            isDontSleep -> Formatting.allTags.deserialize("<prefix:nosleep> ").append(baseName)
+            isLive -> Formatting.allTags.deserialize("<prefix:live> ").append(baseName)
+            isAfk -> baseName
+            else -> null
         }
 
         player.playerListName(tabName)
