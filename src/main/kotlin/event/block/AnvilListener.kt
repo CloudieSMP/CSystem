@@ -1,18 +1,20 @@
 package event.block
 
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.Equippable
 import item.crate.CrateItem
+import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.PrepareAnvilEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.inventory.meta.Repairable
 import org.bukkit.persistence.PersistentDataType.STRING
 import util.Keys.CRATE_ITEM
-import util.Keys.HELMET_ORIGINAL_MODEL
 
 @Suppress("UnstableApiUsage")
 class AnvilListener : Listener {
@@ -45,22 +47,32 @@ class AnvilListener : Listener {
         val result = helmet.clone()
 
         // Read ITEM_MODEL BEFORE editMeta to avoid mid-transaction key construction issues
-        val originalModel = result.getData(DataComponentTypes.ITEM_MODEL)
-        val cosmeticModel = cosmeticStack.getData(DataComponentTypes.ITEM_MODEL)
+        val cosmeticModel: Key = cosmeticStack.getData(DataComponentTypes.ITEM_MODEL)
             ?: NamespacedKey("cloudie", crateItem.storedId.lowercase())
+
+        // Save original equippable so we can preserve slot/sound/etc.
+        val originalEquippable = result.getData(DataComponentTypes.EQUIPPABLE)
 
         result.editMeta { meta ->
             val pdc = meta.persistentDataContainer
-
-            if (originalModel != null) {
-                pdc.set(HELMET_ORIGINAL_MODEL, STRING, originalModel.asString())
-            }
 
             // Copy all cosmetic PDC keys flat onto the helmet — CRATE_ITEM acts as the cosmetic identifier
             cosmeticStack.itemMeta?.persistentDataContainer?.copyTo(pdc, true)
         }
 
         result.setData(DataComponentTypes.ITEM_MODEL, cosmeticModel)
+
+        // Set EQUIPPABLE with NO assetId — Paper renders the ITEM_MODEL on the head automatically.
+        // Preserve the helmet's slot, sound, and other properties.
+        val baseEquippable = originalEquippable
+            ?: Equippable.equippable(EquipmentSlot.HEAD).build()
+        val cosmeticEquippable = Equippable.equippable(baseEquippable.slot())
+            .equipSound(baseEquippable.equipSound())
+            .dispensable(baseEquippable.dispensable())
+            .swappable(baseEquippable.swappable())
+            .damageOnHurt(baseEquippable.damageOnHurt())
+            .build()
+        result.setData(DataComponentTypes.EQUIPPABLE, cosmeticEquippable)
 
         event.result = result
         event.view.repairCost = 0

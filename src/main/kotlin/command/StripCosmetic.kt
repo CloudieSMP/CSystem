@@ -3,7 +3,6 @@ package command
 import chat.Formatting
 import io.papermc.paper.datacomponent.DataComponentTypes
 import item.crate.CrateItem
-import net.kyori.adventure.key.Key
 import org.bukkit.persistence.PersistentDataType.STRING
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.CommandDescription
@@ -12,7 +11,6 @@ import org.incendo.cloud.annotations.processing.CommandContainer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import util.requirePlayer
 import util.Keys.CRATE_ITEM
-import util.Keys.HELMET_ORIGINAL_MODEL
 
 /**
  * /stripcosmetic — Removes a plushie/wearable cosmetic that was applied to a helmet via the anvil.
@@ -53,13 +51,9 @@ class StripCosmetic {
             return
         }
 
-        // Restore or unset the helmet's ITEM_MODEL
-        val originalModelStr = pdc.get(HELMET_ORIGINAL_MODEL, STRING)
-        if (originalModelStr != null) {
-            item.setData(DataComponentTypes.ITEM_MODEL, Key.key(originalModelStr))
-        } else {
-            item.unsetData(DataComponentTypes.ITEM_MODEL)
-        }
+        // Reset ITEM_MODEL and EQUIPPABLE back to vanilla defaults
+        item.resetData(DataComponentTypes.ITEM_MODEL)
+        item.resetData(DataComponentTypes.EQUIPPABLE)
 
         // Build the restored cosmetic first so we know exactly which keys to scrub from the helmet.
         // createItemStack() sets ITEM_MODEL + EQUIPPABLE correctly; copyTo brings back all original
@@ -67,12 +61,10 @@ class StripCosmetic {
         val cosmeticStack = crateItem.createItemStack()
         cosmeticStack.editMeta { m ->
             pdc.copyTo(m.persistentDataContainer, true)
-            m.persistentDataContainer.remove(HELMET_ORIGINAL_MODEL)
         }
 
-        // Remove HELMET_ORIGINAL_MODEL and every key copied from the cosmetic (including CRATE_ITEM)
+        // Remove every key copied from the cosmetic (including CRATE_ITEM)
         item.editMeta { m ->
-            m.persistentDataContainer.remove(HELMET_ORIGINAL_MODEL)
             cosmeticStack.itemMeta?.persistentDataContainer?.keys?.forEach { key ->
                 m.persistentDataContainer.remove(key)
             }
