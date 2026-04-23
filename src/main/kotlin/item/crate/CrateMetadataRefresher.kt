@@ -1,5 +1,6 @@
 package item.crate
 
+import event.block.AnvilListener
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
@@ -11,6 +12,7 @@ object CrateMetadataRefresher {
     }
 
     fun refresh(item: ItemStack?): ItemStack? {
+        if (item != null && AnvilListener.isHelmet(item.type)) return null
         return Crate.refresh(item) ?: CrateItem.refresh(item)
     }
 

@@ -89,10 +89,12 @@ enum class CrateItem(
     FIDEOX("Fideox Plushie", COMMON, "Protects the village, one crop at a time.", "plushies/player/fideox_wide"),
     COMTRA("Comtra Plushie", COMMON, "Stand ready for my arrival, crops.", "plushies/player/comtra_wide"),
 
+    // Legendary player plushies
     SEBIANN_CLASSIC("Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
     CARSON_GRAY("Carson Plushie (Gray)", LEGENDARY, "Some people's kids these days", "plushies/player/carson_gray_wide"),
     ROAST_MAID("Roast Plushie (Maid)", LEGENDARY, "Tehee", "plushies/player/roast_maid_wide"),
     SABINE_CHEER_COOL("Sabine Plushie (Cheer Cool)", LEGENDARY, "Just Cheering you on, but cooler.", "plushies/player/sabine_cheerleader_cool_slim"),
+    COOKIE_ONYX("Cookie Plushie (Onyx)", LEGENDARY, "An onyx Cookie plushie", "plushies/player/cookie/onyx_slim"),
 
     // Character plushies
     N("N Plushie", COMMON, "N from Pokemon", "plushies/character/n_slim"),
@@ -123,6 +125,7 @@ enum class CrateItem(
     HEART_GLASSES("Heart Glasses", COMMON, "Glasses with heart lenses", "wearables/heart_glasses"),
     STRAWHAT("Strawhat", COMMON, "A simple Mugiwara", "wearables/strawhat"),
 
+    // Sabine plushies
     SABINE_BABYSHARK("Sabine Plushie (Baby Shark)", UNCOMMON, "Baby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark", "plushies/player/sabine/sabine_babysharkdoodoodoodoobabysharkdoodoodoodoobabysharkdoodoodoodoo_slim"),
     SABINE_BARMAID("Sabine Plushie (Bar Maid)", COMMON, "Drinking my problems away.", "plushies/player/sabine/sabine_barmaid_slim"),
     SABINE_BASICBITCH("Sabine Plushie (Basic Bitch)", COMMON, "I'm not like the other girls.", "plushies/player/sabine/sabine_basicbitch_slim"),
@@ -163,6 +166,43 @@ enum class CrateItem(
     SABINE_WINKERFISHER("Sabine Plushie (Winker Fisher)", COMMON, "winka winka.", "plushies/player/sabine/sabine_winkerfisher_slim"),
     SABINE_WORKER("Sabine Plushie (Worker)", COMMON, "Working hard or hardly working?", "plushies/player/sabine/sabine_workinghardorhardlyworking_slim"),
     SABINE_ZOOKEEPER("Sabine Plushie (Zoo Keeper)", COMMON, "Gotta catch em all.", "plushies/player/sabine/sabine_zookeeper_slim"),
+
+    // Cookie plushies
+    COOKIE_ALT("Cookie Plushie (Alt)", COMMON, "An alternate Cookie plushie", "plushies/player/cookie/alt_slim"),
+    COOKIE_BLACKCAT("Cookie Plushie (Black Cat)", COMMON, "A black cat Cookie plushie", "plushies/player/cookie/blackcat_slim"),
+    COOKIE_BLACKDRESS("Cookie Plushie (Black Dress)", COMMON, "A black dress Cookie plushie", "plushies/player/cookie/blackdress_slim"),
+    COOKIE_BLUEDRESS("Cookie Plushie (Blue Dress)", COMMON, "A blue dress Cookie plushie", "plushies/player/cookie/bluedress_slim"),
+    COOKIE_CAPYBARA("Cookie Plushie (Capybara)", COMMON, "A capybara Cookie plushie", "plushies/player/cookie/capybara_slim"),
+    COOKIE_CHEERLEADER("Cookie Plushie (Cheerleader)", COMMON, "A cheerleader Cookie plushie", "plushies/player/cookie/cheerleader_slim"),
+    COOKIE_CLOUD("Cookie Plushie (Cloud)", COMMON, "A cloud Cookie plushie", "plushies/player/cookie/cloud_slim"),
+    COOKIE_DONATELLO("Cookie Plushie (Donatello)", COMMON, "A Donatello Cookie plushie", "plushies/player/cookie/donetello_slim"),
+    COOKIE_DUCK("Cookie Plushie (Duck)", COMMON, "A duck Cookie plushie", "plushies/player/cookie/duck_slim"),
+    COOKIE_ELMO("Cookie Plushie (Elmo)", COMMON, "An Elmo Cookie plushie", "plushies/player/cookie/elmo_slim"),
+    COOKIE_FANCY("Cookie Plushie (Fancy)", COMMON, "A fancy Cookie plushie", "plushies/player/cookie/fancy_slim"),
+    COOKIE_FLOWERDRESS("Cookie Plushie (Flower Dress)", COMMON, "A flower dress Cookie plushie", "plushies/player/cookie/flowerdress_slim"),
+    COOKIE_GENGAR("Cookie Plushie (Gengar)", COMMON, "A Gengar Cookie plushie", "plushies/player/cookie/gengar_slim"),
+    COOKIE_GREENFLOWER("Cookie Plushie (Green Flower)", COMMON, "A green flower Cookie plushie", "plushies/player/cookie/greenflower_slim"),
+    COOKIE_KIMONO("Cookie Plushie (Kimono)", COMMON, "A kimono Cookie plushie", "plushies/player/cookie/kimono_slim"),
+    COOKIE_MAIN("Cookie Plushie (Main)", COMMON, "The main Cookie plushie", "plushies/player/cookie/main_slim"),
+    COOKIE_MULTICOLORBEAR("Cookie Plushie (Multicolor Bear)", COMMON, "A multicolor bear Cookie plushie", "plushies/player/cookie/multicolorbear_slim"),
+    COOKIE_MUSHROOM("Cookie Plushie (Mushroom)", COMMON, "A mushroom Cookie plushie", "plushies/player/cookie/mushroom_slim"),
+    COOKIE_PANTS("Cookie Plushie (Pants)", COMMON, "A pants Cookie plushie", "plushies/player/cookie/pants_slim"),
+    COOKIE_PIKACHU("Cookie Plushie (Pikachu)", COMMON, "A Pikachu Cookie plushie", "plushies/player/cookie/pikachu_slim"),
+    COOKIE_PINKFLOWER("Cookie Plushie (Pink Flower)", COMMON, "A pink flower Cookie plushie", "plushies/player/cookie/pinkflower_slim"),
+    COOKIE_RAINBOW("Cookie Plushie (Rainbow)", COMMON, "A rainbow Cookie plushie", "plushies/player/cookie/rainbow_slim"),
+    COOKIE_REDDRESS("Cookie Plushie (Red Dress)", COMMON, "A red dress Cookie plushie", "plushies/player/cookie/reddress_slim"),
+    COOKIE_REDJAPAN("Cookie Plushie (Red Japan)", COMMON, "A red Japan Cookie plushie", "plushies/player/cookie/redjapan_slim"),
+    COOKIE_SHARK("Cookie Plushie (Shark)", COMMON, "A shark Cookie plushie", "plushies/player/cookie/shark_slim"),
+    COOKIE_SNIFFERSKIN("Cookie Plushie (Sniffer Skin)", COMMON, "A sniffer skin Cookie plushie", "plushies/player/cookie/snifferskin"),
+    COOKIE_STAR("Cookie Plushie (Star)", COMMON, "A star Cookie plushie", "plushies/player/cookie/star_slim"),
+    COOKIE_STEAMPUNK("Cookie Plushie (Steampunk)", COMMON, "A steampunk Cookie plushie", "plushies/player/cookie/steampunk_slim"),
+    COOKIE_STICKMAN("Cookie Plushie (Stickman)", COMMON, "A stickman Cookie plushie", "plushies/player/cookie/stickman_slim"),
+    COOKIE_SUIT("Cookie Plushie (Suit)", COMMON, "A suit Cookie plushie", "plushies/player/cookie/suit_slim"),
+    COOKIE_SUNFLOWER("Cookie Plushie (Sunflower)", COMMON, "A sunflower Cookie plushie", "plushies/player/cookie/sunflower_slim"),
+    COOKIE_TEAMROCKET("Cookie Plushie (Team Rocket)", COMMON, "Blast off!", "plushies/player/cookie/teamrocket_slim"),
+    COOKIE_THECOLLECTOR("Cookie Plushie (The Collector)", COMMON, "The owl house", "plushies/player/cookie/thecollector_slim"),
+    COOKIE_VAMPIRE("Cookie Plushie (Vampire)", COMMON, "A vampire Cookie plushie", "plushies/player/cookie/vampire_slim"),
+    COOKIE_WINTER("Cookie Plushie (Winter)", COMMON, "A winter Cookie plushie", "plushies/player/cookie/winter_slim"),
     ;
 
     val storedId: String

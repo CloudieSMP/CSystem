@@ -72,6 +72,14 @@ enum class CrateType(
         "crates/default",
         Material.PINK_WOOL,
         CrateLootPool.SABINE_LOOTPOOL,
+    ),
+    COOKIE(
+        "Cookie Crate",
+        "A crate containing Cookie plushies",
+        RARE,
+        "crates/default",
+        Material.LIGHT_BLUE_WOOL,
+        CrateLootPool.COOKIE_LOOTPOOL,
     );
 
     val displayName: Component
