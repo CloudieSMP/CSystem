@@ -1,8 +1,8 @@
 package event.player
 
 import chat.Formatting
-import command.LiveUtil
-import command.NoSleepHelper
+import library.LiveHelper
+import library.NoSleepHelper
 import library.Translation
 
 import org.bukkit.event.EventHandler
@@ -18,7 +18,7 @@ class PlayerQuit: Listener {
             e.quitMessage(Formatting.allTags.deserialize(Translation.PlayerMessages.QUIT.replace("%player%", e.player.name)))
 
         }
-        LiveUtil.onPlayerQuit(e.player)
+        LiveHelper.onPlayerQuit(e.player)
         NoSleepHelper.cleanup(e.player)
     }
 }

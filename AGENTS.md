@@ -21,9 +21,9 @@ CSystem.kt             — JavaPlugin entry point; wires events, Cloud command m
 Config.kt              — Spongepowered Configurate data class (mapped from src/main/resources/config.yml)
 command/               — One class per command, all discovered via Cloud's annotationParser.parseContainers()
 event/                 — Bukkit event listeners (player/, block/, entity/)
-library/               — Stateful singletons: HomeStorage, MailStorage, CrateRollStatsStorage, CardPullCounterStorage, VanishHelper
-item/                  — Enums for rarities/types; crate/, booster/, binder/ sub-packages
-util/                  — Extensions, Keys registry, resource pack/webhook helpers, UI windows
+library/               — Stateful singletons: HomeStorage, MailStorage, CrateRollStatsStorage, CardPullCounterStorage, VanishHelper, AfkHelper, LiveHelper, NoSleepHelper, HelpHelper, PlayerListNameHelper
+item/                  — Enums for rarities/types; crate/, booster/, binder/, treasurebag/ sub-packages
+util/                  — Extensions, Keys registry, resource pack/webhook helpers, UI windows, Sounds
 chat/                  — MiniMessage formatting, notifications, ChatUtility broadcasts
 ```
 
@@ -34,6 +34,7 @@ chat/                  — MiniMessage formatting, notifications, ChatUtility br
 3. Use `css.requirePlayer()` (extension in `util/CommandSourceStackExtensions.kt`) to guard player-only commands.
 4. No registration needed — `annotationParser.parseContainers()` in `CSystem.kt` auto-discovers all `@CommandContainer` classes via kapt.
 5. Declare the permission node in `src/main/resources/paper-plugin.yml` and add it to the appropriate group.
+6. Add the command's help entry to `library/HelpHelper.kt` (either `commands` map for player commands or `staffCommands` map for staff commands).
 
 Example skeleton:
 ```kotlin
@@ -59,7 +60,7 @@ Custom MiniMessage tags available:
 |-----|---------|
 | `<cloudiecolor>` | Pink brand colour (#C45889) |
 | `<notifcolor>` | Notification red (#DB0060) |
-| `<prefix:NAME>` | Unicode glyph prefix (e.g. `admin`, `dev`, `live`, `warning`) |
+| `<prefix:NAME>` | Unicode glyph prefix (e.g. `admin`, `dev`, `live`, `warning`, `nosleep`) |
 | `<skull:PLAYERNAME>` | Player skull glyph |
 
 Hardcoded join/quit message templates live in `library/Translation.kt`.
@@ -80,12 +81,34 @@ Hardcoded join/quit message templates live in `library/Translation.kt`.
 - Custom item models use `DataComponentTypes.ITEM_MODEL` with keys like `NamespacedKey("cloudie", "crates/blue")` — the path maps to the server resource pack.
 - `ItemRarity` holds display color + Unicode glyph; `CardRarity` extends this with weighted drop probabilities and broadcast behavior.
 - Crate items are `Material.PAPER` with food/consumable data components to make them right-click-activatable without placing.
+- **Sub-rarities** (`item/SubRarity.kt`): Cards can roll `SHINY`, `SHADOW`, or `OBFUSCATED` variants (each with a Unicode glyph and a `modelDataOffset` applied on top of the base model). Use `SubRarity.getRandomSubRarity()`. Debug weights can be overridden via `SubRarity.setDebugWeights(...)`.
+- **Card Registry** (`item/booster/CardRegistry.kt`): The single source of truth for all trading cards. Add or modify cards here — `CardEntry(type, rarity, canHaveSubRarity, allowedBoosters)`. MOB card IDs must match Bukkit `EntityType` keys. After editing the registry, run `/pack export cardmodels` to regenerate resource pack item definitions.
+- **Treasure bags** (`item/treasurebag/`): Bundle-based items (`BundleMeta`) created by `TreasureBag.create(type)`. Loot is defined in `BagLootPool` with per-item percentage roll chances and amount ranges.
+- **Vending machines**: Entities tagged `vending_machine` (scoreboard tag) are handled by `event/entity/VendingMachineInteract.kt`. Interacting while holding a specific material consumes it and spawns a booster pack or crate as a dropped item.
+
+## Sounds
+
+All gameplay sounds are centralized in `util/Sounds.kt` as `Sound` constants (Adventure API). Use these instead of inline `sound(...)` calls:
+
+```kotlin
+player.playSound(Sounds.PLING)
+player.playSound(Sounds.SHINY_CATCH)
+```
+
+Notable entries: `EPIC_CATCH`, `LEGENDARY_CATCH`, `SHINY_CATCH`, `SHADOW_CATCH`, `OBFUSCATED_CATCH`, `VENDING_MACHINE`, `ERROR_DIDGERIDOO`, `GAMBLING_WHEEL_TICK/STOP`.
 
 ## UI Windows
 
 Inventory GUIs use the **Noxcrew Interfaces** library (`util/ui/`) with `CollectionBrowserWindow` as a shared selector/preview engine (used by `CrateBrowserWindow` and `BoosterPackBrowserWindow`) plus `BinderWindow`.
 - Listener-backed windows are `GamblingWindow` and `TrashWindow` (`object : Listener`, registered at startup).
 - Interface windows keep reactive state in closures/triggers (see `DelegateTrigger` usage in `CollectionBrowserWindow`/`BinderWindow`), while `GamblingWindow` tracks sessions in-memory by player UUID.
+
+## AFK & Tab List
+
+- `library/AfkHelper.kt`: Tracks AFK state per UUID. Call `AfkHelper.recordActivity(player)` on any meaningful input. Idle timeout is configured in `config.afk.idleTimeoutSeconds`; the checker runs every 30 seconds via `startIdleChecker()` (called at startup).
+- `library/LiveHelper.kt`: Tracks streamer/live state per UUID. Call `LiveHelper.startLive(player)` / `LiveHelper.stopLive(player)`. Automatically displays a live glyph next to the player's display name and updates the tab list. Players retain their live status for 10 minutes after disconnecting.
+- `library/NoSleepHelper.kt`: Tracks which players have the NoSleep tag enabled. Call `NoSleepHelper.setNoSleep(player, bool)`. While any player has NoSleep active, bed interactions are blocked for others.
+- `library/PlayerListNameHelper.kt`: Updates the player's tab-list name whenever AFK/Live/NoSleep state changes. AFK → gray name, Live → pink name + `<prefix:live>`, NoSleep → `<prefix:nosleep>` prefix. Call `PlayerListNameHelper.apply(player)` after any state change.
 
 ## Config
 
@@ -98,6 +121,7 @@ Config is loaded via Spongepowered Configurate from `src/main/resources/config.y
 | Discord reports webhook | `util/DiscordWebhook.kt` — Ktor CIO, URL in `config.discord.reportWebhookUrl` |
 | Resource pack CDN | `util/ResourcePacker.kt` — downloads & SHA-1 hashes packs on startup; reapplied on join |
 | FastBoard (scoreboard) | `fr.mrmicky:fastboard` — relocated |
+| Resource pack card model export | `util/MobCardModelExporter.kt` — generates `assets/minecraft/items/paper.json` dispatch entries and texture placeholder PNGs; triggered via `/pack export cardmodels` |
 
 ## Top-level Convenience Accessors
 

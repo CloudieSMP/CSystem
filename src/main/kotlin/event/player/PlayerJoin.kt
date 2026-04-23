@@ -1,7 +1,7 @@
 package event.player
 
 import chat.Formatting
-import command.LiveUtil
+import library.LiveHelper
 import command.ShowStat
 import item.crate.CrateMetadataRefresher
 import item.crate.CrateRecipes
@@ -46,7 +46,7 @@ class PlayerJoin : Listener {
             e.joinMessage(Formatting.allTags.deserialize(Translation.PlayerMessages.JOIN.replace("%player%", e.player.name)))
         }
 
-        LiveUtil.onPlayerJoin(e.player)
+        LiveHelper.onPlayerJoin(e.player)
         VanishHelper.syncVisibilityForJoin(e.player)
 
         // Keep the alt-account cache up to date for /showstat filtering.

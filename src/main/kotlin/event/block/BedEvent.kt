@@ -1,7 +1,7 @@
 package event.block
 
 import chat.Formatting.allTags
-import command.NoSleepHelper
+import library.NoSleepHelper
 import org.bukkit.Bukkit
 import org.bukkit.event.player.PlayerInteractEvent
 import plugin

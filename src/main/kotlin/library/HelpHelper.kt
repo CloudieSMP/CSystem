@@ -18,6 +18,16 @@ object HelpHelper {
             listOf("Report anything to Staff like bugs, issues, feedback or players."),
             "Report anything to Staff."
         ),
+        "afk" to CommandHelp(
+            listOf("/afk"),
+            listOf("Toggle your AFK status."),
+            "Toggle AFK status."
+        ),
+        "nosleep" to CommandHelp(
+            listOf("/nosleep"),
+            listOf("Toggle the NoSleep tag on your name in the tab list. While enabled, other players cannot skip the night by sleeping."),
+            "Toggle the NoSleep tab tag."
+        ),
         "book" to CommandHelp(
             listOf("/book author <name>", "/book title <name>"),
             listOf("Set the author of the book you're holding in your main hand.", "Set the title of the book you're holding in your main hand."),
@@ -31,13 +41,18 @@ object HelpHelper {
             listOf("/boosters"),
             listOf("View the available booster packs and preview card odds.")
         ),
+        "cratestats" to CommandHelp(
+            listOf("/cratestats", "/cratestats me <crate>", "/cratestats global"),
+            listOf("Show your overall crate roll stats.", "Show your collectible stats for a specific crate.", "Show global crate roll stats across all players."),
+            "View crate roll statistics."
+        ),
         "echo" to CommandHelp(
             listOf("/echo <message>"),
             listOf("Echo a message back to you.")
         ),
         "flex" to CommandHelp(
             listOf("/flex"),
-            listOf("Flex the item in your hand!")
+            listOf("Flex the item in your hand to the whole server!")
         ),
         "hat" to CommandHelp(
             listOf("/hat"),
@@ -65,7 +80,7 @@ object HelpHelper {
         ),
         "renameitem" to CommandHelp(
             listOf("/renameitem <name>"),
-            listOf("Rename the item in your main hand to the given name.")
+            listOf("Rename the item in your main hand to the given name. Costs 1 lapis lazuli.")
         ),
         "resetitemname" to CommandHelp(
             listOf("/resetitemname"),
@@ -74,16 +89,21 @@ object HelpHelper {
         ),
         "spawn" to CommandHelp(
             listOf("/spawn"),
-            listOf("Tp to spawn.")
+            listOf("Teleport to the server spawn.")
         ),
         "streamermode" to CommandHelp(
             listOf("/streamermode"),
-            listOf("Toggle streamer mode."),
+            listOf("Toggle streamer mode. Adds a live indicator to your name and hides your coordinates from others."),
             "Toggle streamer mode."
         ),
+        "stripcosmetic" to CommandHelp(
+            listOf("/stripcosmetic"),
+            listOf("Remove a cosmetic overlay from a helmet and return the cosmetic item to your inventory."),
+            "Remove a cosmetic from a helmet."
+        ),
         "tpa" to CommandHelp(
-            listOf("/tpa <player>", "/tpahere <player>", "/tpaccept", "/tpdeny"),
-            listOf("Send a TPA Request to a player.", "Send a TPA Here Request to a player.", "Accept the pending TPA Request.", "Deny the pending TPA Request."),
+            listOf("/tpa <player>", "/tpahere <player>", "/tpaccept [player]", "/tpdeny [player]"),
+            listOf("Send a TPA request to a player.", "Request another player to teleport to you.", "Accept a pending TPA request.", "Deny a pending TPA request."),
             "TPA to players."
         )
     )
@@ -104,8 +124,8 @@ object HelpHelper {
             "Send a message to developer chat."
         ),
         "announce" to CommandHelp(
-            listOf("/announce <text>"),
-            listOf("Broadcast a server-wide announcement."),
+            listOf("/announce <text>", "/announcesmall <text>"),
+            listOf("Broadcast a server-wide announcement in chat.", "Broadcast a short announcement in the action bar."),
             "Broadcast a server-wide announcement."
         ),
         "announcerestart" to CommandHelp(
@@ -122,11 +142,6 @@ object HelpHelper {
             listOf("/vanish"),
             listOf("Toggle vanish mode."),
             "Toggle vanish mode."
-        ),
-        "debug" to CommandHelp(
-            listOf("/debug crate <type>", "/debug crate item <type>", "/debug booster <type>", "/debug pull <type>", "/debug binder", "/debug card <booster> <mob>"),
-            listOf("Give a crate for testing.", "Give the crate item form for testing.", "Give a booster pack for testing.", "Simulate card pulls for testing.", "Give a binder for testing.", "Give a specific card for testing."),
-            "Run debug item/testing commands."
         ),
         "pack" to CommandHelp(
             listOf("/pack status", "/pack refresh [player]", "/pack push [player]", "/pack pop [player]", "/pack export cardmodels", "/pack export cardmodels noplacers"),

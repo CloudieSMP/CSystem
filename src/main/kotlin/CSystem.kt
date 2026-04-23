@@ -7,8 +7,8 @@ import event.block.CauldronListener
 import event.block.RainCropGrowthListener
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import command.LiveUtil
 import command.ShowStat
+import library.LiveHelper
 import item.crate.CrateRecipes
 import library.CardPullCounterStorage
 import library.CrateRollStatsStorage
@@ -69,7 +69,7 @@ class CSystem : JavaPlugin() {
 
     override fun onDisable() {
         this.logger.info("Stopping the Cloudie System plugin!")
-        LiveUtil.shutdown()
+        LiveHelper.shutdown()
         HomeStorage.flushAllSync()
         MailStorage.flushAllSync()
         CardPullCounterStorage.flushAllSync()

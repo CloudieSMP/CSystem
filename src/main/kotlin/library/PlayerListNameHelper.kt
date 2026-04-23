@@ -1,8 +1,8 @@
 package library
 
 import chat.Formatting
-import command.LiveUtil
-import command.NoSleepHelper
+import library.LiveHelper
+import library.NoSleepHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -13,7 +13,7 @@ object PlayerListNameHelper {
 
     fun apply(player: Player) {
         val isAfk = AfkHelper.isAfk(player)
-        val isLive = LiveUtil.isLive(player)
+        val isLive = LiveHelper.isLive(player)
         val isDontSleep = NoSleepHelper.isDontSleep(player)
 
         val nameColor = when {

@@ -26,12 +26,12 @@ import util.setIsDebug
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Debug {
-    @Command("debug crate <type> [isDebug]")
+    @Command("debug give crate <type> <isDebug>")
     @Permission("cloudie.cmd.debug")
-    fun debugCrate(css: CommandSourceStack, @Argument("type") type: CrateType, @Argument("isDebug") isDebug: Boolean? = true) {
+    fun debugCrate(css: CommandSourceStack, @Argument("type") type: CrateType, @Argument("isDebug") isDebug: Boolean) {
         val player = css.requirePlayer() ?: return
 
-        if (isDebug == true) {
+        if (isDebug) {
             player.inventory.addItem(Crate.create(type, isDebug = true))
         } else {
             player.inventory.addItem(Crate.create(type))
@@ -39,7 +39,7 @@ class Debug {
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a crate!"))
     }
 
-    @Command("debug crate item <type>")
+    @Command("debug give crate-item <type>")
     @Permission("cloudie.cmd.debug")
     fun debugCrateItem(css: CommandSourceStack, @Argument("type") crateItem: CrateItem) {
         val player = css.requirePlayer() ?: return
@@ -53,7 +53,7 @@ class Debug {
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a crate item!"))
     }
 
-    @Command("debug booster <type>")
+    @Command("debug give booster <type>")
     @Permission("cloudie.cmd.debug")
     fun debugBooster(css: CommandSourceStack, @Argument("type") type: BoosterType) {
         val player = css.requirePlayer() ?: return
@@ -126,7 +126,7 @@ class Debug {
         player.sendMessage(allTags.deserialize("<cloudiecolor>Cleared debug subrarity weights. Normal rates restored."))
     }
 
-    @Command("debug binder")
+    @Command("debug give binder")
     @Permission("cloudie.cmd.debug")
     fun debugBinder(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
@@ -134,7 +134,7 @@ class Debug {
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a Card Binder!"))
     }
 
-    @Command("debug card <booster> <mob>")
+    @Command("debug give card <booster> <mob>")
     @Permission("cloudie.cmd.debug")
     fun debugCard(
         css: CommandSourceStack,
@@ -165,13 +165,14 @@ class Debug {
         )
     }
 
-    @Command("debug treasure_bag <type>")
+    @Command("debug give treasure_bag <type>")
     @Permission("cloudie.cmd.debug")
     fun debugTreasureBag(css: CommandSourceStack, @Argument("type") type: BagType) {
         val player = css.requirePlayer() ?: return
         player.inventory.addItem(TreasureBag.create(type, useDebugSubRarityOverride = true))
     }
-    @Command("debug treasure_bag item <loot>")
+
+    @Command("debug give treasure_bag-item <loot>")
     @Permission("cloudie.cmd.debug")
     fun debugTreasureBagItem(css: CommandSourceStack, @Argument("loot") loot: BagItem) {
         val player = css.requirePlayer() ?: return

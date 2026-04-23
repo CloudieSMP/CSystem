@@ -3,7 +3,7 @@ package chat
 import plugin
 import chat.Formatting.allTags
 import chat.Formatting.restrictedTags
-import command.LiveUtil
+import library.LiveHelper
 import util.Sounds
 
 import io.papermc.paper.chat.ChatRenderer
@@ -84,7 +84,7 @@ object GlobalRenderer : ChatRenderer {
         val plainMessage = PlainTextComponentSerializer.plainText().serialize(message)
         return playerHead
             .append(Component.text(" "))
-            .append(allTags.deserialize("${if (LiveUtil.isLive(source)) "<prefix:live> " else ""}<cloudiecolor>${source.name}<reset>: ")
+            .append(allTags.deserialize("${if (LiveHelper.isLive(source)) "<prefix:live> " else ""}<cloudiecolor>${source.name}<reset>: ")
                 .append(if(source.hasPermission("cloudie.group.admin")) allTags.deserialize(plainMessage) else restrictedTags.deserialize(plainMessage)))
     }
 }
