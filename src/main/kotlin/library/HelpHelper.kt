@@ -174,8 +174,8 @@ object HelpHelper {
             "Open a trash inventory."
         ),
         "debug" to CommandHelp(
-            listOf("/debug list allplayers"),
-            listOf("List every player that has ever joined the server."),
+            listOf("/debug"),
+            listOf("Please talk to Seb before using this."),
             "Debug utilities."
         )
     )
