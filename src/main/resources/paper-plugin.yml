@@ -94,9 +94,11 @@ permissions:
       cloudie.cmd.showstat: true
       cloudie.cmd.afk: true
       cloudie.cmd.dontsleep: true
+      cloudie.cmd.nosleep: true
       cloudie.cmd.cratestats: true
       cloudie.removecmds: true
       cloudie.cmd.stripcosmetic: true
+      cloudie.cmd.ping: true
 
   cloudie.cmd.hat:
     description: Allows the player to use the hat command.
@@ -147,3 +149,7 @@ permissions:
     description: Removes specific commands from tabcomplete like worldguard and worldedit.
   cloudie.cmd.stripcosmetic:
     description: Allows the player to remove a cosmetic from a cosmetified helmet.
+  cloudie.cmd.nosleep:
+    description: Allows the player to toggle the NoSleep tab tag.
+  cloudie.cmd.ping:
+    description: Allows the player to check their ping.
