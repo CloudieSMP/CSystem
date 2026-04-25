@@ -21,6 +21,7 @@ import item.treasurebag.TreasureBag
 import org.bukkit.entity.EntityType
 import org.incendo.cloud.annotations.Argument
 import java.util.UUID
+import plugin
 import util.requirePlayer
 import util.setIsDebug
 
@@ -203,13 +204,21 @@ class Debug {
     @Command("debug list allplayers")
     @Permission("cloudie.cmd.debug")
     fun debugListAllPlayers(css: CommandSourceStack) {
-        val players = Bukkit.getOfflinePlayers()
         val sender = css.sender
-        sender.sendMessage(allTags.deserialize("<cloudiecolor>Players that have ever joined (<white>${players.size}<cloudiecolor>):"))
-        players.forEach { offlinePlayer ->
-            val name = offlinePlayer.name ?: offlinePlayer.uniqueId.toString()
-            val status = if (offlinePlayer.isOnline) "<green>online</green>" else "<gray>offline</gray>"
-            sender.sendMessage(allTags.deserialize("<gray>- <white>$name <gray>[$status<gray>]"))
-        }
+        sender.sendMessage(allTags.deserialize("<gray>Loading all player records…"))
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+            val players = Bukkit.getOfflinePlayers()
+            val lines = buildString {
+                appendLine("<cloudiecolor>Players that have ever joined (<white>${players.size}<cloudiecolor>):")
+                players.forEach { offlinePlayer ->
+                    val name = offlinePlayer.name ?: offlinePlayer.uniqueId.toString()
+                    val status = if (offlinePlayer.isOnline) "<green>online</green>" else "<gray>offline</gray>"
+                    appendLine("<gray>- <white>$name <gray>[$status<gray>]")
+                }
+            }.trimEnd()
+            Bukkit.getScheduler().runTask(plugin, Runnable {
+                sender.sendMessage(allTags.deserialize(lines))
+            })
+        })
     }
 }
