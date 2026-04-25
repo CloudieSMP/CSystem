@@ -8,6 +8,7 @@ import item.booster.Cards
 import item.booster.CardCatalog
 import item.binder.BinderItem
 import item.SubRarity
+import org.bukkit.Bukkit
 import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
@@ -197,5 +198,18 @@ class Debug {
                 "<click:copy_to_clipboard:'$uuidText'><hover:show_text:'<gray>Click to copy UUID</gray>'><cloudiecolor>$uuidText</cloudiecolor></hover></click>"
             )
         )
+    }
+
+    @Command("debug list allplayers")
+    @Permission("cloudie.cmd.debug")
+    fun debugListAllPlayers(css: CommandSourceStack) {
+        val players = Bukkit.getOfflinePlayers()
+        val sender = css.sender
+        sender.sendMessage(allTags.deserialize("<cloudiecolor>Players that have ever joined (<white>${players.size}<cloudiecolor>):"))
+        players.forEach { offlinePlayer ->
+            val name = offlinePlayer.name ?: offlinePlayer.uniqueId.toString()
+            val status = if (offlinePlayer.isOnline) "<green>online</green>" else "<gray>offline</gray>"
+            sender.sendMessage(allTags.deserialize("<gray>- <white>$name <gray>[$status<gray>]"))
+        }
     }
 }

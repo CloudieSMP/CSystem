@@ -105,6 +105,11 @@ object HelpHelper {
             listOf("/tpa <player>", "/tpahere <player>", "/tpaccept [player]", "/tpdeny [player]"),
             listOf("Send a TPA request to a player.", "Request another player to teleport to you.", "Accept a pending TPA request.", "Deny a pending TPA request."),
             "TPA to players."
+        ),
+        "ping" to CommandHelp(
+            listOf("/ping"),
+            listOf("Show your current ping in milliseconds."),
+            "Show your current ping."
         )
     )
 
@@ -167,6 +172,11 @@ object HelpHelper {
             listOf("/trash"),
             listOf("Open a trash inventory — items left inside are deleted on close."),
             "Open a trash inventory."
+        ),
+        "debug" to CommandHelp(
+            listOf("/debug list allplayers"),
+            listOf("List every player that has ever joined the server."),
+            "Debug utilities."
         )
     )
 
