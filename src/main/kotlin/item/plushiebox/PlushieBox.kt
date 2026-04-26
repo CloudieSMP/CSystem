@@ -43,6 +43,7 @@ object PlushieBox {
                     PersistentDataType.LIST.listTypeFrom(PersistentDataType.BYTE_ARRAY),
                     emptyList(),
                 )
+                meta.setMaxStackSize(1)
             }
         }
     }

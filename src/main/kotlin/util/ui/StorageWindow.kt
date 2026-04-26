@@ -196,7 +196,7 @@ object StorageWindow {
             /** Content grid (rows 0–4, cols 0–8) + nav at [5,2/4/6] */
             withTransform(itemsTrigger, filterTrigger, missingTrigger, pageTrigger) { pane, _ ->
                 val display = filteredDisplay()
-                val maxPage = ((display.size - 1) / PAGE_SIZE).coerceAtLeast(0)
+                val maxPage = ((display.size) / PAGE_SIZE).coerceAtLeast(0)
                 if (pageRef[0] > maxPage) pageRef[0] = maxPage
                 val currentPage = pageRef[0]
                 val pageSlice = display.drop(currentPage * PAGE_SIZE).take(PAGE_SIZE)
