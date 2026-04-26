@@ -36,6 +36,11 @@ class PlayerItemConsume : Listener {
 
         val crateType = event.item.persistentDataContainer.get(CRATE_TYPE, PersistentDataType.STRING)
         if (crateType != null) {
+            if (GamblingWindow.isPlayerGambling(event.player)) {
+                event.player.sendMessage(allTags.deserialize("<red>You are already opening a crate!"))
+                event.isCancelled = true
+                return
+            }
             val type = CrateType.fromStoredId(crateType)
             if (type == null) {
                 logger.warning("Unknown crate type '$crateType' on consumed item from ${event.player.name}")

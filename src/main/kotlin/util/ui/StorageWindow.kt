@@ -321,4 +321,3 @@ object StorageWindow {
         InterfacesConstants.SCOPE.launch { iface.open(player) }
     }
 }
-

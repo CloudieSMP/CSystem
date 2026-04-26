@@ -82,4 +82,3 @@ class PlushieBoxInteract : Listener {
         openBoxes.remove(event.player.uniqueId)
     }
 }
-

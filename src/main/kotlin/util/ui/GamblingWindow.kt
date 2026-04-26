@@ -300,4 +300,9 @@ object GamblingWindow : Listener {
         }
         session.rewardGranted = true
     }
+
+    fun isPlayerGambling(player: Player): Boolean {
+        val session = sessions[player.uniqueId] ?: return false
+        return session.isSpinning
+    }
 }
