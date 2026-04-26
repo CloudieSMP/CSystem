@@ -54,6 +54,7 @@ class CSystem : JavaPlugin() {
         CardPullCounterStorage.loadSync()
         CrateRollStatsStorage.loadSync()
         ShowStat.loadSync()
+        registerRecipes()
         if (ResourcePacker.refreshFromUrl()) {
             logger.info("Resource pack cache populated on startup.")
         } else {
