@@ -16,7 +16,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
-import library.VanishHelper
 import org.bukkit.Bukkit
 import util.ResourcePacker
 
@@ -49,7 +48,6 @@ class PlayerJoin : Listener {
         }
 
         LiveHelper.onPlayerJoin(e.player)
-        VanishHelper.syncVisibilityForJoin(e.player)
 
         // Keep the alt-account cache up to date for /showstat filtering.
         if (e.player.hasPermission("cloudie.group.alt")) {
@@ -71,5 +69,4 @@ class PlayerJoin : Listener {
         audience.sendPlayerListHeader(mm.deserialize("<newline><newline><newline><newline><newline>     \uE000    <newline>"))
         audience.sendPlayerListFooter(mm.deserialize("<newline><gradient:#DF6F69:#C45889:#823BC6>  Cloudie SMP<white>: Season 10  <newline>"))
     }
-
 }

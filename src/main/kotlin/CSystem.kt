@@ -25,7 +25,6 @@ import org.spongepowered.configurate.kotlin.objectMapperFactory
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import util.ui.GamblingWindow
 import util.ui.TrashWindow
-import library.VanishHelper
 import library.AfkHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -74,7 +73,6 @@ class CSystem : JavaPlugin() {
         CardPullCounterStorage.flushAllSync()
         CrateRollStatsStorage.flushAllSync()
         ShowStat.saveSync()
-        VanishHelper.resetAllVisibility()
         AfkHelper.resetAll()
         VisualChat.clearChatEntities()
     }
