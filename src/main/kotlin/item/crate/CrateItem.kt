@@ -88,6 +88,7 @@ enum class CrateItem(
     TURTLE("Turtle Plushie", COMMON, "A cute Turtle plushie", "plushies/player/turtle_wide"),
     FIDEOX("Fideox Plushie", COMMON, "Protects the village, one crop at a time.", "plushies/player/fideox_wide"),
     COMTRA("Comtra Plushie", COMMON, "Stand ready for my arrival, crops.", "plushies/player/comtra_wide"),
+    JMO("Jmo Plushie", COMMON, "A cute Jmo plushie", "plushies/player/jmo_slim"),
 
     // Legendary player plushies
     SEBIANN_CLASSIC("Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
