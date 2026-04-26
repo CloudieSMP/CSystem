@@ -13,34 +13,24 @@ import org.bukkit.entity.Player
 import java.util.Locale
 
 object BoosterPackBrowserWindow {
-    private val fillerPane = ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
     private val selectorTitle = allTags.deserialize("<gradient:#DF6F69:#823BC6><bold>Booster Packs</bold></gradient>")
-    private val backButton = ItemStack(Material.ARROW).apply {
-        editMeta { meta ->
-            meta.displayName(allTags.deserialize("<yellow><bold>Back to Boosters"))
-        }
-    }
 
     fun openSelector(player: Player) {
         CollectionBrowserWindow.openSelector(
             player = player,
             title = selectorTitle,
             entries = BoosterType.entries,
-            fillerPane = fillerPane,
             itemForEntry = { boosterType -> BoosterPack.create(boosterType).clone() },
             onEntryClick = { clicker, boosterType -> openPreview(clicker, boosterType) },
         )
     }
 
     private fun openPreview(player: Player, boosterType: BoosterType) {
-        val previewEntries = Cards.previewEntries(boosterType)
-
         CollectionBrowserWindow.openPreview(
             player = player,
             title = boosterType.displayName,
-            entries = previewEntries,
-            fillerPane = fillerPane,
-            backButton = backButton,
+            entries = Cards.previewEntries(boosterType),
+            backButtonName = "← Back to Boosters",
             itemForEntry = { entry -> createPreviewCard(entry) },
             onBackClick = { clicker -> openSelector(clicker) },
         )
@@ -54,16 +44,12 @@ object BoosterPackBrowserWindow {
 
         return ItemStack(Material.PAPER).apply {
             editMeta { meta ->
-                meta.displayName(
-                    allTags.deserialize("<!i><${rarity.colorHex}>${card.displayName}")
-                )
-                meta.lore(
-                    listOf(
-                        allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CARD.typeGlyph} <gray>${entry.rarity.name.lowercase().replaceFirstChar { it.uppercase() }}"),
-                        allTags.deserialize("<!i><gray>Card chance: <white>$cardChanceText%"),
-                        allTags.deserialize("<!i><gray>Rarity bucket chance: <white>$rarityChanceText%"),
-                    )
-                )
+                meta.displayName(allTags.deserialize("<!i><${rarity.colorHex}>${card.displayName}"))
+                meta.lore(listOf(
+                    allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.CARD.typeGlyph} <gray>${entry.rarity.name.lowercase().replaceFirstChar { it.uppercase() }}"),
+                    allTags.deserialize("<!i><gray>Card chance: <white>$cardChanceText%"),
+                    allTags.deserialize("<!i><gray>Rarity bucket chance: <white>$rarityChanceText%"),
+                ))
                 @Suppress("DEPRECATION")
                 meta.setCustomModelData(card.modelDataFor(SubRarity.NONE))
             }

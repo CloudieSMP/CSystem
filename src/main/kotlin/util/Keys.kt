@@ -30,4 +30,9 @@ object Keys {
      * Binder related
      */
     val BINDER_CARDS = NamespacedKey(plugin, "binder.cards")
+
+    /**
+     * Plushie Box related
+     */
+    val PLUSHIE_BOX_ITEMS = NamespacedKey(plugin, "plushiebox.items")
 }

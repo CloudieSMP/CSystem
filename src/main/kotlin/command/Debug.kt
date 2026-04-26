@@ -7,6 +7,7 @@ import item.booster.BoosterType
 import item.booster.Cards
 import item.booster.CardCatalog
 import item.binder.BinderItem
+import item.plushiebox.PlushieBox
 import item.SubRarity
 import org.bukkit.Bukkit
 import org.incendo.cloud.annotations.Command
@@ -20,6 +21,7 @@ import item.treasurebag.BagType
 import item.treasurebag.TreasureBag
 import org.bukkit.entity.EntityType
 import org.incendo.cloud.annotations.Argument
+import org.incendo.cloud.annotations.Default
 import java.util.UUID
 import plugin
 import util.requirePlayer
@@ -28,15 +30,15 @@ import util.setIsDebug
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Debug {
-    @Command("debug give crate <type> <isDebug>")
+    @Command("debug give crate <type> <isDebug> <amount>")
     @Permission("cloudie.cmd.debug")
-    fun debugCrate(css: CommandSourceStack, @Argument("type") type: CrateType, @Argument("isDebug") isDebug: Boolean) {
+    fun debugCrate(css: CommandSourceStack, type: CrateType, isDebug: Boolean, amount: Int) {
         val player = css.requirePlayer() ?: return
 
         if (isDebug) {
-            player.inventory.addItem(Crate.create(type, isDebug = true))
+            player.inventory.addItem(Crate.create(type, amount, true))
         } else {
-            player.inventory.addItem(Crate.create(type))
+            player.inventory.addItem(Crate.create(type, amount))
         }
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a crate!"))
     }
@@ -134,6 +136,14 @@ class Debug {
         val player = css.requirePlayer() ?: return
         player.inventory.addItem(BinderItem.create())
         player.sendMessage(allTags.deserialize("<cloudiecolor>Given a Card Binder!"))
+    }
+
+    @Command("debug give plushiebox")
+    @Permission("cloudie.cmd.debug")
+    fun debugPlushieBox(css: CommandSourceStack) {
+        val player = css.requirePlayer() ?: return
+        player.inventory.addItem(PlushieBox.create())
+        player.sendMessage(allTags.deserialize("<cloudiecolor>Given a Plushie Box!"))
     }
 
     @Command("debug give card <booster> <mob>")

@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.ShowStat
 import library.LiveHelper
 import item.crate.CrateRecipes
+import item.plushiebox.PlushieBox
 import library.CardPullCounterStorage
 import library.CrateRollStatsStorage
 import library.HomeStorage
@@ -59,8 +60,6 @@ class CSystem : JavaPlugin() {
         } else {
             logger.warning("Resource pack cache could not be populated on startup. Use /pack refresh after fixing the resource pack URLs.")
         }
-        CrateRecipes.registerAll()
-        server.onlinePlayers.forEach(CrateRecipes::discoverAll)
         setupEvents()
         registerCommands()
         AfkHelper.startIdleChecker()
@@ -138,6 +137,12 @@ class CSystem : JavaPlugin() {
         }
     }
 
+    private fun registerRecipes() {
+        CrateRecipes.registerAll()
+        PlushieBox.registerRecipe()
+        server.onlinePlayers.forEach(CrateRecipes::discoverAll)
+    }
+
     private fun setupEvents() {
         server.pluginManager.registerEvents(ServerListEvent(), this)
         server.pluginManager.registerEvents(PlayerJoin(), this)
@@ -153,6 +158,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(GamblingWindow, this)
         server.pluginManager.registerEvents(TrashWindow, this)
         server.pluginManager.registerEvents(BinderInteract(), this)
+        server.pluginManager.registerEvents(PlushieBoxInteract(), this)
         server.pluginManager.registerEvents(CommandVisibilityListener(), this)
         server.pluginManager.registerEvents(AfkListener(), this)
     }

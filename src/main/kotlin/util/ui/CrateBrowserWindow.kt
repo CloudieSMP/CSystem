@@ -3,20 +3,12 @@ package util.ui
 import chat.Formatting.allTags
 import item.crate.Crate
 import item.crate.CrateType
-import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import java.math.RoundingMode
 import java.util.Locale
 
 object CrateBrowserWindow {
-    private val fillerPane = ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
     private val selectorTitle = allTags.deserialize("<gradient:#DF6F69:#823BC6><bold>Crates</bold></gradient>")
-    private val backButton = ItemStack(Material.ARROW).apply {
-        editMeta { meta ->
-            meta.displayName(allTags.deserialize("<yellow><bold>Back to Crates"))
-        }
-    }
 
     private fun formatChancePercent(itemEffectiveWeight: Double, totalEffectiveWeight: Double): String {
         if (itemEffectiveWeight <= 0.0 || totalEffectiveWeight <= 0.0) return "0.00"
@@ -30,13 +22,10 @@ object CrateBrowserWindow {
     }
 
     fun openSelector(player: Player) {
-        val crateTypes = CrateType.entries
-
         CollectionBrowserWindow.openSelector(
             player = player,
             title = selectorTitle,
-            entries = crateTypes,
-            fillerPane = fillerPane,
+            entries = CrateType.entries,
             itemForEntry = { crateType ->
                 Crate.create(crateType).clone().apply {
                     editMeta { meta ->
@@ -62,11 +51,9 @@ object CrateBrowserWindow {
             player = player,
             title = crateType.displayName,
             entries = loot,
-            fillerPane = fillerPane,
-            backButton = backButton,
+            backButtonName = "← Back to Crates",
             itemForEntry = { crateItem ->
                 val chancePercentText = formatChancePercent(crateItem.effectiveChanceWeight, totalEffectiveWeight)
-
                 crateItem.createItemStack().apply {
                     editMeta { meta ->
                         val updatedLore = (meta.lore() ?: emptyList()) +

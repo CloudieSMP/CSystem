@@ -5,6 +5,7 @@ import library.LiveHelper
 import command.ShowStat
 import item.crate.CrateMetadataRefresher
 import item.crate.CrateRecipes
+import item.plushiebox.PlushieBox
 import library.HomeStorage
 import library.MailStorage
 import library.CrateRollStatsStorage
@@ -26,6 +27,7 @@ class PlayerJoin : Listener {
     @EventHandler
     fun onPlayerJoin(e: PlayerJoinEvent) {
         CrateRecipes.discoverAll(e.player)
+        PlushieBox.discoverRecipe(e.player)
         HomeStorage.preload(e.player.uniqueId)
         MailStorage.preload(e.player.uniqueId)
         CrateRollStatsStorage.preload(e.player.uniqueId)

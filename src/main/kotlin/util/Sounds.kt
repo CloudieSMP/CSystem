@@ -20,6 +20,12 @@ object Sounds {
     val SHADOW_CATCH = sound(key("entity.wither.ambient"), Source.VOICE, 0.5f, 0f)
     val OBFUSCATED_CATCH = sound(key("entity.shulker.ambient"), Source.VOICE, 1.25f, 0.75f)
 
+    val INTERFACE_INTERACT = sound(key("block.vault.insert_item"), Source.MASTER, 1f, 1f)
+    val INTERFACE_ENTER_SUB_MENU = sound(key("block.vault.activate"), Source.MASTER, 1f, 1f)
+    val INTERFACE_BACK = sound(key("block.vault.deactivate"), Source.MASTER, 1f, 1f)
+    val INTERFACE_ERROR = sound(key("block.vault.reject_rewarded_player"), Source.MASTER, 1f, 1f)
+    val INTERFACE_SHARE_ITEM = sound(key("block.trial_spawner.ominous_activate"), Source.MASTER, 1f, 1f)
+
     val ADMIN_MESSAGE = sound(key("ui.button.click"), Source.MASTER, 0.5f, 2f)
     val SERVER_ANNOUNCEMENT = sound(key("block.note_block.pling"), Source.MASTER, 1f, 1f)
     val RENAME_ITEM = sound(key("block.smithing_table.use"), Source.PLAYER, 1f, 1f)
