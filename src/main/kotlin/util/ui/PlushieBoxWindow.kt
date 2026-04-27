@@ -6,14 +6,9 @@ import item.plushiebox.PlushieBox
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 
 /** Opens the Plushie Box GUI via the shared [StorageWindow] engine. */
 object PlushieBoxWindow {
-
-    /** Remembers the last active filter index per player UUID. */
-    private val lastFilter: MutableMap<UUID, Int> = ConcurrentHashMap()
 
     /**
      * Lazily built inverse map: CrateItem → set of non-MASTER CrateTypes whose
@@ -74,12 +69,8 @@ object PlushieBoxWindow {
             fullMessage = "Plushie Box is full! (${PlushieBox.MAX_CAPACITY} max)",
             removeHint = "Click a collectible to take it out",
             insertHint = "Hold a collectible and click an empty slot to insert",
-            initialFilterIndex = lastFilter[player.uniqueId] ?: 0,
-            onFilterChange = { idx -> lastFilter[player.uniqueId] = idx },
+            initialFilterIndex = PlushieBox.readFilter(boxItem),
+            onFilterChange = { idx -> PlushieBox.saveFilter(player, slot, idx) },
         )
-    }
-
-    fun clearFilter(uuid: UUID) {
-        lastFilter.remove(uuid)
     }
 }

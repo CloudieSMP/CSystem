@@ -35,4 +35,5 @@ object Keys {
      * Plushie Box related
      */
     val PLUSHIE_BOX_ITEMS = NamespacedKey(plugin, "plushiebox.items")
+    val PLUSHIE_BOX_FILTER = NamespacedKey(plugin, "plushiebox.filter")
 }
