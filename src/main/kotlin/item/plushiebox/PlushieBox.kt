@@ -128,6 +128,8 @@ object PlushieBox {
             else -> return
         }
 
+        if (!isPlushieBox(currentItem)) return
+
         val updated = currentItem.clone()
         updated.editMeta { meta ->
             meta.persistentDataContainer.set(Keys.PLUSHIE_BOX_FILTER, PersistentDataType.INTEGER, filterIndex)
