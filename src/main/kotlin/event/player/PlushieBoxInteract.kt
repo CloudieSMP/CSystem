@@ -1,6 +1,7 @@
 package event.player
 
 import item.plushiebox.PlushieBox
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -54,7 +55,7 @@ class PlushieBoxInteract : Listener {
 
     @EventHandler(ignoreCancelled = true)
     fun onClick(event: InventoryClickEvent) {
-        val player = event.whoClicked as? org.bukkit.entity.Player ?: return
+        val player = event.whoClicked as? Player ?: return
         if (player.uniqueId !in openBoxes) return
 
         if (PlushieBox.isPlushieBox(event.currentItem) || PlushieBox.isPlushieBox(event.cursor)) {
@@ -73,7 +74,7 @@ class PlushieBoxInteract : Listener {
 
     @EventHandler
     fun onClose(event: InventoryCloseEvent) {
-        val player = event.player as? org.bukkit.entity.Player ?: return
+        val player = event.player as? Player ?: return
         openBoxes.remove(player.uniqueId)
     }
 

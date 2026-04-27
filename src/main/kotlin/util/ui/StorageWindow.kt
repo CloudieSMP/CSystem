@@ -78,9 +78,11 @@ object StorageWindow {
         fullMessage: String = "Storage is full! ($maxCapacity max)",
         removeHint: String = "Click an item to take it out",
         insertHint: String = "Hold an item and click an empty slot to insert",
+        initialFilterIndex: Int = 0,
+        onFilterChange: ((Int) -> Unit)? = null,
     ) {
         val hasFilter = filters.isNotEmpty()
-        val filterRef = intArrayOf(0)
+        val filterRef = intArrayOf(initialFilterIndex.coerceIn(0, (filters.size - 1).coerceAtLeast(0)))
         val showMissingRef = booleanArrayOf(false)
         val pageRef = intArrayOf(0)
         val itemsTrigger = DelegateTrigger()
@@ -161,6 +163,7 @@ object StorageWindow {
                         // Reset "show missing" if the new filter has no pool
                         if (filters[filterRef[0]].allItems == null) showMissingRef[0] = false
                         pageRef[0] = 0
+                        onFilterChange?.invoke(filterRef[0])
                         filterTrigger.trigger()
                         missingTrigger.trigger()
                     }

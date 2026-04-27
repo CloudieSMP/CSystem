@@ -118,6 +118,29 @@ object PlushieBox {
         Bukkit.addRecipe(recipe)
     }
 
+    fun readFilter(item: ItemStack): Int =
+        item.itemMeta?.persistentDataContainer?.get(Keys.PLUSHIE_BOX_FILTER, PersistentDataType.INTEGER) ?: 0
+
+    fun saveFilter(player: Player, slot: EquipmentSlot, filterIndex: Int) {
+        val currentItem = when (slot) {
+            EquipmentSlot.HAND -> player.inventory.itemInMainHand
+            EquipmentSlot.OFF_HAND -> player.inventory.itemInOffHand
+            else -> return
+        }
+
+        if (!isPlushieBox(currentItem)) return
+
+        val updated = currentItem.clone()
+        updated.editMeta { meta ->
+            meta.persistentDataContainer.set(Keys.PLUSHIE_BOX_FILTER, PersistentDataType.INTEGER, filterIndex)
+        }
+
+        when (slot) {
+            EquipmentSlot.HAND -> player.inventory.setItemInMainHand(updated)
+            EquipmentSlot.OFF_HAND -> player.inventory.setItemInOffHand(updated)
+        }
+    }
+
     fun discoverRecipe(player: Player) {
         player.discoverRecipe(NamespacedKey("cloudie", "plushie_box"))
     }
