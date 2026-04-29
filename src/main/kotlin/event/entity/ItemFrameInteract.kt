@@ -33,7 +33,7 @@ object ItemFrameInteract {
                 event.isCancelled = true
             }
 
-            Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE -> {
+            Material.WOODEN_AXE, Material.STONE_AXE, Material.COPPER_AXE, Material.IRON_AXE, Material.GOLDEN_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE -> {
                 if(!itemFrame.isFixed) {
                     // Do nothing if item frame is not fixed
                     return

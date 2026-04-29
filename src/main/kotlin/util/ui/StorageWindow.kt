@@ -62,6 +62,9 @@ object StorageWindow {
       * @param uniqueKey          When non-null, the "Collected" count shows the number of *distinct*
      *                           items by this key rather than the raw number of list entries.
      *                           Use `CrateItem::resolve` for plushies so duplicates only count once.
+     * @param onRemove           Optional transform applied to an item just before it is returned to
+     *                           the player's inventory on removal. Use this to refresh stale metadata
+     *                           (e.g. `CrateItem.refresh`). Falls back to the original item when null.
      */
     fun open(
         player: Player,
@@ -80,6 +83,7 @@ object StorageWindow {
         insertHint: String = "Hold an item and click an empty slot to insert",
         initialFilterIndex: Int = 0,
         onFilterChange: ((Int) -> Unit)? = null,
+        onRemove: ((ItemStack) -> ItemStack)? = null,
     ) {
         val hasFilter = filters.isNotEmpty()
         val filterRef = intArrayOf(initialFilterIndex.coerceIn(0, (filters.size - 1).coerceAtLeast(0)))
@@ -218,7 +222,8 @@ object StorageWindow {
                                 ctx.player.playSound(Sounds.INTERFACE_INTERACT)
                                 items.removeAt(origIdx)
                                 onSave(ctx.player, items)
-                                ctx.player.inventory.addItem(display2.clone())
+                                val toGive = onRemove?.invoke(display2.clone()) ?: display2.clone()
+                                ctx.player.inventory.addItem(toGive)
                                     .values.forEach { ctx.player.world.dropItemNaturally(ctx.player.location, it) }
                                 val newMax = ((filteredDisplay().size - 1) / PAGE_SIZE).coerceAtLeast(0)
                                 if (pageRef[0] > newMax) pageRef[0] = newMax

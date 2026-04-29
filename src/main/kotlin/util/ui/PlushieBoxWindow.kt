@@ -71,6 +71,7 @@ object PlushieBoxWindow {
             insertHint = "Hold a collectible and click an empty slot to insert",
             initialFilterIndex = PlushieBox.readFilter(boxItem),
             onFilterChange = { idx -> PlushieBox.saveFilter(player, slot, idx) },
+            onRemove = { item -> CrateItem.refresh(item) ?: item },
         )
     }
 }

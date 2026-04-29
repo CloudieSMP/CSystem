@@ -13,8 +13,10 @@ import org.incendo.cloud.annotations.CommandDescription
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 import org.incendo.cloud.annotations.suggestion.Suggestions
+import plugin
 import util.requirePlayer
 import java.util.Locale
+import java.util.UUID
 
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
@@ -28,7 +30,7 @@ class CrateStats {
     @Permission("cloudie.cmd.cratestats")
     fun self(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
-        renderPlayerStats(player, player)
+        renderPlayerStats(player, player.uniqueId, player.name)
     }
 
     @Command("cratestats me <crateName>")
@@ -41,7 +43,7 @@ class CrateStats {
             player.sendMessage(allTags.deserialize("<gray>Unknown crate <white>$crateName</white>.</gray>"))
             return
         }
-        renderPlayerCrateStats(player, player, crateType)
+        renderPlayerCrateStats(player, player.uniqueId, player.name, crateType)
     }
 
     @Command("cratestats global")
@@ -75,9 +77,11 @@ class CrateStats {
     @Command("cratestats <player>")
     @CommandDescription("Show another player's crate roll stats.")
     @Permission("cloudie.cmd.cratestats.other")
-    fun other(css: CommandSourceStack, @Argument("player") target: Player) {
+    fun other(css: CommandSourceStack, @Argument(value = "player", suggestions = "player-names") playerName: String) {
         val requester = css.requirePlayer() ?: return
-        renderPlayerStats(requester, target)
+        resolveOfflinePlayer(requester, playerName) { uuid, name ->
+            renderPlayerStats(requester, uuid, name)
+        }
     }
 
     @Command("cratestats <player> <crateName>")
@@ -85,7 +89,7 @@ class CrateStats {
     @Permission("cloudie.cmd.cratestats.other")
     fun otherByCrate(
         css: CommandSourceStack,
-        @Argument("player") target: Player,
+        @Argument(value = "player", suggestions = "player-names") playerName: String,
         @Argument(value = "crateName", suggestions = "crate-names") crateName: String,
     ) {
         val requester = css.requirePlayer() ?: return
@@ -94,16 +98,48 @@ class CrateStats {
             requester.sendMessage(allTags.deserialize("<gray>Unknown crate <white>$crateName</white>.</gray>"))
             return
         }
-        renderPlayerCrateStats(requester, target, crateType)
+        resolveOfflinePlayer(requester, playerName) { uuid, name ->
+            renderPlayerCrateStats(requester, uuid, name, crateType)
+        }
     }
 
-    private fun renderPlayerStats(requester: Player, target: Player) {
+    /**
+     * Resolves a player name to a UUID + display name, supporting offline players.
+     * The [callback] is invoked on the Bukkit main thread if the player is found.
+     */
+    private fun resolveOfflinePlayer(requester: Player, playerName: String, callback: (UUID, String) -> Unit) {
+        val online = Bukkit.getPlayerExact(playerName)
+        if (online != null) {
+            callback(online.uniqueId, online.name)
+            return
+        }
+
         val requesterId = requester.uniqueId
-        val targetId = target.uniqueId
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+            val offline = Bukkit.getOfflinePlayer(playerName)
+            val resolved = if (offline.hasPlayedBefore() || offline.isOnline) {
+                offline.uniqueId to (offline.name ?: playerName)
+            } else {
+                null
+            }
+
+            Bukkit.getScheduler().runTask(plugin, Runnable {
+                if (resolved == null) {
+                    Bukkit.getPlayer(requesterId)?.sendMessage(
+                        allTags.deserialize("<gray>Player <white>$playerName</white> not found.</gray>")
+                    )
+                } else {
+                    callback(resolved.first, resolved.second)
+                }
+            })
+        })
+    }
+
+    private fun renderPlayerStats(requester: Player, targetId: UUID, targetName: String) {
+        val requesterId = requester.uniqueId
 
         CrateRollStatsStorage.snapshotAsync(targetId) { stats ->
             val onlineRequester = Bukkit.getPlayer(requesterId) ?: return@snapshotAsync
-            val targetName = target.name
 
             onlineRequester.sendMessage(
                 allTags.deserialize(
@@ -140,9 +176,8 @@ class CrateStats {
         }
     }
 
-    private fun renderPlayerCrateStats(requester: Player, target: Player, crateType: CrateType) {
+    private fun renderPlayerCrateStats(requester: Player, targetId: UUID, targetName: String, crateType: CrateType) {
         val requesterId = requester.uniqueId
-        val targetId = target.uniqueId
 
         CrateRollStatsStorage.snapshotAsync(targetId) { stats ->
             val onlineRequester = Bukkit.getPlayer(requesterId) ?: return@snapshotAsync
@@ -159,7 +194,7 @@ class CrateStats {
 
             onlineRequester.sendMessage(
                 allTags.deserialize(
-                    "<cloudiecolor><b>Collectibles for <white>${target.name}</white> in <white>${humanizeStoredId(crateType.storedId)}</white></b></cloudiecolor> <gray>(total collectible rolls: <white>$totalRolls</white>, Collected <white>$collected/$possible</white>)</gray>"
+                    "<cloudiecolor><b>Collectibles for <white>$targetName</white> in <white>${humanizeStoredId(crateType.storedId)}</white></b></cloudiecolor> <gray>(total collectible rolls: <white>$totalRolls</white>, Collected <white>$collected/$possible</white>)</gray>"
                 )
             )
 
@@ -273,5 +308,10 @@ class CrateStats {
         return CrateType.entries
             .map { it.storedId.lowercase(Locale.ENGLISH) }
             .sorted()
+    }
+
+    @Suggestions("player-names")
+    fun suggestPlayerNames(): List<String> {
+        return Bukkit.getOnlinePlayers().map { it.name }
     }
 }

@@ -15,12 +15,10 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.STRING
 import util.Keys.CRATE_ITEM
-import util.Keys.CRATE_ROLL_CHANCE_PERCENT
 import util.Keys.CRATE_ROLLED_BY
 import util.Keys.GENERIC_RARITY
 import util.isDebug
 import util.setIsDebug
-import java.math.RoundingMode
 
 private fun createDisplayName(displayName: String, rarity: ItemRarity): Component {
     return Component.text(displayName)
@@ -28,25 +26,11 @@ private fun createDisplayName(displayName: String, rarity: ItemRarity): Componen
         .decoration(TextDecoration.ITALIC, false)
 }
 
-private fun formatChancePercent(itemEffectiveWeight: Double, totalEffectiveWeight: Double): String {
-    if (itemEffectiveWeight <= 0.0 || totalEffectiveWeight <= 0.0) return "0.00"
-    val percent = itemEffectiveWeight * 100 / totalEffectiveWeight
-    val rounded = percent.toBigDecimal().setScale(2, RoundingMode.HALF_UP)
-    if (rounded.signum() == 0) {
-        val precise = percent.toBigDecimal().setScale(4, RoundingMode.HALF_UP).stripTrailingZeros()
-        return precise.toPlainString()
-    }
-    return rounded.stripTrailingZeros().toPlainString()
-}
-
-private fun createLore(description: String, rarity: ItemRarity, chancePercent: String? = null): List<Component> {
+private fun createLore(description: String, rarity: ItemRarity): List<Component> {
     return buildList {
         add(allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.PLUSHIE.typeGlyph}"))
         description.split("\n").forEach { line ->
             add(Component.text(line).decoration(TextDecoration.ITALIC, false))
-        }
-        if (chancePercent != null) {
-            add(allTags.deserialize("<!i><gray>Chance: <white>$chancePercent%"))
         }
     }
 }
@@ -226,28 +210,24 @@ enum class CrateItem(
         return buildItemStack(amount)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun createItemStack(crateType: CrateType, rolledBy: String? = null, amount: Int = 1): ItemStack {
-        val pool = crateType.lootPool.possibleItems
-        val totalEffectiveWeight = pool.sumOf { it.effectiveChanceWeight }
-        val chancePercent = formatChancePercent(this.effectiveChanceWeight, totalEffectiveWeight)
-
-        return buildItemStack(amount, chancePercent, rolledBy)
+        return buildItemStack(amount, rolledBy)
     }
 
-    private fun buildItemStack(amount: Int, chancePercent: String? = null, rolledBy: String? = null): ItemStack {
+    private fun buildItemStack(amount: Int, rolledBy: String? = null): ItemStack {
         return ItemStack(Material.PAPER, amount).apply {
-            applyMetadata(this, chancePercent, rolledBy)
+            applyMetadata(this, rolledBy)
         }
     }
 
     @Suppress("UnstableApiUsage")
-    private fun applyMetadata(itemStack: ItemStack, chancePercent: String? = null, rolledBy: String? = null) {
+    private fun applyMetadata(itemStack: ItemStack, rolledBy: String? = null) {
         itemStack.editMeta { meta ->
             meta.displayName(createDisplayName(itemName, rarity))
-            meta.lore(createLore(itemDescription, rarity, chancePercent))
+            meta.lore(createLore(itemDescription, rarity))
             meta.persistentDataContainer.set(CRATE_ITEM, STRING, storedId)
             meta.persistentDataContainer.set(GENERIC_RARITY, STRING, rarity.name)
-            chancePercent?.let { meta.persistentDataContainer.set(CRATE_ROLL_CHANCE_PERCENT, STRING, it) }
             rolledBy?.let { meta.persistentDataContainer.set(CRATE_ROLLED_BY, STRING, it) }
         }
         itemStack.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey("cloudie", modelPath))
@@ -278,13 +258,12 @@ enum class CrateItem(
             val current = item ?: return null
             val resolved = resolve(current) ?: return null
             val currentMeta = current.itemMeta ?: return null
-            val existingChance = currentMeta.persistentDataContainer.get(CRATE_ROLL_CHANCE_PERCENT, STRING)
             val existingRolledBy = currentMeta.persistentDataContainer.get(CRATE_ROLLED_BY, STRING)
                 ?.takeUnless { it == "DEBUG" }
             val existingIsDebug = currentMeta.persistentDataContainer.isDebug()
 
-            val refreshed = if (existingChance != null || existingRolledBy != null) {
-                resolved.buildItemStack(current.amount, existingChance, existingRolledBy)
+            val refreshed = if (existingRolledBy != null) {
+                resolved.buildItemStack(current.amount, existingRolledBy)
             } else {
                 resolved.createItemStack(current.amount)
             }
