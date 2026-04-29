@@ -9,6 +9,7 @@ import item.plushiebox.PlushieBox
 import library.HomeStorage
 import library.MailStorage
 import library.CrateRollStatsStorage
+import library.PlayerListNameHelper
 import library.Translation
 import logger
 import net.kyori.adventure.audience.Audience
@@ -63,6 +64,7 @@ class PlayerJoin : Listener {
                 e.player.sendMessage(mm.deserialize("<green>You have new mail! Use <white><click:run_command:/mail inbox>/mail inbox </white>to check it out."))
             }
         }
+        PlayerListNameHelper.apply(e.player)
     }
 
     private fun sendTabList(audience: Audience) {

@@ -8,19 +8,21 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
+import org.bukkit.Color
 
 /**
  * Crates
  * @param crateName The display name of the crate
  * @param crateDescription The description of the crate
- * @param crateRarity The rarity of the crate, which determines the color of the crate's name and lore
+ * @param crateNameColor The color of the crate's name
  * @param crateMaterial The item model path used for this crate
+ * @param recipeIngredient The material used in the crafting recipe for this crate
  * @param lootPool The loot pool to pull from when generating crate rewards
  */
 enum class CrateType(
     private val crateName: String,
     private val crateDescription: String,
-    val crateRarity: ItemRarity,
+    val crateNameColor: String,
     val crateMaterial: String,
     val recipeIngredient: Material,
     val lootPool: CrateLootPool,
@@ -28,7 +30,7 @@ enum class CrateType(
     MASTER(
         "Master Crate",
         "A crate containing everything",
-        LEGENDARY,
+    "#FFAA00",
         "crates/gold",
         Material.YELLOW_WOOL,
         CrateLootPool.MASTER,
@@ -36,15 +38,23 @@ enum class CrateType(
     PLUSHIE(
         "Plushie Crate",
         "A crate containing plushies",
-        COMMON,
+        "#FFFFFF",
         "crates/blue_white",
         Material.WHITE_WOOL,
         CrateLootPool.PLUSHIE,
     ),
+    BABY(
+        "Baby Crate",
+        "A crate containing baby plushies",
+        "#FF00FF",
+        "crates/light_gray",
+        Material.LIGHT_GRAY_WOOL,
+        CrateLootPool.BABY,
+    ),
     WEARABLES(
         "Wearables Crate",
         "A crate containing wearables",
-        COMMON,
+        "#5555FF",
         "crates/blue",
         Material.BLUE_WOOL,
         CrateLootPool.WEARABLES,
@@ -52,7 +62,7 @@ enum class CrateType(
     PLAYER(
         "Player Crate",
         "A crate containing player plushies",
-        RARE,
+        "#AA0000",
         "crates/red",
         Material.RED_WOOL,
         CrateLootPool.PLAYER,
@@ -60,7 +70,7 @@ enum class CrateType(
     CHARACTER(
         "Character Crate",
         "A crate containing character plushies",
-        UNCOMMON,
+        "#2A2A2A",
         "crates/black",
         Material.BLACK_WOOL,
         CrateLootPool.CHARACTER,
@@ -68,29 +78,29 @@ enum class CrateType(
     SABINE(
         "Sabine Crate",
         "A crate containing Sabine plushies",
-        RARE,
-        "crates/default",
+        "#FF55FF",
+        "crates/sabine",
         Material.PINK_WOOL,
         CrateLootPool.SABINE_LOOTPOOL,
     ),
     COOKIE(
         "Cookie Crate",
         "A crate containing Cookie plushies",
-        RARE,
-        "crates/default",
+        "#55FFFF",
+        "crates/cookie",
         Material.LIGHT_BLUE_WOOL,
         CrateLootPool.COOKIE_LOOTPOOL,
     );
 
     val displayName: Component
         get() = Component.text(crateName)
-            .color(TextColor.color(crateRarity.color.asRGB()))
+            .color(TextColor.fromHexString(crateNameColor))
             .decoration(TextDecoration.ITALIC, false)
             .decoration(TextDecoration.BOLD, true)
 
     val loreLines: List<Component>
         get() = listOf(
-            allTags.deserialize("<reset><!i><white>${crateRarity.rarityGlyph}${ItemType.CONSUMABLE.typeGlyph}"),
+            allTags.deserialize("<reset><!i><white>${ItemType.CONSUMABLE.typeGlyph}"),
             Component.text(crateDescription)
                 .color(TextColor.color(0xFFFF55))
                 .decoration(TextDecoration.ITALIC, false),

@@ -114,6 +114,14 @@ class Tpa {
         ))
     }
 
+    @Command("tpacancel")
+    @CommandDescription("Request to teleport another player here.")
+    @Permission("cloudie.cmd.tpa")
+    fun tpacancel(css: CommandSourceStack) {
+        val player = css.requirePlayer() ?: return
+        tpaRequests.removeIf { it.requester == player.uniqueId }
+    }
+
     private fun createRequest(css: CommandSourceStack, targetPlayer: Player, type: TpaType) {
         val player = css.requirePlayer() ?: return
         if (player.uniqueId == targetPlayer.uniqueId) {
@@ -121,8 +129,8 @@ class Tpa {
             return
         }
 
-        if (hasOutgoingRequest(player.uniqueId)) {
-            player.sendMessage(allTags.deserialize("<red>You already have an outgoing TPA request pending."))
+        if (hasOutgoingRequestTo(player.uniqueId, targetPlayer.uniqueId)) {
+            player.sendMessage(allTags.deserialize("<red>You already have an outgoing TPA request to this person pending."))
             return
         }
 
@@ -133,15 +141,26 @@ class Tpa {
         player.sendMessage(allTags.deserialize(
             "<yellow>Teleport request sent to <white>${targetPlayer.name}</white>.\nRequest will time out in <white>$requestExpireTime</white> seconds."
         ))
+        when (type) {
+            TpaType.TPA_THERE -> targetPlayer.sendMessage(allTags.deserialize(
+                "<yellow><b><white>${player.name}</white></b> is requesting to teleport <b>to you</b>:"
+            ))
+            TpaType.TPA_HERE -> targetPlayer.sendMessage(allTags.deserialize(
+                "<yellow><b><white>${player.name}</white></b> is requesting you to teleport <b>to them</b>:"
+            ))
+        }
         targetPlayer.sendMessage(allTags.deserialize(
-            "<yellow>You have an incoming TPA request from <b><white>${player.name}</white></b>:\n" +
-                    "Type <click:run_command:'/tpaccept ${player.name}'><hover:show_text:'Accepts the TPA request.'><b><green>/tpaccept ${player.name}</green></b></hover></click> to accept\n" +
-                    "Type <click:run_command:'/tpdeny ${player.name}'><hover:show_text:'Denies the TPA request.'><b><red>/tpdeny ${player.name}</red></b></hover></click> to deny."
+            "<yellow>Click/Type <click:run_command:'/tpaccept ${player.name}'><hover:show_text:'Accepts the TPA request.'><b><green>/tpaccept ${player.name}</green></b></hover></click> to accept\n" +
+            "Click/Type <click:run_command:'/tpdeny ${player.name}'><hover:show_text:'Denies the TPA request.'><b><red>/tpdeny ${player.name}</red></b></hover></click> to deny."
         ))
     }
 
     private fun hasOutgoingRequest(requesterId: UUID): Boolean {
         return tpaRequests.any { it.requester == requesterId }
+    }
+
+    private fun hasOutgoingRequestTo(requesterId: UUID, targetId: UUID): Boolean {
+        return tpaRequests.any { it.requester == requesterId && it.target == targetId }
     }
 
     private fun findIncomingRequest(targetId: UUID, requesterName: String): TpaRequest? {

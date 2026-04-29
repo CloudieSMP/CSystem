@@ -45,7 +45,6 @@ object Crate {
             meta.displayName(type.displayName)
             meta.lore(type.loreLines)
             meta.persistentDataContainer.set(Keys.CRATE_TYPE, PersistentDataType.STRING, type.storedId)
-            meta.persistentDataContainer.set(Keys.GENERIC_RARITY, PersistentDataType.STRING, type.crateRarity.name)
             meta.persistentDataContainer.setIsDebug(isDebug)
         }
         itemStack.setData(DataComponentTypes.FOOD, FoodProperties.food().nutrition(0).saturation(0f).canAlwaysEat(true).build())

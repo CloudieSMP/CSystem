@@ -57,6 +57,32 @@ enum class CrateItem(
     AXOLOTL_CYAN("Axolotl Plushie (Cyan)", COMMON, "A cute cyan axolotl plushie", "plushies/axolotl_cyan"),
     AXOLOTL_BLUE("Axolotl Plushie (Blue)", LEGENDARY, "A cute blue axolotl plushie", "plushies/axolotl_blue"),
 
+    // Baby animals Plushies
+    ARMADILLO_BABY("Baby Armadillo Plushie", COMMON, "A cute baby armadillo plushie", "plushies/baby/armadillo_baby"),
+    AXOLOTL_WILD_BABY("Baby Axolotl Plushie (Wild)", COMMON, "A cute baby wild axolotl plushie", "plushies/baby/axolotl_wild_baby"),
+    AXOLOTL_LUCY_BABY("Baby Axolotl Plushie (Lucy)", COMMON, "A cute baby Lucy axolotl plushie", "plushies/baby/axolotl_lucy_baby"),
+    AXOLOTL_GOLD_BABY("Baby Axolotl Plushie (Gold)", COMMON, "A cute baby gold axolotl plushie", "plushies/baby/axolotl_gold_baby"),
+    AXOLOTL_CYAN_BABY("Baby Axolotl Plushie (Cyan)", COMMON, "A cute baby cyan axolotl plushie", "plushies/baby/axolotl_cyan_baby"),
+    AXOLOTL_BLUE_BABY("Baby Axolotl Plushie (Blue)", LEGENDARY, "A cute baby blue axolotl plushie", "plushies/baby/axolotl_blue_baby"),
+    BEE_BABY("Baby Bee Plushie", COMMON, "A cute baby bee plushie", "plushies/baby/bee_baby"),
+    CAMEL_BABY("Baby Camel Plushie", COMMON, "A cute baby camel plushie", "plushies/baby/camel_baby"),
+    COW_TEMPERATE_BABY("Baby Cow Plushie (Temperate)", COMMON, "A cute baby cow plushie that is temperate", "plushies/baby/cow_temperate_baby"),
+    CHICKEN_COLD_BABY("Baby Chicken Plushie (Cold)", COMMON, "A cute baby chicken plushie that is cold", "plushies/baby/chicken_cold_baby"),
+    CHICKEN_WARM_BABY("Baby Chicken Plushie (Warm)", COMMON, "A cute baby chicken plushie that is warm", "plushies/baby/chicken_warm_baby"),
+    CHICKEN_TEMPERATE_BABY("Baby Chicken Plushie (Temperate)", COMMON, "A cute baby chicken plushie that is temperate", "plushies/baby/chicken_temperate_baby"),
+    DOLPHIN_BABY("Baby Dolphin Plushie", COMMON, "A cute baby dolphin plushie", "plushies/baby/dolphin_baby"),
+    FOX_BABY("Baby Fox Plushie", COMMON, "A cute baby fox plushie", "plushies/baby/fox_baby"),
+    FOX_SNOW_BABY("Baby Fox Plushie (Snow)", COMMON, "A cute baby snow fox plushie", "plushies/baby/fox_snow_baby"),
+    GOAT_BABY("Baby Goat Plushie", COMMON, "A cute baby goat plushie", "plushies/baby/goat_baby"),
+    GLOW_SQUID_BABY("Baby Glow Squid Plushie", COMMON, "A cute baby glow squid plushie", "plushies/baby/glow_squid_baby"),
+    SQUID_BABY("Baby Squid Plushie", COMMON, "A cute baby squid plushie", "plushies/baby/squid_baby"),
+    HAPPY_GHAST_BABY("Baby Happy Ghast Plushie", COMMON, "A cute baby happy ghast plushie", "plushies/baby/happy_ghast_baby"),
+    MOOSHROOM_RED_BABY("Baby Mooshroom Plushie (Red)", COMMON, "A cute baby red mooshroom plushie", "plushies/baby/mooshroom_red_baby"),
+    NAUTILUS_BABY("Baby Nautilus Plushie", COMMON, "A cute baby nautilus plushie", "plushies/baby/nautilus_baby"),
+    POLARBEAR_BABY("Baby Polar Bear Plushie", COMMON, "A cute baby polar bear plushie", "plushies/baby/polarbear_baby"),
+    SHEEP_BABY("Baby Sheep Plushie", COMMON, "A cute baby sheep plushie", "plushies/baby/sheep_baby"),
+    TURTLE_BABY("Baby Turtle Plushie", COMMON, "A cute baby turtle plushie", "plushies/baby/turtle_baby"),
+
     // Player plushies
     SEBIANN("Sebiann Plushie", COMMON, "A cute Sebiann plushie", "plushies/player/sebiann"),
     COOKIE("Cookie Plushie", COMMON, "A cute Cookie plushie", "plushies/player/cookie"),
@@ -74,6 +100,7 @@ enum class CrateItem(
     COMTRA("Comtra Plushie", COMMON, "Stand ready for my arrival, crops.", "plushies/player/comtra_wide"),
     JMO("Jmo Plushie", COMMON, "A cute Jmo plushie", "plushies/player/jmo_slim"),
     LUKE("Luke Plushie", COMMON, "A cute Luke plushie", "plushies/player/luke_slim"),
+    WHISPER("Whisper Plushie", COMMON, "A cute Whisper plushie", "plushies/player/whisper_wide"),
 
     // Legendary player plushies
     SEBIANN_CLASSIC("Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
@@ -110,6 +137,7 @@ enum class CrateItem(
     KING_CROWN("King Crown", UNCOMMON, "A majestic king's crown", "wearables/king_crown"),
     HEART_GLASSES("Heart Glasses", COMMON, "Glasses with heart lenses", "wearables/heart_glasses"),
     STRAWHAT("Strawhat", COMMON, "A simple Mugiwara", "wearables/strawhat"),
+    COPPER_ANTENNAS("Copper Antennas", UNCOMMON, "Shiny copper antennas", "wearables/copper_antennas"),
 
     // Sabine plushies
     SABINE_BABYSHARK("Sabine Plushie (Baby Shark)", UNCOMMON, "Baby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark", "plushies/player/sabine/sabine_babysharkdoodoodoodoobabysharkdoodoodoodoobabysharkdoodoodoodoo_slim"),
