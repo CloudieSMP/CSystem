@@ -46,7 +46,7 @@ enum class CrateType(
     BABY(
         "Baby Crate",
         "A crate containing baby plushies",
-        "#FF00FF",
+        "#AAAAAA",
         "crates/light_gray",
         Material.LIGHT_GRAY_WOOL,
         CrateLootPool.BABY,

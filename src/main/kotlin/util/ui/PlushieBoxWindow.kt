@@ -47,6 +47,7 @@ object PlushieBoxWindow {
         val filters = listOf(
             StorageWindow.FilterOption("✦ All"),  // no pool → toggle unavailable
             filterFor("Plushie Crate",   CrateType.PLUSHIE),
+            filterFor("Baby Crate",      CrateType.BABY),
             filterFor("Wearables Crate", CrateType.WEARABLES),
             filterFor("Player Crate",    CrateType.PLAYER),
             filterFor("Character Crate", CrateType.CHARACTER),
