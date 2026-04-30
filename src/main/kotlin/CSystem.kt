@@ -8,6 +8,7 @@ import event.block.RainCropGrowthListener
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.ShowStat
+import event.block.StonecutterDamageListener
 import library.LiveHelper
 import item.crate.CrateRecipes
 import item.plushiebox.PlushieBox
@@ -160,6 +161,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(PlushieBoxInteract(), this)
         server.pluginManager.registerEvents(CommandVisibilityListener(), this)
         server.pluginManager.registerEvents(AfkListener(), this)
+        server.pluginManager.registerEvents(StonecutterDamageListener(), this)
     }
 
     private fun applyConfig(config: Config) {
