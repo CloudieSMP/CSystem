@@ -37,7 +37,7 @@ private fun createLore(description: String, rarity: ItemRarity): List<Component>
 
 enum class CrateItem(
     private val itemName: String,
-    private val rarity: ItemRarity,
+    val rarity: ItemRarity,
     private val itemDescription: String,
     private val modelPath: String,
 ) {

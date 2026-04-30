@@ -2,7 +2,7 @@ package item
 
 import org.bukkit.Color
 
-enum class ItemRarity(
+enum class  ItemRarity(
     val rarityName: String,
     val rarityGlyph: String,
     val color: Color,

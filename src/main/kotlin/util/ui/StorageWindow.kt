@@ -19,8 +19,9 @@ import util.Sounds
  * Layout (6 rows):
  *   Rows 0–4  — full content grid (cols 0–8, 45 slots per page)
  *   Row 5     — glass bar
- *               [5,2] ← prev  [5,3] filter (optional)  [5,4] page/info book
- *               [5,5] show-missing toggle (optional)    [5,6] → next
+ *               [5,2] ← prev  [5,3] filter1 (optional)  [5,4] page/info book
+ *               [5,5] show-missing toggle (optional)     [5,6] → next
+ *               [5,7] filter2 (optional)
  */
 object StorageWindow {
 
@@ -51,6 +52,8 @@ object StorageWindow {
      * @param canInsert          Returns true if the cursor item may be inserted.
      * @param onSave             Called on the main thread after each insert/remove to persist changes.
      * @param filters            Ordered filter cycle shown at [5,3]. Empty = no filter bar.
+     * @param filters2           Optional second filter cycle shown at [5,7].
+     *                           Both predicates are ANDed together when both are active.
      * @param showMissingToggle  Whether to show the "show missing" toggle button at [5,5].
       * @param sameItem           Comparator used to match stored items against the filter's
      *                           `allItems` pool. Defaults to [ItemStack.isSimilar]; override
@@ -83,14 +86,20 @@ object StorageWindow {
         insertHint: String = "Hold an item and click an empty slot to insert",
         initialFilterIndex: Int = 0,
         onFilterChange: ((Int) -> Unit)? = null,
+        filters2: List<FilterOption> = emptyList(),
+        initialFilterIndex2: Int = 0,
+        onFilterChange2: ((Int) -> Unit)? = null,
         onRemove: ((ItemStack) -> ItemStack)? = null,
     ) {
         val hasFilter = filters.isNotEmpty()
+        val hasFilter2 = filters2.isNotEmpty()
         val filterRef = intArrayOf(initialFilterIndex.coerceIn(0, (filters.size - 1).coerceAtLeast(0)))
+        val filterRef2 = intArrayOf(initialFilterIndex2.coerceIn(0, (filters2.size - 1).coerceAtLeast(0)))
         val showMissingRef = booleanArrayOf(false)
         val pageRef = intArrayOf(0)
         val itemsTrigger = DelegateTrigger()
         val filterTrigger = DelegateTrigger()
+        val filterTrigger2 = DelegateTrigger()
         val missingTrigger = DelegateTrigger()
         val pageTrigger = DelegateTrigger()
 
@@ -120,8 +129,11 @@ object StorageWindow {
          */
         fun filteredDisplay(): List<Pair<Int?, ItemStack>> {
             val predicate = if (hasFilter) filters[filterRef[0]].predicate else null
+            val predicate2 = if (hasFilter2) filters2[filterRef2[0]].predicate else null
             val found: List<Pair<Int?, ItemStack>> = items.mapIndexedNotNull { idx, stack ->
-                if (predicate == null || predicate(stack)) (idx to stack) else null
+                val matchesFilter1 = predicate == null || predicate(stack)
+                val matchesFilter2 = predicate2 == null || predicate2(stack)
+                if (matchesFilter1 && matchesFilter2) (idx to stack) else null
             }
             val missing: List<Pair<Int?, ItemStack>> = missingItems().map { null to barrierFor(it) }
             return found + missing
@@ -174,6 +186,39 @@ object StorageWindow {
                 }
             }
 
+            /** Second filter cycling item at [5,7] — only rendered when filters2 are configured */
+            if (hasFilter2) {
+                withTransform(filterTrigger2) { pane, _ ->
+                    val current = filterRef2[0]
+                    val lore = mutableListOf(
+                        allTags.deserialize("<!i><gray>Left-click to cycle forward."),
+                        allTags.deserialize("<!i><gray>Right-click to cycle backward."),
+                        allTags.deserialize("<!i>"),
+                        allTags.deserialize("<!i><gray>Current filter:"),
+                    )
+                    for ((idx, option) in filters2.withIndex()) {
+                        lore += allTags.deserialize(
+                            if (idx == current) "<!i><dark_gray>• <cloudiecolor>> <white>${option.name}"
+                            else "<!i><dark_gray>• ${option.name}"
+                        )
+                    }
+                    pane[5, 7] = StaticElement(drawable(ItemStack(Material.HOPPER).apply {
+                        editMeta { meta ->
+                            meta.displayName(allTags.deserialize("<!i><cloudiecolor>Filter: <white>${filters2[current].name}"))
+                            meta.lore(lore)
+                        }
+                    })) { ctx ->
+                        ctx.player.playSound(Sounds.INTERFACE_INTERACT)
+                        val step = if (ctx.type.isRightClick) -1 else 1
+                        filterRef2[0] = (filterRef2[0] + step + filters2.size) % filters2.size
+                        pageRef[0] = 0
+                        onFilterChange2?.invoke(filterRef2[0])
+                        filterTrigger2.trigger()
+                        itemsTrigger.trigger()
+                    }
+                }
+            }
+
             /** Show-missing toggle at [5,5] — only when showMissingToggle is enabled */
             if (showMissingToggle) {
                 withTransform(filterTrigger, missingTrigger) { pane, _ ->
@@ -201,7 +246,7 @@ object StorageWindow {
             }
 
             /** Content grid (rows 0–4, cols 0–8) + nav at [5,2/4/6] */
-            withTransform(itemsTrigger, filterTrigger, missingTrigger, pageTrigger) { pane, _ ->
+            withTransform(itemsTrigger, filterTrigger, filterTrigger2, missingTrigger, pageTrigger) { pane, _ ->
                 val display = filteredDisplay()
                 val maxPage = ((display.size) / PAGE_SIZE).coerceAtLeast(0)
                 if (pageRef[0] > maxPage) pageRef[0] = maxPage
@@ -287,7 +332,10 @@ object StorageWindow {
 
                 // ── Nav: Prev, page/info book, Next ──────────────────────────
                 val predicate = if (hasFilter) filters[filterRef[0]].predicate else null
-                val foundItems = items.filter { stack -> predicate == null || predicate(stack) }
+                val predicate2 = if (hasFilter2) filters2[filterRef2[0]].predicate else null
+                val foundItems = items.filter { stack ->
+                    (predicate == null || predicate(stack)) && (predicate2 == null || predicate2(stack))
+                }
                 val foundCount = if (uniqueKey != null) foundItems.distinctBy { uniqueKey(it) }.size
                                else foundItems.size
                 val missingCount = missingItems().size
@@ -301,7 +349,8 @@ object StorageWindow {
                 val loreLines = mutableListOf(
                     allTags.deserialize("<!i><gray>$capacityLabel: <white>${items.size}<gray>/$maxCapacity"),
                 )
-                if (hasFilter && filters[filterRef[0]].predicate != null) {
+                if ((hasFilter && filters[filterRef[0]].predicate != null) ||
+                    (hasFilter2 && filters2[filterRef2[0]].predicate != null)) {
                     loreLines += allTags.deserialize("<!i><gray>Collected: <white>$foundCount")
                     if (showMissingRef[0]) {
                         loreLines += allTags.deserialize("<!i><gray>Missing: <white>$missingCount")

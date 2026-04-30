@@ -1,5 +1,6 @@
 package util.ui
 
+import item.ItemRarity
 import item.crate.CrateItem
 import item.crate.CrateType
 import item.plushiebox.PlushieBox
@@ -25,13 +26,24 @@ object PlushieBoxWindow {
         map
     }
 
+    private fun matchesItemRarity(stack: ItemStack, rarity: ItemRarity): Boolean {
+        val crateItem = CrateItem.resolve(stack) ?: return false
+        return crateItem.rarity == rarity
+    }
+
     private fun matchesCrateType(stack: ItemStack, crateType: CrateType): Boolean {
         val crateItem = CrateItem.resolve(stack) ?: return false
         return itemCrateTypes[crateItem]?.contains(crateType) == true
     }
 
+    private fun filterForRarity(name: String, rarity: ItemRarity) = StorageWindow.FilterOption(
+        name = name,
+        predicate = { matchesItemRarity(it, rarity) },
+        allItems = { CrateItem.entries.filter { it.rarity == rarity }.map { it.createItemStack() } },
+    )
+
     /** Filter option for a specific crate type, with full loot pool for "show missing". */
-    private fun filterFor(name: String, crateType: CrateType) = StorageWindow.FilterOption(
+    private fun filterForType(name: String, crateType: CrateType) = StorageWindow.FilterOption(
         name = name,
         predicate = { matchesCrateType(it, crateType) },
         allItems = { crateType.lootPool.possibleItems.map { it.createItemStack() } },
@@ -44,15 +56,28 @@ object PlushieBoxWindow {
             else -> return
         }
 
-        val filters = listOf(
+        val typeFilters = listOf(
             StorageWindow.FilterOption("✦ All"),  // no pool → toggle unavailable
-            filterFor("Plushie Crate",   CrateType.PLUSHIE),
-            filterFor("Baby Crate",      CrateType.BABY),
-            filterFor("Wearables Crate", CrateType.WEARABLES),
-            filterFor("Player Crate",    CrateType.PLAYER),
-            filterFor("Character Crate", CrateType.CHARACTER),
-            filterFor("Sabine Crate",    CrateType.SABINE),
-            filterFor("Cookie Crate",    CrateType.COOKIE),
+            filterForType("Plushie Crate",   CrateType.PLUSHIE),
+            filterForType("Baby Crate",      CrateType.BABY),
+            filterForType("Wearables Crate", CrateType.WEARABLES),
+            filterForType("Player Crate",    CrateType.PLAYER),
+            filterForType("Character Crate", CrateType.CHARACTER),
+            filterForType("Sabine Crate",    CrateType.SABINE),
+            filterForType("Cookie Crate",    CrateType.COOKIE),
+        )
+
+        val rarityFilter = listOf(
+            StorageWindow.FilterOption("✦ All"),  // no pool → toggle unavailable
+            filterForRarity("Common", ItemRarity.COMMON),
+            filterForRarity("Uncommon", ItemRarity.UNCOMMON),
+            filterForRarity("Rare", ItemRarity.RARE),
+            filterForRarity("Epic", ItemRarity.EPIC),
+            filterForRarity("Legendary", ItemRarity.LEGENDARY),
+            filterForRarity("Mythic", ItemRarity.MYTHIC),
+            filterForRarity("Unreal", ItemRarity.UNREAL),
+            filterForRarity("Transcendent", ItemRarity.TRANSCENDENT),
+            filterForRarity("Celestial", ItemRarity.CELESTIAL),
         )
 
         StorageWindow.open(
@@ -62,7 +87,8 @@ object PlushieBoxWindow {
             maxCapacity = PlushieBox.MAX_CAPACITY,
             canInsert = { PlushieBox.isCrateCollectible(it) },
             onSave = { p, plushies -> PlushieBox.savePlushies(p, slot, plushies) },
-            filters = filters,
+            filters = typeFilters,
+            filters2 = rarityFilter,
             showMissingToggle = true,
             sameItem = { stored, candidate -> CrateItem.resolve(stored) == CrateItem.resolve(candidate) },
             uniqueKey = { CrateItem.resolve(it) },
@@ -72,6 +98,8 @@ object PlushieBoxWindow {
             insertHint = "Hold a collectible and click an empty slot to insert",
             initialFilterIndex = PlushieBox.readFilter(boxItem),
             onFilterChange = { idx -> PlushieBox.saveFilter(player, slot, idx) },
+            initialFilterIndex2 = PlushieBox.readFilter2(boxItem),
+            onFilterChange2 = { idx -> PlushieBox.saveFilter2(player, slot, idx) },
             onRemove = { item -> CrateItem.refresh(item) ?: item },
         )
     }
