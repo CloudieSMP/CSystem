@@ -137,7 +137,10 @@ enum class CrateItem(
     KING_CROWN("King Crown", UNCOMMON, "A majestic king's crown", "wearables/king_crown"),
     HEART_GLASSES("Heart Glasses", COMMON, "Glasses with heart lenses", "wearables/heart_glasses"),
     STRAWHAT("Strawhat", COMMON, "A simple Mugiwara", "wearables/strawhat"),
-    COPPER_ANTENNAS("Copper Antennas", UNCOMMON, "Shiny copper antennas", "wearables/copper_antennas"),
+    COPPER_ANTENNAS("Copper Antennas", COMMON, "Shiny copper antennas", "wearables/copper_antennas"),
+    COPPER_ANTENNAS_EXPOSED("Copper Antennas (Exposed)", UNCOMMON, "Shiny copper antennas, now with the wires exposed", "wearables/copper_antennas_exposed"),
+    COPPER_ANTENNAS_WEATHERED("Copper Antennas (Weathered)", RARE, "Shiny copper antennas, now weathered and old", "wearables/copper_antennas_weathered"),
+    COPPER_ANTENNAS_OXIDIZED("Copper Antennas (Oxidized)", EPIC, "Shiny copper antennas, now oxidized and green", "wearables/copper_antennas_oxidized"),
 
     // Sabine plushies
     SABINE_BABYSHARK("Sabine Plushie (Baby Shark)", UNCOMMON, "Baby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark, do, do, do-do, do-do\nBaby shark", "plushies/player/sabine/sabine_babysharkdoodoodoodoobabysharkdoodoodoodoobabysharkdoodoodoodoo_slim"),
