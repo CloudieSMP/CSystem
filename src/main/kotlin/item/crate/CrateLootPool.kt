@@ -93,6 +93,9 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         HEART_GLASSES,
         STRAWHAT,
         COPPER_ANTENNAS,
+        COPPER_ANTENNAS_EXPOSED,
+        COPPER_ANTENNAS_OXIDIZED,
+        COPPER_ANTENNAS_WEATHERED,
     )),
     PLAYER(listOf(
         SEBIANN,
