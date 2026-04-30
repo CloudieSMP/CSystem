@@ -102,8 +102,8 @@ object HelpHelper {
             "Remove a cosmetic from a helmet."
         ),
         "tpa" to CommandHelp(
-            listOf("/tpa <player>", "/tpahere <player>", "/tpaccept [player]", "/tpdeny [player]"),
-            listOf("Send a TPA request to a player.", "Request another player to teleport to you.", "Accept a pending TPA request.", "Deny a pending TPA request."),
+            listOf("/tpa <player>", "/tpahere <player>", "/tpaccept [player]", "/tpdeny [player]", "/tpacancel"),
+            listOf("Send a TPA request to a player.", "Request another player to teleport to you.", "Accept a pending TPA request.", "Deny a pending TPA request.", "Cancel all TPA request you sent."),
             "TPA to players."
         ),
         "ping" to CommandHelp(

@@ -119,7 +119,17 @@ class Tpa {
     @Permission("cloudie.cmd.tpa")
     fun tpacancel(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
-        tpaRequests.removeIf { it.requester == player.uniqueId }
+        for (request in tpaRequests) {
+            if (request.requester == player.uniqueId) {
+                val target = Bukkit.getPlayer(request.target)
+                target?.sendMessage(allTags.deserialize(
+                    "<yellow>TPA request from <white>${player.name}</white> has been cancelled."
+                ))
+            }
+        }
+        val removal = tpaRequests.removeIf { it.requester == player.uniqueId }
+        if (removal) player.sendMessage(allTags.deserialize("<yellow>All your outgoing TPA requests have been cancelled."))
+        else player.sendMessage(allTags.deserialize("<yellow>You don't have any outgoing TPA requests to cancel."))
     }
 
     private fun createRequest(css: CommandSourceStack, targetPlayer: Player, type: TpaType) {
