@@ -95,7 +95,7 @@ enum class CrateItem(
     SABINE("Sabine Plushie", COMMON, "Just Cheering you on.", "plushies/player/sabine_cheerleader_slim"),
     YANN("Yann Plushie", COMMON, "A cute Yann plushie", "plushies/player/yann_wide"),
     ROAST("Roast Plushie", COMMON, "Hasn’t slept in 3 in-game nights.\nStill smiling.", "plushies/player/roast_wide"),
-    TURTLE("Turtle Plushie", COMMON, "A cute Turtle plushie", "plushies/player/turtle_wide"),
+    TURTLE("Turtle Plushie", COMMON, "A pirate's life is the life for me,\nfloating turtely in the deep blue sea.", "plushies/player/turtle_wide"),
     FIDEOX("Fideox Plushie", COMMON, "Protects the village, one crop at a time.", "plushies/player/fideox_wide"),
     COMTRA("Comtra Plushie", COMMON, "Stand ready for my arrival, crops.", "plushies/player/comtra_wide"),
     JMO("Jmo Plushie", COMMON, "A cute Jmo plushie", "plushies/player/jmo_slim"),
