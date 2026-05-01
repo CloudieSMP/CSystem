@@ -13,6 +13,6 @@ class Seed {
     @Command("seed")
     @Permission("cloudie.cmd.seed")
     fun seed(css: CommandSourceStack) {
-        css.sender.sendMessage(Formatting.allTags.deserialize("<rainbow>made you look lol</rainbow>"))
+        css.sender.sendMessage(Formatting.allTags.deserialize("<rainbow>made you look lol\nAlso, you just lost the game</rainbow>"))
     }
 }
