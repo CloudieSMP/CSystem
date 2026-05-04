@@ -43,7 +43,6 @@ permissions:
       cloudie.cmd.help.staff: true
       cloudie.cmd.admin_chat: true
       cloudie.cmd.dev_chat: true
-      cloudie.cmd.vanish: true
       cloudie.cmd.debug: true
       cloudie.cmd.announce: true
       cloudie.cmd.timer: true
@@ -66,8 +65,6 @@ permissions:
     description: Allows the player to use the admin chat command.
   cloudie.cmd.dev_chat:
     description: Allows the player to use the developer chat command.
-  cloudie.cmd.vanish:
-    description: Allows the player to use the vanish command.
   cloudie.cmd.debug:
     description: Allows the player to use debug commands.
   cloudie.cmd.announce:
@@ -108,9 +105,9 @@ permissions:
       cloudie.cmd.afk: true
       cloudie.cmd.nosleep: true
       cloudie.cmd.cratestats: true
-      cloudie.removecmds: true
       cloudie.cmd.stripcosmetic: true
       cloudie.cmd.ping: true
+      cloudie.removecmds: true
 
   cloudie.cmd.hat:
     description: Allows the player to use the hat command.
@@ -148,18 +145,20 @@ permissions:
     description: Allows the player to report issues.
   cloudie.cmd.showstat:
     description: Allows the player to show server statistic scoreboards.
-  cloudie.dontshowstatscreen:
-    description: Hides the /showstat scoreboard from this player's screen.
-    default: false
   cloudie.cmd.afk:
     description: Allows the player to toggle their AFK status.
   cloudie.cmd.cratestats:
     description: Allows the player to view crate roll stats.
-  cloudie.removecmds:
-    description: Removes specific commands from tabcomplete like worldguard and worldedit.
   cloudie.cmd.stripcosmetic:
     description: Allows the player to remove a cosmetic from a cosmetified helmet.
   cloudie.cmd.nosleep:
     description: Allows the player to toggle the NoSleep tab tag.
   cloudie.cmd.ping:
     description: Allows the player to check their ping.
+
+  cloudie.dontshowstatscreen:
+    description: Hides the /showstat scoreboard from this player's screen.
+    default: false
+
+  cloudie.removecmds:
+    description: Removes specific commands from tabcomplete like worldguard and worldedit.
