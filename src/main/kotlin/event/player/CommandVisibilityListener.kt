@@ -32,7 +32,16 @@ class CommandVisibilityListener : Listener {
             "lp", "luckperms", "perm", "perms", "permission", "permissions"
         )
 
+        private val SINGLE_HIDDEN_COMMANDS = setOf(
+            "co", "coreprotect:co"
+        )
+
+        private val WT_HIDDEN_COMMANDS = setOf(
+            "wt", "wanderingtrades", "wanderingtrades:wanderingtrades", "wanderingtrades:wt"
+        )
+
         private val HIDDEN_COMMANDS = buildSet {
+            addAll(SINGLE_HIDDEN_COMMANDS)
             addAll(WG_HIDDEN_COMMANDS)
             addAll(WG_HIDDEN_COMMANDS.map { "worldguard:$it" })
             addAll(WE_HIDDEN_COMMANDS)
@@ -45,6 +54,7 @@ class CommandVisibilityListener : Listener {
             addAll(VANISH_HIDDEN_COMMANDS.map { "premiumvanish:$it" })
             addAll(LP_HIDDEN_COMMANDS)
             addAll(LP_HIDDEN_COMMANDS.map { "luckperms:$it" })
+            addAll(WT_HIDDEN_COMMANDS)
         }
     }
 
