@@ -44,16 +44,12 @@ class PlayerJoin : Listener {
 
         ResourcePacker.applyPackPlayer(e.player)
 
-        // Inject the F3+N / F3+F4 Netty handler for future op-level packets, then send
-        // an elevated op-level packet once permissions have had a chance to initialise.
-        // The 10-tick delay mirrors F3NPerm's approach: the server sends the initial op-level
-        // packet before PlayerJoinEvent fires, so we wait for the permission system to settle
-        // before issuing our corrective packet.
-        val permissionSettleTicks = 10L
-        F3NPermHelper.inject(e.player)
+        // Send an elevated op-level packet once permissions have had a chance to initialise.
+        // The server sends the initial level-0 packet before PlayerJoinEvent fires, so we
+        // wait a short time for the permission system to settle before issuing our corrective packet.
         plugin.server.scheduler.runTaskLater(plugin, Runnable {
             if (e.player.isOnline) F3NPermHelper.sendElevatedOpLevel(e.player)
-        }, permissionSettleTicks)
+        }, 10L)
 
         e.player.sendMessage(mm.deserialize("<red>⚠ <reset>Please <b>do not</b> break loot chests!"))
         if (e.player.hasPermission("cloudie.silent.join")) {

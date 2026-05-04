@@ -2,7 +2,6 @@ package event.player
 
 import chat.Formatting
 import library.LiveHelper
-import library.F3NPermHelper
 import library.NoSleepHelper
 import library.Translation
 
@@ -22,6 +21,5 @@ class PlayerQuit: Listener {
         }
         LiveHelper.onPlayerQuit(e.player)
         NoSleepHelper.cleanup(e.player)
-        F3NPermHelper.uninject(e.player)
     }
 }
