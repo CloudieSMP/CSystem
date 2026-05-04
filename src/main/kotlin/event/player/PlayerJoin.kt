@@ -9,6 +9,7 @@ import item.plushiebox.PlushieBox
 import library.HomeStorage
 import library.MailStorage
 import library.CrateRollStatsStorage
+import library.F3NPermHelper
 import library.GhostMode
 import library.PlayerListNameHelper
 import library.Translation
@@ -19,6 +20,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.Bukkit
+import plugin
 import util.ResourcePacker
 
 @Suppress("UnstableApiUsage")
@@ -41,6 +43,17 @@ class PlayerJoin : Listener {
         logger.info("(BRAND) ${e.player.name} joined using $brand.")
 
         ResourcePacker.applyPackPlayer(e.player)
+
+        // Inject the F3+N / F3+F4 Netty handler for future op-level packets, then send
+        // an elevated op-level packet once permissions have had a chance to initialise.
+        // The 10-tick delay mirrors F3NPerm's approach: the server sends the initial op-level
+        // packet before PlayerJoinEvent fires, so we wait for the permission system to settle
+        // before issuing our corrective packet.
+        val permissionSettleTicks = 10L
+        F3NPermHelper.inject(e.player)
+        plugin.server.scheduler.runTaskLater(plugin, Runnable {
+            if (e.player.isOnline) F3NPermHelper.sendElevatedOpLevel(e.player)
+        }, permissionSettleTicks)
 
         e.player.sendMessage(mm.deserialize("<red>⚠ <reset>Please <b>do not</b> break loot chests!"))
         if (e.player.hasPermission("cloudie.silent.join")) {

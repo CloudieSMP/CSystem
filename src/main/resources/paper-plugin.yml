@@ -51,6 +51,7 @@ permissions:
       cloudie.cmd.height.others: true
       cloudie.cmd.trash: true
       cloudie.cmd.cratestats.other: true
+      cloudie.f3nperm: true
 
   cloudie.group.dev:
     description: Allows the player to use developer chat and receive developer messages.
@@ -82,6 +83,10 @@ permissions:
     description: Allows the player to open the trash inventory.
   cloudie.cmd.cratestats.other:
     description: Allows the player to view crate stats for other players.
+
+  cloudie.f3nperm:
+    description: Allows the player to use F3+N and F3+F4 without being an operator.
+    default: false
 
   cloudie.group.default:
     description: Allows the player to use all default commands.
