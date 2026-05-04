@@ -42,6 +42,10 @@ class PlayerJoin : Listener {
 
         ResourcePacker.applyPackPlayer(e.player)
 
+        if (e.player.hasPermission("cloudie.group.admin")) {
+            e.player.sendOpLevel(2)
+        }
+
         e.player.sendMessage(mm.deserialize("<red>⚠ <reset>Please <b>do not</b> break loot chests!"))
         if (e.player.hasPermission("cloudie.silent.join")) {
             e.joinMessage(null)
