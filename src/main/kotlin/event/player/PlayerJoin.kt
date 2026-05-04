@@ -9,6 +9,7 @@ import item.plushiebox.PlushieBox
 import library.HomeStorage
 import library.MailStorage
 import library.CrateRollStatsStorage
+import library.GhostMode
 import library.PlayerListNameHelper
 import library.Translation
 import logger
@@ -42,7 +43,10 @@ class PlayerJoin : Listener {
         ResourcePacker.applyPackPlayer(e.player)
 
         e.player.sendMessage(mm.deserialize("<red>⚠ <reset>Please <b>do not</b> break loot chests!"))
-        if(e.player.hasPermission("cloudie.silent.join")) {
+        if (e.player.hasPermission("cloudie.silent.join")) {
+            e.joinMessage(null)
+        } else if (e.player.hasPermission("cloudie.group.ghost")) {
+            GhostMode.toggleGhostMode(e.player)
             e.joinMessage(null)
         } else {
             e.joinMessage(Formatting.allTags.deserialize(Translation.PlayerMessages.JOIN.replace("%player%", e.player.name)))

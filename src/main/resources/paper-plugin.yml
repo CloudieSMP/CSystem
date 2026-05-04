@@ -22,6 +22,15 @@ permissions:
     description: Allows the player to quit the server silently.
     default: false
 
+  cloudie.group.ghost:
+    description: Allows the player to use ghostmode and more.
+    default: false
+    children:
+      cloudie.cmd.ghost: true
+  cloudie.cmd.ghost:
+    description: Allows the player toggle ghost mode.
+    default: false
+
   cloudie.group.admin:
     description: Allows the player to use all admin commands.
     default: op

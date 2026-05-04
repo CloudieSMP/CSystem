@@ -14,9 +14,10 @@ class PlayerQuit: Listener {
     private fun onQuit(e: PlayerQuitEvent) {
         if(e.player.hasPermission("cloudie.silent.quit")) {
             e.quitMessage(null)
+        } else if (e.player.hasPermission("cloudie.group.ghost")) {
+            e.quitMessage(null)
         } else {
             e.quitMessage(Formatting.allTags.deserialize(Translation.PlayerMessages.QUIT.replace("%player%", e.player.name)))
-
         }
         LiveHelper.onPlayerQuit(e.player)
         NoSleepHelper.cleanup(e.player)

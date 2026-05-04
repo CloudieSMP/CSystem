@@ -37,7 +37,6 @@ object Formatting {
         .tags(
             TagResolver.builder()
                 .resolver(StandardTags.defaults())
-                .resolver(skullResolver())
                 .resolver(Cloudie_Color)
                 .resolver(NOTIFICATION_COLOR)
                 .resolver(prefix())
@@ -55,7 +54,7 @@ object Formatting {
                 .resolver(StandardTags.pride())
                 .resolver(StandardTags.gradient())
                 .resolver(StandardTags.shadowColor())
-                .resolver(skullResolver())
+                .resolver(StandardTags.sequentialHead())
                 .resolver(Cloudie_Color)
                 .build()
         )
@@ -83,14 +82,6 @@ object Formatting {
             Tag.inserting(
                 Component.text(Prefix.ofName(prefixName.toString()).value)
             )
-        }
-    }
-
-    /** Resolves any MiniMessage <skull:NAME> tags used in messages. **/
-    fun skullResolver() : TagResolver {
-        return TagResolver.resolver("skull") { args, _ ->
-            val rawName = args.popOr("Name not supplied.")
-            Tag.inserting(Component.`object`(ObjectContents.playerHead(rawName.toString())))
         }
     }
 }
