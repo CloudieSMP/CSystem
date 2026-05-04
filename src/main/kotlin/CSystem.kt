@@ -147,21 +147,24 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(ServerListEvent(), this)
         server.pluginManager.registerEvents(PlayerJoin(), this)
         server.pluginManager.registerEvents(PlayerQuit(), this)
-        server.pluginManager.registerEvents(InventoryOpenRefresh(), this)
+        server.pluginManager.registerEvents(PlayerDeath(), this)
         server.pluginManager.registerEvents(ChatEvent(), this)
         server.pluginManager.registerEvents(PlayerInteractEntity(), this)
         server.pluginManager.registerEvents(PlayerItemConsume(), this)
-        server.pluginManager.registerEvents(CauldronListener(), this)
         server.pluginManager.registerEvents(PlayerInteract(), this)
+
+        server.pluginManager.registerEvents(CauldronListener(), this)
+        server.pluginManager.registerEvents(InventoryOpenRefresh(), this)
         server.pluginManager.registerEvents(RainCropGrowthListener(), this)
         server.pluginManager.registerEvents(AnvilListener(), this)
-        server.pluginManager.registerEvents(GamblingWindow, this)
-        server.pluginManager.registerEvents(TrashWindow, this)
         server.pluginManager.registerEvents(BinderInteract(), this)
         server.pluginManager.registerEvents(PlushieBoxInteract(), this)
         server.pluginManager.registerEvents(CommandVisibilityListener(), this)
         server.pluginManager.registerEvents(AfkListener(), this)
         server.pluginManager.registerEvents(StonecutterDamageListener(), this)
+
+        server.pluginManager.registerEvents(GamblingWindow, this)
+        server.pluginManager.registerEvents(TrashWindow, this)
     }
 
     private fun applyConfig(config: Config) {

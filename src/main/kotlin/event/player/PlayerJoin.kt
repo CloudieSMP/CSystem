@@ -9,7 +9,6 @@ import item.plushiebox.PlushieBox
 import library.HomeStorage
 import library.MailStorage
 import library.CrateRollStatsStorage
-import library.F3NPermHelper
 import library.GhostMode
 import library.PlayerListNameHelper
 import library.Translation
@@ -20,7 +19,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.Bukkit
-import plugin
 import util.ResourcePacker
 
 @Suppress("UnstableApiUsage")
@@ -44,12 +42,9 @@ class PlayerJoin : Listener {
 
         ResourcePacker.applyPackPlayer(e.player)
 
-        // Send an elevated op-level packet once permissions have had a chance to initialise.
-        // The server sends the initial level-0 packet before PlayerJoinEvent fires, so we
-        // wait a short time for the permission system to settle before issuing our corrective packet.
-        plugin.server.scheduler.runTaskLater(plugin, Runnable {
-            if (e.player.isOnline) F3NPermHelper.sendElevatedOpLevel(e.player)
-        }, 10L)
+        if (e.player.hasPermission("cloudie.group.admin")) {
+            e.player.sendOpLevel(2)
+        }
 
         e.player.sendMessage(mm.deserialize("<red>⚠ <reset>Please <b>do not</b> break loot chests!"))
         if (e.player.hasPermission("cloudie.silent.join")) {
