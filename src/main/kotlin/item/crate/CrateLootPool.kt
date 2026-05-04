@@ -34,6 +34,7 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         COPPER_ANTENNAS_EXPOSED,
         COPPER_ANTENNAS_WEATHERED,
         COPPER_ANTENNAS_OXIDIZED,
+        HORNS
     )),
     PLAYER(listOf(
         SEBIANN,
@@ -55,6 +56,8 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         WHISPER,
         YAMS,
         SOHCAHTO,
+        RADISLI,
+
         SEBIANN_CLASSIC,
         CARSON_GRAY,
         ROAST_MAID,

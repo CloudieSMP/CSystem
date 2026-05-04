@@ -105,6 +105,7 @@ enum class CrateItem(
     WHISPER("Whisper Plushie", COMMON, "A cute Whisper plushie", "plushies/player/whisper_wide"),
     YAMS("Yams Plushie", COMMON, "RAWR, I'm a dwagon.", "plushies/player/yams_slim"),
     SOHCAHTO("SohCahTo Plushie", COMMON, "ifykyk", "plushies/player/sohcahto_slim"),
+    RADISLI("Radisli Plushie", COMMON, "Boat goes Binted!", "plushies/player/radisli_slim"),
 
     // Legendary player plushies
     SEBIANN_CLASSIC("Sebiann Classic Plushie", LEGENDARY, "A classic Sebiann plushie\nA precious collector's item\nExtremely limited!", "plushies/player/sebiann_classic"),
