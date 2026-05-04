@@ -5,5 +5,6 @@ enum class ItemType(val typeName : String, val typeGlyph : String) {
     CONSUMABLE("Consumable", "\uE201"),
     PLUSHIE("Plushie", "\uE202"),
     CARD("Card", "\uE203"),
-    ARMOR("Armor", "\uE204")
+    ARMOR("Armor", "\uE204"),
+    COSMETIC("Cosmetic", "\uE205"),
 }

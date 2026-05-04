@@ -4,7 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import item.crate.CrateItem
 import net.kyori.adventure.key.Key
-import org.bukkit.Material
+import util.Materials.HOE_MATERIALS
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta
 import org.bukkit.inventory.meta.Repairable
 import org.bukkit.persistence.PersistentDataType.STRING
 import util.Keys.CRATE_ITEM
+import util.Materials.isHelmet
 
 @Suppress("UnstableApiUsage")
 class AnvilListener : Listener {
@@ -87,7 +88,7 @@ class AnvilListener : Listener {
      */
     private fun handleSweepingEdgeOnHoe(event: PrepareAnvilEvent) {
         val base = event.inventory.getItem(0) ?: return
-        if (base.type !in HarvestReplantListener.HOE_MATERIALS) return
+        if (base.type !in HOE_MATERIALS) return
 
         val addition = event.inventory.getItem(1) ?: return
         val bookMeta = addition.itemMeta as? EnchantmentStorageMeta ?: return
@@ -126,20 +127,6 @@ class AnvilListener : Listener {
         }
 
         event.result = result
-    }
-
-    companion object {
-        private val HELMET_MATERIALS = setOf(
-            Material.LEATHER_HELMET,
-            Material.CHAINMAIL_HELMET,
-            Material.IRON_HELMET,
-            Material.GOLDEN_HELMET,
-            Material.DIAMOND_HELMET,
-            Material.NETHERITE_HELMET,
-            Material.TURTLE_HELMET,
-        )
-
-        fun isHelmet(material: Material): Boolean = material in HELMET_MATERIALS
     }
 }
 

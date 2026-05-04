@@ -68,6 +68,11 @@ object HelpHelper {
             listOf("List all of your homes.", "Sets a home with the given name (if already exists, overwrites it).", "Deletes the home.", "Teleport to the home with the given name."),
             "Manage your homes."
         ),
+        "tpa" to CommandHelp(
+            listOf("/tpa <player>", "/tpahere <player>", "/tpaccept [player]", "/tpdeny [player]", "/tpacancel"),
+            listOf("Send a TPA request to a player.", "Request another player to teleport to you.", "Accept a pending TPA request.", "Deny a pending TPA request.", "Cancel all TPA request you sent."),
+            "TPA to players."
+        ),
         "mail" to CommandHelp(
             listOf("/mail send <player> <message>", "/mail inbox [page]", "/mail read <id>", "/mail delete <id>", "/mail clearread"),
             listOf("Send mail to a player.", "Open your mailbox inbox.", "Read a mailbox entry by id.", "Delete a mailbox entry by id.", "Delete all read mailbox entries."),
@@ -101,10 +106,9 @@ object HelpHelper {
             listOf("Remove a cosmetic overlay from a helmet and return the cosmetic item to your inventory."),
             "Remove a cosmetic from a helmet."
         ),
-        "tpa" to CommandHelp(
-            listOf("/tpa <player>", "/tpahere <player>", "/tpaccept [player]", "/tpdeny [player]", "/tpacancel"),
-            listOf("Send a TPA request to a player.", "Request another player to teleport to you.", "Accept a pending TPA request.", "Deny a pending TPA request.", "Cancel all TPA request you sent."),
-            "TPA to players."
+        "toggleglow" to CommandHelp(
+            listOf("/toggleglow"),
+            listOf("Toggle the glowing effect on a helmet held in your hand.")
         ),
         "ping" to CommandHelp(
             listOf("/ping"),

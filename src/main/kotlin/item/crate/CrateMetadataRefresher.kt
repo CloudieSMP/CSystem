@@ -1,10 +1,10 @@
 package item.crate
 
-import event.block.AnvilListener
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.event.inventory.InventoryType
+import util.Materials.STORAGE_INVENTORY_TYPES
+import util.Materials.isHelmet
 
 object CrateMetadataRefresher {
     fun refreshPlayerInventories(player: Player): Int {
@@ -12,7 +12,7 @@ object CrateMetadataRefresher {
     }
 
     fun refresh(item: ItemStack?): ItemStack? {
-        if (item != null && AnvilListener.isHelmet(item.type)) return null
+        if (item != null && isHelmet(item.type)) return CrateItem.refreshHelmet(item)
         return Crate.refresh(item) ?: CrateItem.refresh(item)
     }
 
@@ -32,15 +32,4 @@ object CrateMetadataRefresher {
 
         return updatedSlots
     }
-
-    private val STORAGE_INVENTORY_TYPES = setOf(
-        InventoryType.CHEST,
-        InventoryType.ENDER_CHEST,
-        InventoryType.SHULKER_BOX,
-        InventoryType.BARREL,
-        InventoryType.HOPPER,
-        InventoryType.DISPENSER,
-        InventoryType.DROPPER,
-    )
 }
-

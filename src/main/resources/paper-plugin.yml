@@ -107,6 +107,7 @@ permissions:
       cloudie.cmd.cratestats: true
       cloudie.cmd.stripcosmetic: true
       cloudie.cmd.ping: true
+      cloudie.cmd.toggleglow: true
       cloudie.removecmds: true
 
   cloudie.cmd.hat:
@@ -155,6 +156,8 @@ permissions:
     description: Allows the player to toggle the NoSleep tab tag.
   cloudie.cmd.ping:
     description: Allows the player to check their ping.
+  cloudie.cmd.toggleglow:
+    description: Allows the player to toggle glowing effect on their helmet.
 
   cloudie.dontshowstatscreen:
     description: Hides the /showstat scoreboard from this player's screen.

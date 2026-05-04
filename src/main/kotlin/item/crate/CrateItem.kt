@@ -17,6 +17,8 @@ import org.bukkit.persistence.PersistentDataType.STRING
 import util.Keys.CRATE_ITEM
 import util.Keys.CRATE_ROLLED_BY
 import util.Keys.GENERIC_RARITY
+import util.Keys.ITEM_TYPE
+import util.Materials.isHelmet
 import util.isDebug
 import util.setIsDebug
 
@@ -26,9 +28,9 @@ private fun createDisplayName(displayName: String, rarity: ItemRarity): Componen
         .decoration(TextDecoration.ITALIC, false)
 }
 
-private fun createLore(description: String, rarity: ItemRarity): List<Component> {
+private fun createLore(description: String, rarity: ItemRarity, itemType: ItemType): List<Component> {
     return buildList {
-        add(allTags.deserialize("<!i><white>${rarity.rarityGlyph}${ItemType.PLUSHIE.typeGlyph}"))
+        add(allTags.deserialize("<!i><white>${rarity.rarityGlyph}${itemType.typeGlyph}"))
         description.split("\n").forEach { line ->
             add(Component.text(line).decoration(TextDecoration.ITALIC, false))
         }
@@ -234,6 +236,13 @@ enum class CrateItem(
     val isPlushie: Boolean
         get() = modelPath.startsWith("plushies/")
 
+    val itemType: ItemType
+        get() = when {
+            modelPath.startsWith("plushies/") -> ItemType.PLUSHIE
+            modelPath.startsWith("cosmetics/") -> ItemType.COSMETIC
+            else -> ItemType.UTILITY
+        }
+
     val rollWeight: Double
         get() = rarity.crateWeight
 
@@ -259,9 +268,10 @@ enum class CrateItem(
     private fun applyMetadata(itemStack: ItemStack, rolledBy: String? = null) {
         itemStack.editMeta { meta ->
             meta.displayName(createDisplayName(itemName, rarity))
-            meta.lore(createLore(itemDescription, rarity))
+            meta.lore(createLore(itemDescription, rarity, itemType))
             meta.persistentDataContainer.set(CRATE_ITEM, STRING, storedId)
             meta.persistentDataContainer.set(GENERIC_RARITY, STRING, rarity.name)
+            meta.persistentDataContainer.set(ITEM_TYPE, STRING, itemType.name)
             rolledBy?.let { meta.persistentDataContainer.set(CRATE_ROLLED_BY, STRING, it) }
         }
         itemStack.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey("cloudie", modelPath))
@@ -309,6 +319,35 @@ enum class CrateItem(
             }
 
             return if (current.type == refreshed.type && current.itemMeta == refreshed.itemMeta) {
+                null
+            } else {
+                refreshed
+            }
+        }
+
+        @Suppress("UnstableApiUsage")
+        fun refreshHelmet(item: ItemStack?): ItemStack? {
+            val current = item ?: return null
+            if (!isHelmet(current.type)) return null
+
+            val currentMeta = current.itemMeta ?: return null
+            val storedId = currentMeta.persistentDataContainer.get(CRATE_ITEM, STRING) ?: return null
+            val crateItem = fromStoredId(storedId) ?: return null
+
+            // Build a fresh cosmetic stack to get up-to-date PDC values (ITEM_TYPE, GENERIC_RARITY, etc.)
+            val cosmeticStack = crateItem.createItemStack(1)
+            val cosmeticMeta = cosmeticStack.itemMeta ?: return null
+
+            val refreshed = current.clone()
+            refreshed.editMeta { m ->
+                cosmeticMeta.persistentDataContainer.copyTo(m.persistentDataContainer, true)
+            }
+            // Ensure ITEM_MODEL reflects current model path
+            refreshed.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey("cloudie", crateItem.modelPath))
+
+            return if (current.itemMeta == refreshed.itemMeta &&
+                current.getData(DataComponentTypes.ITEM_MODEL) == refreshed.getData(DataComponentTypes.ITEM_MODEL)
+            ) {
                 null
             } else {
                 refreshed

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
+import util.Materials.HOE_MATERIALS
 
 object HarvestReplantListener {
 
@@ -19,16 +20,6 @@ object HarvestReplantListener {
         Material.BEETROOTS to Material.BEETROOT_SEEDS,
         Material.TORCHFLOWER_CROP to Material.TORCHFLOWER_SEEDS,
         Material.NETHER_WART to Material.NETHER_WART,
-    )
-
-    val HOE_MATERIALS = setOf(
-        Material.WOODEN_HOE,
-        Material.STONE_HOE,
-        Material.COPPER_HOE,
-        Material.IRON_HOE,
-        Material.GOLDEN_HOE,
-        Material.DIAMOND_HOE,
-        Material.NETHERITE_HOE,
     )
 
     fun harvestReplantEvent(event: PlayerInteractEvent) {
