@@ -9,7 +9,6 @@ import item.SubRarity
 import item.SubRarity.*
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import net.kyori.adventure.key.Key
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.*
@@ -57,22 +56,20 @@ enum class BagItem(val pctChanceToRoll: Int, val amountRange: IntRange, private 
             listOf(allTags.deserialize("<reset><!i><white>${EPIC.rarityGlyph}${if (subRarity != NONE) subRarity.subRarityGlyph else ""}${ItemType.ARMOR.typeGlyph}"))
         )
 
+        var equippable: Equippable? = null
         when (subRarity) {
             SHINY -> {
                 elytraMeta.setEnchantmentGlintOverride(true)
-                elytraMeta.itemModel = NamespacedKey("cloudie", "elytra_shiny")
-                val equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(Key.key("cloudie:elytra_shiny")).build()
-                item.setData(DataComponentTypes.EQUIPPABLE, equippable)
+                elytraMeta.itemModel = NamespacedKey("cloudie", "cosmetics/elytra_shiny")
+                equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(NamespacedKey("cloudie", "elytra_shiny")).build()
             }
             SHADOW -> {
-                elytraMeta.itemModel = NamespacedKey("cloudie", "elytra_shadow")
-                val equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(Key.key("cloudie:elytra_shadow")).build()
-                item.setData(DataComponentTypes.EQUIPPABLE, equippable)
+                elytraMeta.itemModel = NamespacedKey("cloudie", "cosmetics/elytra_shadow")
+                equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(NamespacedKey("cloudie", "elytra_shadow")).build()
             }
             OBFUSCATED -> {
-                elytraMeta.itemModel = NamespacedKey("cloudie", "elytra_obf")
-                val equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(Key.key("cloudie:elytra_obf")).build()
-                item.setData(DataComponentTypes.EQUIPPABLE, equippable)
+                elytraMeta.itemModel = NamespacedKey("cloudie", "cosmetics/elytra_obf")
+                equippable = Equippable.equippable(EquipmentSlot.CHEST).assetId(NamespacedKey("cloudie", "elytra_obf")).build()
             }
             else -> {}
         }
@@ -80,6 +77,12 @@ enum class BagItem(val pctChanceToRoll: Int, val amountRange: IntRange, private 
         elytraMeta.persistentDataContainer.set(GENERIC_RARITY, STRING, EPIC.rarityName.uppercase())
         elytraMeta.persistentDataContainer.set(GENERIC_SUB_RARITY, STRING, subRarity.name.uppercase())
         item.itemMeta = elytraMeta
+
+        // Set EQUIPPABLE data component AFTER itemMeta to prevent it from being overwritten
+        if (equippable != null) {
+            item.setData(DataComponentTypes.EQUIPPABLE, equippable)
+        }
+
         return item
     }
 }
