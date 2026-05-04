@@ -31,6 +31,10 @@ permissions:
     description: Allows the player toggle ghost mode.
     default: false
 
+  cloudie.group.alt:
+    description: This is just a marker for Alt accounts.
+    default: false
+
   cloudie.group.admin:
     description: Allows the player to use all admin commands.
     default: op
