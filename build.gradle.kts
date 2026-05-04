@@ -56,6 +56,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:3.4.2")
     implementation("io.ktor:ktor-client-cio:3.4.2")
     implementation("io.ktor:ktor-client-logging:3.4.2")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.spongepowered:configurate-yaml:4.2.0")
     implementation("org.spongepowered:configurate-extra-kotlin:4.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
@@ -79,6 +80,7 @@ tasks {
         relocate("org.incendo", "${shadowPkg}.org.incendo")
         relocate("org.spongepowered", "${shadowPkg}.org.spongepowered")
         relocate("fr.mrmicky", "${shadowPkg}.fr.mrmicky")
+        relocate("com.google.gson", "${shadowPkg}.com.google.gson")
 
         mergeServiceFiles()
     }

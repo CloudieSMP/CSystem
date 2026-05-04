@@ -1,13 +1,15 @@
 package util
 
+import ResourcePack
 import plugin
 import logger
+
+import com.google.gson.JsonParser
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.http.HttpMethod
 
 import kotlinx.coroutines.runBlocking
 
@@ -29,6 +31,7 @@ object ResourcePacker {
 
     private class DownloadedPack(
         val bytes: ByteArray,
+        val uri: URI,
         val releaseLabel: String?
     )
 
@@ -41,7 +44,6 @@ object ResourcePacker {
     )
 
     private val client = HttpClient(CIO)
-    private val noRedirectClient = HttpClient(CIO) { followRedirects = false }
 
     @Volatile
     private var cachedPacks: List<ResourcePackInfo> = emptyList()
@@ -88,12 +90,12 @@ object ResourcePacker {
 
         try {
             configured.forEach { pack ->
-                val downloaded = fetch(pack.uri.toString())
+                val downloaded = fetch(pack)
                 val resolvedHash = hash(downloaded.bytes)
 
-                nextPacks += ResourcePackInfo.resourcePackInfo(UUID.randomUUID(), pack.uri, resolvedHash)
+                nextPacks += ResourcePackInfo.resourcePackInfo(UUID.randomUUID(), downloaded.uri, resolvedHash)
                 nextMeta += CachedPackMeta(
-                    uri = pack.uri,
+                    uri = downloaded.uri,
                     priority = pack.priority,
                     hash = resolvedHash,
                     releaseLabel = downloaded.releaseLabel
@@ -107,7 +109,7 @@ object ResourcePacker {
             true
         } catch (e: Exception) {
             lastError = e.message ?: e::class.simpleName ?: "Unknown refresh error"
-            logger.severe("Failed to refresh resource pack cache from URL\nStack Trace:\n${e.stackTrace}\nMessage:\n${e.message}")
+            logger.severe("Failed to refresh resource pack cache\nStack Trace:\n${e.stackTrace}\nMessage:\n${e.message}")
             false
         }
     }
@@ -122,44 +124,66 @@ object ResourcePacker {
         )
     }
 
-    private suspend fun fetch(url: String): DownloadedPack {
-        val response: HttpResponse = client.get(url)
-        val configuredUri = URI(url)
-        val effectiveUri = URI(response.request.url.toString())
-        val releaseLabel = resolveGitHubLatestRelease(url)
-            ?: deriveGitHubReleaseFromUri(configuredUri)
-            ?: deriveGitHubReleaseFromUri(effectiveUri)
+    // -------------------------------------------------------------------------
+    // Internal helpers
+    // -------------------------------------------------------------------------
 
+    private suspend fun fetch(pack: ResourcePack): DownloadedPack {
+        val (downloadUri, tagName) = resolveGitHubReleaseAsset(pack)
+        val response: HttpResponse = client.get(downloadUri.toString())
         return DownloadedPack(
             bytes = response.readRawBytes(),
-            releaseLabel = releaseLabel
+            uri = downloadUri,
+            releaseLabel = tagName
         )
     }
 
-    private suspend fun resolveGitHubLatestRelease(url: String): String? {
-        val uri = runCatching { URI(url) }.getOrNull() ?: return null
-        val host = uri.host?.lowercase() ?: return null
-        if (host != "github.com" && host != "www.github.com") return null
-        if (!uri.path.contains("/releases/latest/download/")) return null
-
-        val response = noRedirectClient.request(url) {
-            method = HttpMethod.Get
+    /**
+     * Calls the GitHub Releases API for the repository described by [pack.githubUrl],
+     * finds the newest release whose tag name starts with "[pack.branch]-",
+     * then returns the browser_download_url of the asset named [pack.zipName]
+     * together with the matched tag name.
+     */
+    private suspend fun resolveGitHubReleaseAsset(pack: ResourcePack): Pair<URI, String> {
+        val repoUri = URI(pack.githubUrl.trimEnd('/'))
+        val pathParts = repoUri.path.trimStart('/').split('/')
+        require(pathParts.size >= 2) {
+            "githubUrl must contain owner and repo segments: ${pack.githubUrl}"
         }
-        val location = response.headers["Location"] ?: return null
-        return runCatching { deriveGitHubReleaseFromUri(URI(location)) }.getOrNull()
+        val owner = pathParts[0]
+        val repo  = pathParts[1]
+
+        val apiUrl = "https://api.github.com/repos/$owner/$repo/releases"
+        logger.info("Fetching GitHub releases from $apiUrl for branch prefix '${pack.branch}-'")
+
+        val response: HttpResponse = client.get(apiUrl) {
+            header("Accept", "application/vnd.github+json")
+            header("X-GitHub-Api-Version", "2022-11-28")
+        }
+
+        val body = response.bodyAsText()
+        val releases = JsonParser.parseString(body).asJsonArray
+
+        val prefix = "${pack.branch}-"
+
+        // Releases are returned newest-first by the API; take the first match.
+        val release = releases.asSequence()
+            .map { it.asJsonObject }
+            .firstOrNull { it["tag_name"]?.asString?.startsWith(prefix) == true }
+            ?: error("No GitHub release found with tag starting with '$prefix' in ${pack.githubUrl}")
+
+        val tagName = release["tag_name"].asString
+
+        val asset = release["assets"].asJsonArray
+            .asSequence()
+            .map { it.asJsonObject }
+            .firstOrNull { it["name"].asString == pack.zipName }
+            ?: error("Asset '${pack.zipName}' not found in release '$tagName' of ${pack.githubUrl}")
+
+        val downloadUrl = asset["browser_download_url"].asString
+        logger.info("Resolved resource pack '${pack.zipName}' → $downloadUrl (tag: $tagName)")
+        return Pair(URI(downloadUrl), tagName)
     }
-
-    private fun deriveGitHubReleaseFromUri(uri: URI): String? {
-        val host = uri.host?.lowercase() ?: return null
-        if (host != "github.com" && host != "www.github.com") return null
-
-        val segments = uri.path.split('/').filter { it.isNotBlank() }
-        val downloadIndex = segments.indexOf("download")
-        if (downloadIndex < 0 || downloadIndex + 1 >= segments.size) return null
-        if (downloadIndex == 0 || segments[downloadIndex - 1] != "releases") return null
-        return segments[downloadIndex + 1]
-    }
-
 
     private fun hash(data: ByteArray): String {
         val messageDigest = MessageDigest.getInstance("SHA-1")

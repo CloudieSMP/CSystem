@@ -7,10 +7,14 @@ links:
     order: 0
 
 # Server resource packs which are applied on join.
-# URI is a direct link to a zip file.
-# Priority determines pack order, higher priority will put the pack higher up in the list.
+# github-url: Base URL of the GitHub repository (e.g. https://github.com/Owner/repo).
+# branch:     The tag prefix to match releases against (e.g. "master" matches tags like "master-v64").
+# zip-name:   The asset filename to download from the matching release (e.g. "cloudie-s10-RP.zip").
+# priority:   Pack stack order; higher number = higher priority.
 resource-packs:
-  - uri: "https://github.com/CloudieSMP/resourcepack-s10/releases/latest/download/cloudie-s10-RP.zip"
+  - github-url: "https://github.com/CloudieSMP/resourcepack-s10"
+    branch: master
+    zip-name: "cloudie-s10-RP.zip"
     priority: 100
 
 # Server MOTD displayed in the server list. Supports MiniMessage.
@@ -24,7 +28,7 @@ tpa:
   # Time in seconds before the player gets tped.
   tpa-delay: 2
 home:
-  max-homes: 5
+  max-homes: 3
 
 discord:
   # Webhook URL for player reports. Leave empty to disable.
@@ -37,7 +41,7 @@ afk:
 rain-crop-growth:
   # Chance (0.0–1.0) that a crop exposed to open sky receives an extra growth tick
   # during rain. Set to 0.0 to disable.
-  boost-chance: 0.5
+  boost-chance: 0.25
 
 show-stat:
   # How long each scoreboard page is shown, in seconds.

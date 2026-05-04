@@ -1,5 +1,4 @@
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
-import java.net.URI
 
 @ConfigSerializable
 data class Config(
@@ -48,7 +47,7 @@ data class ShowStatConfig(
 )
 
 @ConfigSerializable
-data class Link(val component: String, val uri: URI, val order: Int)
+data class Link(val component: String, val uri: java.net.URI, val order: Int)
 
 @ConfigSerializable
-data class ResourcePack(val uri: URI, val priority: Int)
+data class ResourcePack(val githubUrl: String, val branch: String, val zipName: String, val priority: Int)
