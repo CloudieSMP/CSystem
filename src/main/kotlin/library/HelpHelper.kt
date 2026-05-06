@@ -162,6 +162,11 @@ object HelpHelper {
             listOf("Broadcast a rotating statistic scoreboard to online players."),
             "Broadcast statistic scoreboards."
         ),
+        "tagstat" to CommandHelp(
+            listOf("/tagstat tagged", "/tagstat tagger"),
+            listOf("Broadcast a scoreboard of how many times each player has been tagged.", "Broadcast a scoreboard of how many times each player has tagged someone."),
+            "Broadcast tag game stat scoreboards."
+        ),
         "cloudie" to CommandHelp(
             listOf("/cloudie reload"),
             listOf("Reload the plugin configuration and systems."),

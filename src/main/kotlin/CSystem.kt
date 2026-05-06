@@ -27,6 +27,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import util.ui.GamblingWindow
 import util.ui.TrashWindow
 import library.AfkHelper
+import library.TagHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
@@ -55,6 +56,7 @@ class CSystem : JavaPlugin() {
         CardPullCounterStorage.loadSync()
         CrateRollStatsStorage.loadSync()
         ShowStat.loadSync()
+        TagHelper.loadSync()
         registerRecipes()
         if (ResourcePacker.refreshFromUrl()) {
             logger.info("Resource pack cache populated on startup.")
@@ -75,6 +77,7 @@ class CSystem : JavaPlugin() {
         CardPullCounterStorage.flushAllSync()
         CrateRollStatsStorage.flushAllSync()
         ShowStat.saveSync()
+        TagHelper.flushAllSync()
         AfkHelper.resetAll()
         VisualChat.clearChatEntities()
     }
@@ -162,6 +165,7 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(CommandVisibilityListener(), this)
         server.pluginManager.registerEvents(AfkListener(), this)
         server.pluginManager.registerEvents(StonecutterDamageListener(), this)
+        server.pluginManager.registerEvents(TagListener(), this)
 
         server.pluginManager.registerEvents(GamblingWindow, this)
         server.pluginManager.registerEvents(TrashWindow, this)

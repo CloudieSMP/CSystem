@@ -10,7 +10,8 @@ data class Config(
     val discord: DiscordConfig = DiscordConfig(),
     val afk: AfkConfig = AfkConfig(),
     val rainCropGrowth: RainCropGrowthConfig = RainCropGrowthConfig(),
-    val showStat: ShowStatConfig = ShowStatConfig()
+    val showStat: ShowStatConfig = ShowStatConfig(),
+    val tagYourIt: TagYourItConfig = TagYourItConfig(),
 )
 
 @ConfigSerializable
@@ -44,6 +45,13 @@ data class RainCropGrowthConfig(
 data class ShowStatConfig(
     /** How long each scoreboard page is shown, in seconds. */
     val secondsPerPage: Int = 7
+)
+
+@ConfigSerializable
+data class TagYourItConfig(
+    val cooldownSeconds: Int = 30,
+    /** How long (in seconds) a player must wait before they can tag back the person who tagged them. Default: 24 hours. */
+    val cooldownBackTaggingSeconds: Int = 86400
 )
 
 @ConfigSerializable

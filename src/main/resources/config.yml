@@ -46,3 +46,8 @@ rain-crop-growth:
 show-stat:
   # How long each scoreboard page is shown, in seconds.
   seconds-per-page: 7
+
+tag-your-it:
+  cooldown-seconds: 30
+  # How long (in seconds) before a player can tag back the person who tagged them. Default: 86400 (24 hours).
+  cooldown-back-tagging-seconds: 86400

@@ -11,6 +11,7 @@ import library.MailStorage
 import library.CrateRollStatsStorage
 import library.GhostMode
 import library.PlayerListNameHelper
+import library.TagHelper
 import library.Translation
 import logger
 import net.kyori.adventure.audience.Audience
@@ -33,6 +34,7 @@ class PlayerJoin : Listener {
         MailStorage.preload(e.player.uniqueId)
         CrateRollStatsStorage.preload(e.player.uniqueId)
         CrateMetadataRefresher.refreshPlayerInventories(e.player)
+        TagHelper.ensurePlayer(e.player)
         sendTabList(e.player)
 
         val brand = e.player.clientBrandName

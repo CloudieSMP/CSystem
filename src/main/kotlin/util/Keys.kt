@@ -16,6 +16,7 @@ object Keys {
     val IS_DEBUG = NamespacedKey(plugin, "item.is_debug")
     val CRATE_ROLLED_BY = NamespacedKey(plugin, "crate.rolled_by")
     val BOOSTER_TYPE = NamespacedKey(plugin, "booster.type")
+    val IS_TAG = NamespacedKey(plugin, "item.is_tag")
 
     /**
      * Card related
