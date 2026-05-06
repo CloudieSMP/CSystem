@@ -37,10 +37,10 @@ object HelpHelper {
             listOf("/crates"),
             listOf("View the available crates.")
         ),
-        "boosters" to CommandHelp(
-            listOf("/boosters"),
-            listOf("View the available booster packs and preview card odds.")
-        ),
+//        "boosters" to CommandHelp(
+//            listOf("/boosters"),
+//            listOf("View the available booster packs and preview card odds.")
+//        ),
         "cratestats" to CommandHelp(
             listOf("/cratestats", "/cratestats me <crate>", "/cratestats global"),
             listOf("Show your overall crate roll stats.", "Show your collectible stats for a specific crate.", "Show global crate roll stats across all players."),

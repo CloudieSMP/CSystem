@@ -19,7 +19,9 @@ import item.crate.CrateType
 import item.treasurebag.BagItem
 import item.treasurebag.BagType
 import item.treasurebag.TreasureBag
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.incendo.cloud.annotations.Argument
 import org.incendo.cloud.annotations.Default
 import java.util.UUID
@@ -191,7 +193,7 @@ class Debug {
         player.inventory.addItem(loot.createItemStack(useDebugSubRarityOverride = true))
     }
 
-    @Command("debug uuid <x> <y> <z> <a>")
+    @Command("debug uuid convert <x> <y> <z> <a>")
     @Permission("cloudie.cmd.debug")
     fun debugUuid(
         css: CommandSourceStack,
@@ -207,6 +209,17 @@ class Debug {
         css.sender.sendMessage(
             allTags.deserialize(
                 "<click:copy_to_clipboard:'$uuidText'><hover:show_text:'<gray>Click to copy UUID</gray>'><cloudiecolor>$uuidText</cloudiecolor></hover></click>"
+            )
+        )
+    }
+
+    @Command("debug uuid get <player>")
+    @Permission("cloudie.cmd.debug")
+    fun debugUuidPlayer(css: CommandSourceStack, player: OfflinePlayer) {
+        val uuidText = player.uniqueId.toString()
+        css.sender.sendMessage(
+            allTags.deserialize(
+                "<click:copy_to_clipboard:'$uuidText'><hover:show_text:'<gray>Click to copy UUID</gray>'><white>$uuidText</white></hover></click>"
             )
         )
     }
