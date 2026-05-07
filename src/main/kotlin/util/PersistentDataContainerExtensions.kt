@@ -7,6 +7,10 @@ fun PersistentDataContainer.isDebug(): Boolean {
     return this.get(Keys.IS_DEBUG, BYTE)?.toInt() == 1
 }
 
+fun PersistentDataContainer.isTag(): Boolean {
+    return this.get(Keys.IS_TAG, BYTE)?.toInt() == 1
+}
+
 fun PersistentDataContainer.setIsDebug(isDebug: Boolean) {
     if (isDebug) {
         this.set(Keys.IS_DEBUG, BYTE, 1)

@@ -4,8 +4,8 @@ import library.AfkHelper
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInputEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
 class AfkListener : Listener {
@@ -20,13 +20,12 @@ class AfkListener : Listener {
         AfkHelper.cleanup(event.player)
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onMove(event: PlayerMoveEvent) {
-        // Only trigger on actual position change, not just head rotation
-        if (event.from.blockX != event.to.blockX ||
-            event.from.blockY != event.to.blockY ||
-            event.from.blockZ != event.to.blockZ
-        ) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun onInput(event: PlayerInputEvent) {
+        val input = event.input
+        // Only count deliberate key presses — knockback and forced teleports never trigger this
+        if (input.isForward || input.isBackward || input.isLeft || input.isRight ||
+            input.isJump || input.isSneak || input.isSprint) {
             AfkHelper.recordActivity(event.player)
         }
     }

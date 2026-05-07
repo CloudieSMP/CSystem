@@ -41,10 +41,10 @@ object HelpHelper {
 //            listOf("/boosters"),
 //            listOf("View the available booster packs and preview card odds.")
 //        ),
-        "cratestats" to CommandHelp(
-            listOf("/cratestats", "/cratestats me <crate>", "/cratestats global"),
-            listOf("Show your overall crate roll stats.", "Show your collectible stats for a specific crate.", "Show global crate roll stats across all players."),
-            "View crate roll statistics."
+        "stats" to CommandHelp(
+            listOf("/stats crate", "/stats crate me <crate>", "/stats crate global", "/stats tag tagged", "/stats tag tagger", "/stats crate <player>"),
+            listOf("Show your overall crate roll stats.", "Show your collectible stats for a specific crate.", "Show global crate roll stats across all players.", "Broadcast a scoreboard of how many times each player has been tagged.", "Broadcast a scoreboard of how many times each player has tagged someone.", "View another player's crate roll stats (staff only)."),
+            "Show tag or crate statistics."
         ),
         "echo" to CommandHelp(
             listOf("/echo <message>"),
@@ -109,6 +109,10 @@ object HelpHelper {
         "toggleglow" to CommandHelp(
             listOf("/toggleglow"),
             listOf("Toggle the glowing effect on a helmet held in your hand.")
+        ),
+        "losttag" to CommandHelp(
+            listOf("/losttag"),
+            listOf("Use this to regain your tag.")
         ),
         "ping" to CommandHelp(
             listOf("/ping"),
@@ -176,6 +180,11 @@ object HelpHelper {
             listOf("/trash"),
             listOf("Open a trash inventory — items left inside are deleted on close."),
             "Open a trash inventory."
+        ),
+        "tagyourit" to CommandHelp(
+            listOf("/tagyourit create [player]", "/tagyourit delete [player]", "/tagyourit add [player]", "/tagyourit remove [player]"),
+            listOf("Create a tag for yourself or another player.", "Delete your tag or another player's tag.", "Tag yourself or another player.", "Untag yourself or another player."),
+            "Tag your it."
         ),
         "debug" to CommandHelp(
             listOf("/debug"),
