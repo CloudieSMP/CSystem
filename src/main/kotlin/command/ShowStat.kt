@@ -16,6 +16,7 @@ import org.incendo.cloud.annotations.Command
 import org.incendo.cloud.annotations.Flag
 import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
+import org.bukkit.scheduler.BukkitTask
 import plugin
 import util.Sounds.ERROR_DIDGERIDOO
 import java.text.DecimalFormat
@@ -29,7 +30,6 @@ class ShowStat {
 
     val pageSize = 14
     val secondsPerPage get() = plugin.config.showStat.secondsPerPage
-    var isActive = false
 
     @Command("showstat|sb <stat>")
     @Permission("cloudie.cmd.showstat")
@@ -92,7 +92,12 @@ class ShowStat {
 
         val sorted = sbEntries.sortedByDescending { it.second }
 
+        // All validation passed — commit to this run.
+        // Cancel any pending clear from the previous run so it can't wipe the new scoreboard.
+        pendingClearTask?.cancel()
+        pendingClearTask = null
         isActive = true
+
         val formatter = formatterFor(stat)
         val statScoreboardRunnable = object : BukkitRunnable() {
             var pageIndex = if (page != null) (page - 1).coerceAtLeast(0) else 0
@@ -122,14 +127,12 @@ class ShowStat {
                     broadcastScoreboardLines(title, page, formatter)
                     if (singlePage) {
                         clearScoreboards(secondsPerPage * 20L)
-                        isActive = false
                         this.cancel()
                     } else {
                         pageIndex++
                     }
                 } else {
                     clearScoreboards(20L)
-                    isActive = false
                     this.cancel()
                 }
             }
@@ -138,6 +141,12 @@ class ShowStat {
     }
 
     companion object {
+        /** Global flag: true while a scoreboard sequence is active (including while a deferred clear is pending). */
+        var isActive = false
+
+        /** The scheduled task that will wipe scoreboards; cancelled if a new sequence starts before it fires. */
+        private var pendingClearTask: BukkitTask? = null
+
         /** UUIDs of players with the `cloudie.group.alt` permission, populated on join. */
         val altUuids: MutableSet<UUID> = Collections.newSetFromMap(java.util.concurrent.ConcurrentHashMap())
 
@@ -198,12 +207,15 @@ class ShowStat {
         }
 
         fun clearScoreboards(delay: Long) {
-            object : BukkitRunnable() {
+            pendingClearTask?.cancel()
+            pendingClearTask = object : BukkitRunnable() {
                 override fun run() {
                     for (player in Bukkit.getOnlinePlayers()) {
                         if (player.hasPermission("cloudie.dontshowstatscreen")) continue
                         FastBoard(player).delete()
                     }
+                    isActive = false
+                    pendingClearTask = null
                 }
             }.runTaskLater(plugin, delay)
         }

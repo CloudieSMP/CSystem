@@ -17,6 +17,7 @@ import org.incendo.cloud.annotations.Permission
 import org.incendo.cloud.annotations.processing.CommandContainer
 import org.incendo.cloud.annotations.suggestion.Suggestions
 import plugin
+import util.Sounds.ERROR_DIDGERIDOO
 import util.requirePlayer
 import java.util.Locale
 import java.util.UUID
@@ -47,6 +48,11 @@ class Stats {
     }
 
     private fun broadcastTagStat(player: Player, titleBase: String, getValue: (TagHelper.PlayerTagStats) -> Int) {
+        if (ShowStat.isActive) {
+            player.sendMessage(allTags.deserialize("<red>Other stats are already being shown, please wait for them to finish."))
+            player.playSound(ERROR_DIDGERIDOO)
+            return
+        }
         val entries = TagHelper.getAllStats()
             .filter { (_, s) -> getValue(s) > 0 }
             .map { (_, s) -> Pair(ShowStat.formatPlayerName(s.name), getValue(s)) }
@@ -66,6 +72,7 @@ class Stats {
             addAll(entries)
         }
         val pages = allEntries.chunked(pageSize)
+        ShowStat.isActive = true
         object : BukkitRunnable() {
             var pageIndex = 0
             override fun run() {
