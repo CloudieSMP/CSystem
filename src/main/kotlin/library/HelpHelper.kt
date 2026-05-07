@@ -41,15 +41,10 @@ object HelpHelper {
 //            listOf("/boosters"),
 //            listOf("View the available booster packs and preview card odds.")
 //        ),
-        "stats crate" to CommandHelp(
-            listOf("/stats crate", "/stats crate me <crate>", "/stats crate global"),
-            listOf("Show your overall crate roll stats.", "Show your collectible stats for a specific crate.", "Show global crate roll stats across all players."),
-            "View crate roll statistics."
-        ),
-        "stats tag" to CommandHelp(
-            listOf("/stats tag tagged", "/stats tag tagger", "/stats crate <player>"),
-            listOf("Broadcast a scoreboard of how many times each player has been tagged.", "Broadcast a scoreboard of how many times each player has tagged someone.", "View another player's crate roll stats (staff only)."),
-            "Broadcast tag/crate stat scoreboards."
+        "stats" to CommandHelp(
+            listOf("/stats crate", "/stats crate me <crate>", "/stats crate global", "/stats tag tagged", "/stats tag tagger", "/stats crate <player>"),
+            listOf("Show your overall crate roll stats.", "Show your collectible stats for a specific crate.", "Show global crate roll stats across all players.", "Broadcast a scoreboard of how many times each player has been tagged.", "Broadcast a scoreboard of how many times each player has tagged someone.", "View another player's crate roll stats (staff only)."),
+            "Show tag or crate statistics."
         ),
         "echo" to CommandHelp(
             listOf("/echo <message>"),

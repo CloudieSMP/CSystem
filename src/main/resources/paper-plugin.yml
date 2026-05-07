@@ -81,8 +81,6 @@ permissions:
     description: Allows the player to check height of other players.
   cloudie.cmd.trash:
     description: Allows the player to open the trash inventory.
-  cloudie.cmd.cratestats.other:
-    description: Allows the player to view crate stats for other players.
 
   cloudie.group.default:
     description: Allows the player to use all default commands.
@@ -158,8 +156,6 @@ permissions:
     description: Allows the player to view stats for other players.
   cloudie.cmd.afk:
     description: Allows the player to toggle their AFK status.
-  cloudie.cmd.cratestats:
-    description: Allows the player to view crate roll stats.
   cloudie.cmd.stripcosmetic:
     description: Allows the player to remove a cosmetic from a cosmetified helmet.
   cloudie.cmd.nosleep:
@@ -174,4 +170,4 @@ permissions:
     default: false
 
   cloudie.removecmds:
-    description: Removes specific commands from complete like worldguard and worldedit.
+    description: Removes specific commands from tabcomplete like worldguard and worldedit.
