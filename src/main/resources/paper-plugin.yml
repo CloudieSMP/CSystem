@@ -49,7 +49,11 @@ permissions:
       cloudie.cmd.pack: true
       cloudie.cmd.height.others: true
       cloudie.cmd.trash: true
-      cloudie.cmd.cratestats.other: true
+      cloudie.cmd.stats.other: true
+      cloudie.cmd.tag.create: true
+      cloudie.cmd.tag.delete: true
+      cloudie.cmd.tag.add: true
+      cloudie.cmd.tag.remove: true
 
   cloudie.group.dev:
     description: Allows the player to use developer chat and receive developer messages.
@@ -102,13 +106,14 @@ permissions:
       cloudie.cmd.mail: true
       cloudie.cmd.report: true
       cloudie.cmd.showstat: true
-      cloudie.cmd.tagstat: true
+      cloudie.cmd.stats: true
       cloudie.cmd.afk: true
       cloudie.cmd.nosleep: true
-      cloudie.cmd.cratestats: true
       cloudie.cmd.stripcosmetic: true
       cloudie.cmd.ping: true
       cloudie.cmd.toggleglow: true
+      cloudie.cmd.tag.list: true
+      cloudie.cmd.tag.lost: true
       cloudie.removecmds: true
 
   cloudie.cmd.hat:
@@ -147,8 +152,10 @@ permissions:
     description: Allows the player to report issues.
   cloudie.cmd.showstat:
     description: Allows the player to show server statistic scoreboards.
-  cloudie.cmd.tagstat:
-    description: Allows the player to show tag game stat scoreboards.
+  cloudie.cmd.stats:
+    description: Allows the player to use /stats (tag and crate sub-commands).
+  cloudie.cmd.stats.other:
+    description: Allows the player to view stats for other players.
   cloudie.cmd.afk:
     description: Allows the player to toggle their AFK status.
   cloudie.cmd.cratestats:

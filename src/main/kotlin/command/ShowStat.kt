@@ -65,7 +65,7 @@ class ShowStat {
         val sbEntries = mutableListOf<Pair<Component, Int>>()
         when (stat.type) {
             Statistic.Type.UNTYPED -> {
-                sbEntries.addAll(players.map { Pair(formatPlayerName(it), it.getStatistic(stat)) }.toMutableList())
+                sbEntries.addAll(players.map { Pair(ShowStat.formatPlayerName(it), it.getStatistic(stat)) }.toMutableList())
             }
             Statistic.Type.ITEM, Statistic.Type.BLOCK -> {
                 if (material == null) {
@@ -73,7 +73,7 @@ class ShowStat {
                     player.playSound(ERROR_DIDGERIDOO)
                     return
                 }
-                sbEntries.addAll(players.map { Pair(formatPlayerName(it), it.getStatistic(stat, material)) }.toMutableList())
+                sbEntries.addAll(players.map { Pair(ShowStat.formatPlayerName(it), it.getStatistic(stat, material)) }.toMutableList())
             }
             Statistic.Type.ENTITY -> {
                 if (entityType == null) {
@@ -81,7 +81,7 @@ class ShowStat {
                     player.playSound(ERROR_DIDGERIDOO)
                     return
                 }
-                sbEntries.addAll(players.map { Pair(formatPlayerName(it), it.getStatistic(stat, entityType)) }.toMutableList())
+                sbEntries.addAll(players.map { Pair(ShowStat.formatPlayerName(it), it.getStatistic(stat, entityType)) }.toMutableList())
             }
         }
 
@@ -137,39 +137,6 @@ class ShowStat {
         statScoreboardRunnable.runTaskTimer(plugin, 0L, secondsPerPage * 20L)
     }
 
-    private fun broadcastScoreboardLines(title: Component, lines: List<Pair<Component, Int>>, formatter: (Int) -> Component = ::formatInteger) {
-        for (player in Bukkit.getOnlinePlayers()) {
-            if (player.hasPermission("cloudie.dontshowstatscreen")) continue
-            val board = FastBoard(player)
-            board.updateTitle(title)
-            val names = lines.map { it.first }
-            val scores = lines.map { formatter(it.second) }
-            board.updateLines(names, scores)
-        }
-    }
-
-    private fun clearScoreboards(delay: Long) {
-        object : BukkitRunnable() {
-            override fun run() {
-                for (player in Bukkit.getOnlinePlayers()) {
-                    if (player.hasPermission("cloudie.dontshowstatscreen")) continue
-                    val board = FastBoard(player)
-                    board.delete()
-                }
-            }
-        }.runTaskLater(plugin, delay)
-    }
-
-    private fun formatPlayerName(offlinePlayer: OfflinePlayer): Component {
-        if (offlinePlayer.name == null) return text("Unknown")
-
-        return if (offlinePlayer.isOnline) {
-            allTags.deserialize("<cloudiecolor><shadow:black>${offlinePlayer.name}")
-        } else {
-            allTags.deserialize("<white><shadow:black>${offlinePlayer.name}")
-        }
-    }
-
     companion object {
         /** UUIDs of players with the `cloudie.group.alt` permission, populated on join. */
         val altUuids: MutableSet<UUID> = Collections.newSetFromMap(java.util.concurrent.ConcurrentHashMap())
@@ -220,7 +187,53 @@ class ShowStat {
             Statistic.AVIATE_ONE_CM,
             Statistic.STRIDER_ONE_CM,
         )
-    }
+
+        fun broadcastScoreboardLines(title: Component, lines: List<Pair<Component, Int>>, formatter: (Int) -> Component = ::formatInteger) {
+            for (player in Bukkit.getOnlinePlayers()) {
+                if (player.hasPermission("cloudie.dontshowstatscreen")) continue
+                val board = FastBoard(player)
+                board.updateTitle(title)
+                board.updateLines(lines.map { it.first }, lines.map { formatter(it.second) })
+            }
+        }
+
+        fun clearScoreboards(delay: Long) {
+            object : BukkitRunnable() {
+                override fun run() {
+                    for (player in Bukkit.getOnlinePlayers()) {
+                        if (player.hasPermission("cloudie.dontshowstatscreen")) continue
+                        FastBoard(player).delete()
+                    }
+                }
+            }.runTaskLater(plugin, delay)
+        }
+
+        fun formatPlayerName(offlinePlayer: OfflinePlayer): Component {
+            if (offlinePlayer.name == null) return text("Unknown")
+            return if (offlinePlayer.isOnline) {
+                allTags.deserialize("<cloudiecolor><shadow:black>${offlinePlayer.name}")
+            } else {
+                allTags.deserialize("<white><shadow:black>${offlinePlayer.name}")
+            }
+        }
+
+        /** Formats a player by name string (for cases where only a name is available). */
+        fun formatPlayerName(name: String): Component {
+            val online = Bukkit.getPlayerExact(name) != null
+            return if (online) {
+                allTags.deserialize("<cloudiecolor><shadow:black>$name")
+            } else {
+                allTags.deserialize("<white><shadow:black>$name")
+            }
+        }
+
+        fun formatInteger(number: Int): Component {
+            val symbols = DecimalFormatSymbols(Locale.forLanguageTag("de-CH"))
+            symbols.groupingSeparator = '\''
+            val formatter = DecimalFormat("#,##0", symbols)
+            return allTags.deserialize("<red><shadow:black>${formatter.format(number)}")
+        }
+    } // end companion object
 
     /** Choose the right formatter for [stat]. */
     fun formatterFor(stat: Statistic): (Int) -> Component = when (stat) {
@@ -229,14 +242,6 @@ class ShowStat {
         else -> ::formatInteger
     }
 
-    private fun formatInteger(number: Int): Component {
-        val symbols = DecimalFormatSymbols(Locale.forLanguageTag("de-CH"))
-        symbols.groupingSeparator = '\''
-        val formatter = DecimalFormat("#,##0", symbols)
-        return allTags.deserialize("<red><shadow:black>${formatter.format(number)}")
-    }
-
-    /** Converts ticks to a human-readable duration, e.g. `3d 2h 15m`. */
     private fun formatTicks(ticks: Int): Component {
         val totalSeconds = ticks / 20
         val days    = totalSeconds / 86400

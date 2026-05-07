@@ -218,6 +218,11 @@ object TagHelper {
 
     // Others
 
+    fun getCurrentlyTaggedPlayers(): List<PlayerTagStats> {
+        if (!loaded) loadSync()
+        return cache.values.filter { it.isTagged }
+    }
+
     fun isHoldingTag(player: Player): Boolean {
         val item = player.inventory.itemInMainHand
         if (item.type == Material.AIR) return false

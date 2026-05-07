@@ -13,7 +13,7 @@ import util.requirePlayer
 @Suppress("unused", "unstableApiUsage")
 @CommandContainer
 class Tag {
-    @Command("tagurit create")
+    @Command("tagyourit create")
     @Permission("cloudie.cmd.tag.create")
     fun createTag(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
@@ -22,7 +22,7 @@ class Tag {
         player.sendMessage(allTags.deserialize("<green>You have received a tag!"))
     }
 
-    @Command("tagurit create <player>")
+    @Command("tagyourit create <player>")
     @Permission("cloudie.cmd.tag.create")
     fun createTagPlayer(css: CommandSourceStack, @Argument("player") target: Player) {
         val player = css.requirePlayer() ?: return
@@ -32,7 +32,7 @@ class Tag {
         target.sendMessage(allTags.deserialize("<green>You have been given a tag!"))
     }
 
-    @Command("tagurit delete")
+    @Command("tagyourit delete")
     @Permission("cloudie.cmd.tag.delete")
     fun deleteTag(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
@@ -40,7 +40,7 @@ class Tag {
         player.sendMessage(allTags.deserialize("<green>You have deleted your tag!"))
     }
 
-    @Command("tagurit delete <player>")
+    @Command("tagyourit delete <player>")
     @Permission("cloudie.cmd.tag.delete")
     fun deleteTagPlayer(css: CommandSourceStack, @Argument("player") target: Player) {
         val player = css.requirePlayer() ?: return
@@ -49,7 +49,7 @@ class Tag {
         target.sendMessage(allTags.deserialize("<green>Your tag has been deleted!"))
     }
 
-    @Command("tagurit add")
+    @Command("tagyourit add")
     @Permission("cloudie.cmd.tag.add")
     fun addTagger(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
@@ -57,7 +57,7 @@ class Tag {
         player.sendMessage(allTags.deserialize("<green>You have been tagged!"))
     }
 
-    @Command("tagurit add <player>")
+    @Command("tagyourit add <player>")
     @Permission("cloudie.cmd.tag.add")
     fun addTaggerOther(css: CommandSourceStack, @Argument("player") target: Player) {
         val player = css.requirePlayer() ?: return
@@ -66,7 +66,7 @@ class Tag {
         target.sendMessage(allTags.deserialize("<green>You have been tagged!"))
     }
 
-    @Command("tagurit remove")
+    @Command("tagyourit remove")
     @Permission("cloudie.cmd.tag.remove")
     fun removeTagger(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
@@ -74,7 +74,7 @@ class Tag {
         player.sendMessage(allTags.deserialize("<green>You have been untagged!"))
     }
 
-    @Command("tagurit remove <player>")
+    @Command("tagyourit remove <player>")
     @Permission("cloudie.cmd.tag.remove")
     fun removeTaggerOther(css: CommandSourceStack, @Argument("player") target: Player) {
         val player = css.requirePlayer() ?: return
@@ -83,10 +83,31 @@ class Tag {
         target.sendMessage(allTags.deserialize("<green>You have been untagged!"))
     }
 
-    @Command("tagurit list")
+    @Command("tagyourit list")
     @Permission("cloudie.cmd.tag.list")
     fun listTaggers(css: CommandSourceStack) {
         val player = css.requirePlayer() ?: return
-        player.sendMessage(allTags.deserialize("<green>This doesn't work yet!"))
+        player.sendMessage(allTags.deserialize("<green>Currently tagged players:"))
+        val taggedPlayers = TagHelper.getCurrentlyTaggedPlayers()
+        if (taggedPlayers.isEmpty()) {
+            player.sendMessage(allTags.deserialize("<yellow>None"))
+        } else {
+            taggedPlayers.forEach { taggedPlayer ->
+                player.sendMessage(allTags.deserialize("<yellow>${taggedPlayer.name}"))
+            }
+        }
+    }
+
+    @Command("losttag")
+    @Permission("cloudie.cmd.tag.lost")
+    fun lostTag(css: CommandSourceStack) {
+        val player = css.requirePlayer() ?: return
+        if (TagHelper.isCurrentlyTagged(player)) {
+            player.sendMessage(allTags.deserialize("<green>Here is your tag!"))
+            player.inventory.remove(TagHelper.createTagItem())
+            player.inventory.addItem(TagHelper.createTagItem())
+        } else {
+            player.sendMessage(allTags.deserialize("<red>You are not currently tagged!"))
+        }
     }
 }

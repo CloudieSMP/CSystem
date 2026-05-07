@@ -41,10 +41,15 @@ object HelpHelper {
 //            listOf("/boosters"),
 //            listOf("View the available booster packs and preview card odds.")
 //        ),
-        "cratestats" to CommandHelp(
-            listOf("/cratestats", "/cratestats me <crate>", "/cratestats global"),
+        "stats crate" to CommandHelp(
+            listOf("/stats crate", "/stats crate me <crate>", "/stats crate global"),
             listOf("Show your overall crate roll stats.", "Show your collectible stats for a specific crate.", "Show global crate roll stats across all players."),
             "View crate roll statistics."
+        ),
+        "stats tag" to CommandHelp(
+            listOf("/stats tag tagged", "/stats tag tagger", "/stats crate <player>"),
+            listOf("Broadcast a scoreboard of how many times each player has been tagged.", "Broadcast a scoreboard of how many times each player has tagged someone.", "View another player's crate roll stats (staff only)."),
+            "Broadcast tag/crate stat scoreboards."
         ),
         "echo" to CommandHelp(
             listOf("/echo <message>"),
@@ -110,6 +115,10 @@ object HelpHelper {
             listOf("/toggleglow"),
             listOf("Toggle the glowing effect on a helmet held in your hand.")
         ),
+        "losttag" to CommandHelp(
+            listOf("/losttag"),
+            listOf("Use this to regain your tag.")
+        ),
         "ping" to CommandHelp(
             listOf("/ping"),
             listOf("Show your current ping in milliseconds."),
@@ -162,11 +171,6 @@ object HelpHelper {
             listOf("Broadcast a rotating statistic scoreboard to online players."),
             "Broadcast statistic scoreboards."
         ),
-        "tagstat" to CommandHelp(
-            listOf("/tagstat tagged", "/tagstat tagger"),
-            listOf("Broadcast a scoreboard of how many times each player has been tagged.", "Broadcast a scoreboard of how many times each player has tagged someone."),
-            "Broadcast tag game stat scoreboards."
-        ),
         "cloudie" to CommandHelp(
             listOf("/cloudie reload"),
             listOf("Reload the plugin configuration and systems."),
@@ -181,6 +185,11 @@ object HelpHelper {
             listOf("/trash"),
             listOf("Open a trash inventory — items left inside are deleted on close."),
             "Open a trash inventory."
+        ),
+        "tagyourit" to CommandHelp(
+            listOf("/tagyourit create [player]", "/tagyourit delete [player]", "/tagyourit add [player]", "/tagyourit remove [player]"),
+            listOf("Create a tag for yourself or another player.", "Delete your tag or another player's tag.", "Tag yourself or another player.", "Untag yourself or another player."),
+            "Tag your it."
         ),
         "debug" to CommandHelp(
             listOf("/debug"),
