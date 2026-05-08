@@ -1,6 +1,7 @@
 package library
 
 import chat.Formatting
+import event.player.PlayerJoin
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
@@ -11,6 +12,9 @@ import kotlin.math.acos
 
 object GhostMode {
     private val ghostPlayers = mutableSetOf<Player>()
+
+    fun isGhost(player: Player): Boolean = player in ghostPlayers
+
     fun toggleGhostMode(player: Player) {
         if(player in ghostPlayers) {
             ghostPlayers.remove(player)
@@ -20,6 +24,7 @@ object GhostMode {
             ghostModeTask(player)
             player.sendMessage(Formatting.allTags.deserialize("<dark_gray><i>You are now intangible"))
         }
+        PlayerJoin.refreshTabListForAll()
     }
 
     private fun ghostModeTask(player: Player) {

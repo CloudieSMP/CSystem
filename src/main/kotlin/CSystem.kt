@@ -1,13 +1,14 @@
 import chat.Formatting.allTags
 import chat.VisualChat
 import com.noxcrew.interfaces.InterfacesListeners
-import event.ServerListEvent
+import event.player.PlayerJoin
 import event.block.AnvilListener
 import event.block.CauldronListener
 import event.block.RainCropGrowthListener
 import event.player.*
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.ShowStat
+import event.ServerListEvent
 import event.block.StonecutterDamageListener
 import library.LiveHelper
 import item.crate.CrateRecipes
@@ -66,6 +67,10 @@ class CSystem : JavaPlugin() {
         setupEvents()
         registerCommands()
         AfkHelper.startIdleChecker()
+        // Periodic tab-list count refresh — picks up vanish state changes from PremiumVanish etc.
+        server.scheduler.runTaskTimer(this, Runnable {
+            PlayerJoin.refreshTabListForAll()
+        }, 300L, 300L) // 300 ticks = 15 seconds
         VisualChat.clearChatEntities()
     }
 

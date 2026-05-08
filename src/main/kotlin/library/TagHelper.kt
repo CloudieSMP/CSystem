@@ -14,6 +14,9 @@ import util.Keys
 import util.isTag
 import util.timeRemainingFormattedSeconds
 import java.io.File
+import java.io.FileWriter
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
@@ -33,6 +36,22 @@ object TagHelper {
 
     @Volatile
     private var loaded = false
+
+    private val tagLogFile: File
+        get() = File(plugin.dataFolder, "tag-log.txt")
+
+    private val logTimestampFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+    private fun appendTagLog(tagger: Player, taggee: Player) {
+        val timestamp = LocalDateTime.now().format(logTimestampFormat)
+        val line = "[$timestamp] ${tagger.name} (${tagger.uniqueId}) tagged ${taggee.name} (${taggee.uniqueId})\n"
+        try {
+            if (!plugin.dataFolder.exists()) plugin.dataFolder.mkdirs()
+            FileWriter(tagLogFile, true).use { it.write(line) }
+        } catch (ex: Exception) {
+            logger.warning("Failed to write tag log: ${ex.message}")
+        }
+    }
 
     private val tagFile: File
         get() = File(plugin.dataFolder, "tags.yml")
@@ -272,6 +291,7 @@ object TagHelper {
         }
 
         broadcastAll("<green>${tagger.name} tagged ${taggee.name}!")
+        appendTagLog(tagger, taggee)
         tagger.inventory.remove(createTagItem())
         taggee.inventory.addItem(createTagItem())
 
