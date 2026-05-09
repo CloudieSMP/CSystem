@@ -22,14 +22,6 @@ motd: |-
   <gradient:#DF6F69:#C45889:#823BC6>          --- Cloudie SMP ☁ Season 10! ---</gradient>
   <cloudiecolor>                   ╰┈➤Join today! V26.1</cloudiecolor>
 
-tpa:
-  # Time in seconds before a tpa request expires.
-  request-expire-time: 60
-  # Time in seconds before the player gets tped.
-  tpa-delay: 2
-home:
-  max-homes: 3
-
 discord:
   # Webhook URL for player reports. Leave empty to disable.
   report-webhook-url: ""

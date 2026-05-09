@@ -5,24 +5,11 @@ data class Config(
     val links: List<Link>,
     val resourcePacks: List<ResourcePack>,
     val motd: String = "Bro forgot to set the motd, laugh at this user",
-    val tpa: TpaConfig = TpaConfig(),
-    val home: HomeConfig = HomeConfig(),
     val discord: DiscordConfig = DiscordConfig(),
     val afk: AfkConfig = AfkConfig(),
     val rainCropGrowth: RainCropGrowthConfig = RainCropGrowthConfig(),
     val showStat: ShowStatConfig = ShowStatConfig(),
     val tagYourIt: TagYourItConfig = TagYourItConfig(),
-)
-
-@ConfigSerializable
-data class TpaConfig(
-    val requestExpireTime: Int = 30,
-    val tpaDelay: Int = 2
-)
-
-@ConfigSerializable
-data class HomeConfig(
-    val maxHomes: Int = 5
 )
 
 @ConfigSerializable

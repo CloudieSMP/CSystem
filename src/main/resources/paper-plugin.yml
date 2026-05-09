@@ -1,6 +1,6 @@
 name: CSystem
 description: Cloudie SMP S10 System
-api-version: "1.21.11"
+api-version: "26.1.2"
 authors: [Sebiann]
 website: https://sebiann.moe
 
@@ -96,10 +96,7 @@ permissions:
       cloudie.cmd.resetitemname: true
       cloudie.cmd.crates: true
       cloudie.cmd.boosters: true
-      cloudie.cmd.home: true
-      cloudie.cmd.spawn: true
       cloudie.cmd.streamermode: true
-      cloudie.cmd.tpa: true
       cloudie.cmd.echo: true
       cloudie.cmd.mail: true
       cloudie.cmd.report: true
@@ -134,14 +131,8 @@ permissions:
     description: Allows the player to open the crates browser.
   cloudie.cmd.boosters:
     description: Allows the player to open the booster packs browser.
-  cloudie.cmd.home:
-    description: Allows the player to manage personal homes.
-  cloudie.cmd.spawn:
-    description: Allows the player to use the spawn command.
   cloudie.cmd.streamermode:
     description: Allows the player to toggle streamer mode.
-  cloudie.cmd.tpa:
-    description: Allows the player to send tpa requests.
   cloudie.cmd.echo:
     description: Allows the player to use the echo command.
   cloudie.cmd.mail:

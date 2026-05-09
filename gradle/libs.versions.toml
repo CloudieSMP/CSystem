@@ -1,0 +1,39 @@
+[versions]
+kotlin = "2.4.0-Beta2"
+
+paper-api = "26.1.2.build.+"
+minecraft = "26.1.2"
+
+paperweight-userdev = "2.0.0-beta.21"
+shadow = "9.4.1"
+run-task = "3.0.2"
+
+incendo-cloud = "2.0.0"
+ktor = "3.4.2"
+configurate = "4.2.0"
+
+[libraries]
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+cloud-paper = { module = "org.incendo:cloud-paper", version = "2.0.0-beta.15" }
+cloud-annotations = { module = "org.incendo:cloud-annotations", version.ref = "incendo-cloud" }
+cloud-kotlin-coroutines-annotations = { module = "org.incendo:cloud-kotlin-coroutines-annotations", version.ref = "incendo-cloud" }
+cloud-kotlin-extensions = { module = "org.incendo:cloud-kotlin-extensions", version.ref = "incendo-cloud" }
+cloud-processors-confirmation = { module = "org.incendo:cloud-processors-confirmation", version = "1.0.0-rc.1" }
+
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+
+gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
+
+configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate" }
+configurate-extra-kotlin = { module = "org.spongepowered:configurate-extra-kotlin", version.ref = "configurate" }
+
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.10.2" }
+fastboard = { module = "fr.mrmicky:fastboard", version = "2.1.5" }
+interfaces = { module = "com.noxcrew.interfaces:interfaces", version = "2.1.0-SNAPSHOT" }
+
+[plugins]
+paperweight-userdev = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight-userdev" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-task" }

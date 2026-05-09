@@ -14,22 +14,15 @@ val commitHash = Runtime
         output.trim()
     }
 
-plugins {
-    kotlin("jvm") version "2.4.0-Beta1"
-    kotlin("kapt") version "2.4.0-Beta1"
-    id("com.gradleup.shadow") version "9.4.1"
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
-    id("xyz.jpenilla.run-paper") version "3.0.2"
-}
-
 group = "moe.oof"
 version = "$patch-$commitHash"
 
-kotlin {
-    jvmToolchain(25)
-    compilerOptions {
-        javaParameters = true
-    }
+plugins {
+    kotlin("jvm") version libs.versions.kotlin.get()
+    kotlin("kapt") version libs.versions.kotlin.get()
+    alias(libs.plugins.paperweight.userdev)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.run.paper)
 }
 
 repositories {
@@ -43,35 +36,48 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    paperweight.paperDevBundle("26.1.2.build.+")
+    paperweight.paperDevBundle(libs.versions.paper.api.get())
+    implementation(libs.kotlin.stdlib)
 
-    implementation("org.incendo:cloud-paper:2.0.0-beta.15")
-    implementation("org.incendo:cloud-annotations:2.0.0")
-    implementation("org.incendo:cloud-kotlin-extensions:2.0.0")
-    implementation("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0")
-    kapt("org.incendo:cloud-kotlin-coroutines-annotations:2.0.0")
-    implementation("org.incendo:cloud-kotlin-extensions:2.0.0")
-    implementation("org.incendo:cloud-processors-confirmation:1.0.0-rc.1")
-    implementation("io.ktor:ktor-client-core:3.4.2")
-    implementation("io.ktor:ktor-client-cio:3.4.2")
-    implementation("io.ktor:ktor-client-logging:3.4.2")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.spongepowered:configurate-yaml:4.2.0")
-    implementation("org.spongepowered:configurate-extra-kotlin:4.2.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation(libs.cloud.paper)
+    implementation(libs.cloud.annotations)
 
-    implementation("fr.mrmicky:fastboard:2.1.5")
+    implementation(libs.cloud.kotlin.extensions)
+    implementation(libs.cloud.kotlin.coroutines.annotations)
+    kapt(libs.cloud.kotlin.coroutines.annotations)
+    implementation(libs.cloud.processors.confirmation)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.gson)
+    implementation(libs.configurate.yaml)
+    implementation(libs.configurate.extra.kotlin)
+    implementation(libs.kotlinx.coroutines.core)
 
-    implementation("com.noxcrew.interfaces:interfaces:2.1.0-SNAPSHOT")
+    implementation(libs.fastboard)
+
+    implementation(libs.interfaces)
+}
+
+kotlin {
+    jvmToolchain(25)
+    compilerOptions {
+        javaParameters = true
+    }
 }
 
 tasks {
-    compileJava {
-        options.release = 25
+    build {
+        dependsOn(shadowJar)
     }
+
     javadoc {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+    }
+
+    runServer {
+        minecraftVersion(libs.versions.minecraft.get())
+        jvmArgs("-Xms2G", "-Xmx2G", "-Dcom.mojang.eula.agree=true")
     }
 
     shadowJar {

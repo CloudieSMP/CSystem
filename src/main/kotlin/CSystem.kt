@@ -15,7 +15,6 @@ import item.crate.CrateRecipes
 import item.plushiebox.PlushieBox
 import library.CardPullCounterStorage
 import library.CrateRollStatsStorage
-import library.HomeStorage
 import library.MailStorage
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
@@ -77,7 +76,6 @@ class CSystem : JavaPlugin() {
     override fun onDisable() {
         this.logger.info("Stopping the Cloudie System plugin!")
         LiveHelper.shutdown()
-        HomeStorage.flushAllSync()
         MailStorage.flushAllSync()
         CardPullCounterStorage.flushAllSync()
         CrateRollStatsStorage.flushAllSync()

@@ -21,7 +21,7 @@ CSystem.kt             — JavaPlugin entry point; wires events, Cloud command m
 Config.kt              — Spongepowered Configurate data class (mapped from src/main/resources/config.yml)
 command/               — One class per command, all discovered via Cloud's annotationParser.parseContainers()
 event/                 — Bukkit event listeners (player/, block/, entity/)
-library/               — Stateful singletons: HomeStorage, MailStorage, CrateRollStatsStorage, CardPullCounterStorage, VanishHelper, AfkHelper, LiveHelper, NoSleepHelper, HelpHelper, PlayerListNameHelper
+library/               — Stateful singletons: MailStorage, CrateRollStatsStorage, CardPullCounterStorage, AfkHelper, LiveHelper, NoSleepHelper, HelpHelper, PlayerListNameHelper, GhostMode, TagHelper
 item/                  — Enums for rarities/types; crate/, booster/, binder/, treasurebag/ sub-packages
 util/                  — Extensions, Keys registry, resource pack/webhook helpers, UI windows, Sounds
 chat/                  — MiniMessage formatting, notifications, ChatUtility broadcasts
@@ -67,13 +67,14 @@ Hardcoded join/quit message templates live in `library/Translation.kt`.
 
 ## Storage Pattern
 
-`HomeStorage`, `MailStorage`, and `CrateRollStatsStorage` all follow the same pattern:
+`MailStorage` and `CrateRollStatsStorage` follow the same async-read/sync-flush pattern:
 - In-memory `ConcurrentHashMap` cache per player UUID.
-- **Async reads** via callback: `HomeStorage.listHomeNamesAsync(uuid) { names -> ... }` (disk I/O is async, callback is rescheduled onto the Bukkit main thread).
-- **Sync flush** on plugin disable: `HomeStorage.flushAllSync()`.
-- Data files live in `plugins/System/homes/<uuid>.yml`, `plugins/System/mail/<uuid>.yml`, `plugins/System/crate-roll-stats/<uuid>.yml`, etc.
+- **Async reads** via callback — disk I/O is async, callback is rescheduled onto the Bukkit main thread.
+- **Sync flush** on plugin disable: `flushAllSync()`.
+- Data files live in `plugins/System/mail/<uuid>.yml`, `plugins/System/crate-roll-stats/<uuid>.yml`, etc.
 - Call `preload(uuid)` on player join to warm the cache early (done in `event/player/PlayerJoin.kt`).
 - `CardPullCounterStorage` is separate: global sync load/save in `plugins/System/card-pulls.yml`.
+- `TagHelper` uses a **sync** variant: `loadSync()` on startup, `flushAllSync()` on disable, with `scheduleSave()` (async) after in-game writes. Data in `plugins/System/tags.yml`; tag events also appended to `plugins/System/tag-log.txt`.
 
 ## Item System
 
@@ -85,6 +86,9 @@ Hardcoded join/quit message templates live in `library/Translation.kt`.
 - **Card Registry** (`item/booster/CardRegistry.kt`): The single source of truth for all trading cards. Add or modify cards here — `CardEntry(type, rarity, canHaveSubRarity, allowedBoosters)`. MOB card IDs must match Bukkit `EntityType` keys. After editing the registry, run `/pack export cardmodels` to regenerate resource pack item definitions.
 - **Treasure bags** (`item/treasurebag/`): Bundle-based items (`BundleMeta`) created by `TreasureBag.create(type)`. Loot is defined in `BagLootPool` with per-item percentage roll chances and amount ranges.
 - **Vending machines**: Entities tagged `vending_machine` (scoreboard tag) are handled by `event/entity/VendingMachineInteract.kt`. Interacting while holding a specific material consumes it and spawns a booster pack or crate as a dropped item.
+- **Plushie Box** (`item/plushiebox/`): PDC-backed storage item holding crate collectibles (max 256). Created via `PlushieBox.create()`; contents stored as `BYTE_ARRAY` lists under `Keys.PLUSHIE_BOX_ITEMS`. Opened by right-click → `PlushieBoxWindow`. Crafted from any bundle + wool.
+- **Cosmetic system**: A CrateItem can be overlaid onto any helmet via an anvil (slot 0 = helmet, slot 1 = CrateItem). The result inherits the CrateItem's `ITEM_MODEL` and has its PDC keys copied flat. Reversed with `/stripcosmetic`. The same `AnvilListener` also enables Sweeping Edge to be applied to hoes.
+- Material helpers are centralized in `util/Materials.kt` (`HOE_MATERIALS`, `HELMET_MATERIALS`, `STORAGE_INVENTORY_TYPES`).
 
 ## Sounds
 
@@ -95,13 +99,15 @@ player.playSound(Sounds.PLING)
 player.playSound(Sounds.SHINY_CATCH)
 ```
 
-Notable entries: `EPIC_CATCH`, `LEGENDARY_CATCH`, `SHINY_CATCH`, `SHADOW_CATCH`, `OBFUSCATED_CATCH`, `VENDING_MACHINE`, `ERROR_DIDGERIDOO`, `GAMBLING_WHEEL_TICK/STOP`.
+Notable entries: `EPIC_CATCH`, `LEGENDARY_CATCH`, `LEGENDARY_CATCH_EXPLODE`, `MYTHIC_CATCH`, `UNREAL_CATCH`, `TRANSCENDENT_CATCH`, `CELESTIAL_CATCH`, `SHINY_CATCH`, `SHADOW_CATCH`, `OBFUSCATED_CATCH`, `VENDING_MACHINE`, `ERROR_DIDGERIDOO`, `GAMBLING_WHEEL_TICK/STOP`, `INTERFACE_INTERACT`, `INTERFACE_ENTER_SUB_MENU`, `INTERFACE_BACK`, `INTERFACE_ERROR`.
 
 ## UI Windows
 
-Inventory GUIs use the **Noxcrew Interfaces** library (`util/ui/`) with `CollectionBrowserWindow` as a shared selector/preview engine (used by `CrateBrowserWindow` and `BoosterPackBrowserWindow`) plus `BinderWindow`.
+Inventory GUIs use the **Noxcrew Interfaces** library (`util/ui/`). There are two shared GUI engines:
+- **`StorageWindow`** — generic interactive insert/remove storage with pagination, filterable views, and an optional show-missing toggle. Used by `BinderWindow` (card binder) and `PlushieBoxWindow` (plushie box). Pass `canInsert`, `onSave`, `filters`, and optional `uniqueKey`/`onRemove` callbacks.
+- **`CollectionBrowserWindow`** — read-only selector/preview browser, used by `CrateBrowserWindow` and `BoosterPackBrowserWindow`.
 - Listener-backed windows are `GamblingWindow` and `TrashWindow` (`object : Listener`, registered at startup).
-- Interface windows keep reactive state in closures/triggers (see `DelegateTrigger` usage in `CollectionBrowserWindow`/`BinderWindow`), while `GamblingWindow` tracks sessions in-memory by player UUID.
+- Interface windows keep reactive state in closures/triggers (see `DelegateTrigger` usage in `StorageWindow`/`CollectionBrowserWindow`), while `GamblingWindow` tracks sessions in-memory by player UUID.
 
 ## AFK & Tab List
 
@@ -109,10 +115,24 @@ Inventory GUIs use the **Noxcrew Interfaces** library (`util/ui/`) with `Collect
 - `library/LiveHelper.kt`: Tracks streamer/live state per UUID. Call `LiveHelper.startLive(player)` / `LiveHelper.stopLive(player)`. Automatically displays a live glyph next to the player's display name and updates the tab list. Players retain their live status for 10 minutes after disconnecting.
 - `library/NoSleepHelper.kt`: Tracks which players have the NoSleep tag enabled. Call `NoSleepHelper.setNoSleep(player, bool)`. While any player has NoSleep active, bed interactions are blocked for others.
 - `library/PlayerListNameHelper.kt`: Updates the player's tab-list name whenever AFK/Live/NoSleep state changes. AFK → gray name, Live → pink name + `<prefix:live>`, NoSleep → `<prefix:nosleep>` prefix. Call `PlayerListNameHelper.apply(player)` after any state change.
+- `library/GhostMode.kt`: Toggles ghost-mode per player (in-memory `mutableSetOf<Player>`). Ghost players are hidden from all others **except** viewers who are looking at them from a peripheral angle (52.5°–62.5° off centre). Updated every 2 ticks via a `BukkitRunnable`. Ghost state clears automatically on disconnect. Call `GhostMode.toggleGhostMode(player)`.
+- `library/TagHelper.kt`: Tag-your-it mini-game state. Stores `PlayerTagStats` (tagged/tagger/timestamps/counts) per UUID. Call `TagHelper.ensurePlayer(player)` on join, `TagHelper.startTagging(tagger, taggee)` to execute a tag. Cooldowns are configured under `config.tagYourIt` (`cooldownSeconds`, `cooldownBackTaggingSeconds`).
 
 ## Config
 
 Config is loaded via Spongepowered Configurate from `src/main/resources/config.yml` into the `Config` data class. Access it via `plugin.config` (the field is named `config` on the `CSystem` class, shadowing `JavaPlugin.getConfig()`). Reload at runtime with `/cloudie reload` (permission `cloudie.cmd.reload`).
+
+Notable config keys beyond the top-level defaults:
+| Key | Description |
+|-----|-------------|
+| `motd` | Server MOTD string (MiniMessage). Applied via `Bukkit.serverLinks` on load/reload. |
+| `links` | List of `Link(component, uri, order)` entries added to the server links panel. |
+| `resourcePacks` | List of `ResourcePack(githubUrl, branch, zipName, priority)` entries. |
+| `afk.idleTimeoutSeconds` | Seconds before a player is marked AFK (default 300). |
+| `rainCropGrowth.boostChance` | Probability (0.0–1.0) a sky-exposed crop gets a bonus growth tick during rain (default 0.5). |
+| `showStat.secondsPerPage` | How long each scoreboard page is displayed in seconds (default 7). |
+| `tagYourIt.cooldownSeconds` | Minimum seconds "it" must be held before tagging again (default 30). |
+| `tagYourIt.cooldownBackTaggingSeconds` | Back-tag lockout in seconds (default 86400 = 24 h). |
 
 ## External Integrations
 
