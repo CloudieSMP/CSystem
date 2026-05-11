@@ -8,6 +8,13 @@ version: "${version}"
 main: CSystem
 load: STARTUP
 
+dependencies:
+  server:
+    BetterModel:
+      load: BEFORE
+      required: true
+      join-classpath: false
+
 permissions:
   cloudie.silent:
     description: Allows the player to join and quit the server silently.
@@ -107,6 +114,7 @@ permissions:
       cloudie.cmd.stripcosmetic: true
       cloudie.cmd.ping: true
       cloudie.cmd.toggleglow: true
+      cloudie.cmd.tail: true
       cloudie.cmd.tag.list: true
       cloudie.cmd.tag.lost: true
       cloudie.removecmds: true
@@ -162,3 +170,8 @@ permissions:
 
   cloudie.removecmds:
     description: Removes specific commands from tabcomplete like worldguard and worldedit.
+
+  cloudie.cmd.tail:
+    description: Allows the player to equip or remove a tail cosmetic.
+  cloudie.cmd.tail.dragon:
+    description: Allows the player to equip the dragon tail cosmetic.
