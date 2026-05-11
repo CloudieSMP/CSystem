@@ -33,7 +33,9 @@ repositories {
     maven("https://maven.noxcrew.com/public") {
         name = "noxcrewMavenPublic"
     }
-    maven("https://maven.blamejared.com/")
+    maven("https://maven.blamejared.com/") {
+        name = "blameJaredMaven"
+    }
 }
 
 dependencies {

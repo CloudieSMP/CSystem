@@ -3,6 +3,7 @@ package library
 import item.cosmetic.PlayerTail
 import kr.toxicity.model.api.BetterModel
 import kr.toxicity.model.api.bukkit.platform.BukkitAdapter
+import logger
 import org.bukkit.entity.Player
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -27,7 +28,10 @@ object TailHelper {
         // Remove existing tail first (no-op if none)
         remove(player)
 
-        val renderer = BetterModel.model(tail.modelId).orElse(null) ?: return false
+        val renderer = BetterModel.model(tail.modelId).orElse(null) ?: run {
+            logger.warning("TailHelper: model '${tail.modelId}' not found in BetterModel — has the .bbmodel file been loaded?")
+            return false
+        }
 
         renderer.getOrCreate(BukkitAdapter.adapt(player))
         activeTails[player.uniqueId] = tail
