@@ -33,6 +33,7 @@ repositories {
     maven("https://maven.noxcrew.com/public") {
         name = "noxcrewMavenPublic"
     }
+    maven("https://maven.blamejared.com/")
 }
 
 dependencies {
@@ -57,6 +58,8 @@ dependencies {
     implementation(libs.fastboard)
 
     implementation(libs.interfaces)
+
+    compileOnly("io.github.toxicity188:bettermodel-bukkit-api:3.0.2")
 }
 
 kotlin {

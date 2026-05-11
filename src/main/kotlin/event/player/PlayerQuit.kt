@@ -3,6 +3,7 @@ package event.player
 import chat.Formatting
 import library.LiveHelper
 import library.NoSleepHelper
+import library.TailHelper
 import library.Translation
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -22,6 +23,7 @@ class PlayerQuit: Listener {
         }
         LiveHelper.onPlayerQuit(e.player)
         NoSleepHelper.cleanup(e.player)
+        TailHelper.onPlayerQuit(e.player)
         // Refresh tab list count after this player is fully removed (next tick)
         Bukkit.getScheduler().runTask(plugin, Runnable { PlayerJoin.refreshTabListForAll() })
     }
