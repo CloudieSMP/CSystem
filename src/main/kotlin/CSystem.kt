@@ -27,6 +27,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import util.ui.GamblingWindow
 import util.ui.TrashWindow
 import library.AfkHelper
+import library.CosmeticHelper
 import library.TagHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -82,6 +83,7 @@ class CSystem : JavaPlugin() {
         ShowStat.saveSync()
         TagHelper.flushAllSync()
         AfkHelper.resetAll()
+        CosmeticHelper.onDisable()
         VisualChat.clearChatEntities()
     }
 
