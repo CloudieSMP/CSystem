@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import command.ShowStat
 import event.ServerListEvent
 import event.block.StonecutterDamageListener
+import event.entity.DragonDeathEvent
 import library.LiveHelper
 import item.crate.CrateRecipes
 import item.plushiebox.PlushieBox
@@ -169,6 +170,8 @@ class CSystem : JavaPlugin() {
         server.pluginManager.registerEvents(AfkListener(), this)
         server.pluginManager.registerEvents(StonecutterDamageListener(), this)
         server.pluginManager.registerEvents(TagListener(), this)
+
+        server.pluginManager.registerEvents(DragonDeathEvent(), this)
 
         server.pluginManager.registerEvents(GamblingWindow, this)
         server.pluginManager.registerEvents(TrashWindow, this)
