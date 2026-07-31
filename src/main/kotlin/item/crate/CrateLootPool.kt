@@ -57,6 +57,7 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         YAMS,
         SOHCAHTO,
         RADISLI,
+        JOEL,
 
         SEBIANN_CLASSIC,
         CARSON_GRAY,
