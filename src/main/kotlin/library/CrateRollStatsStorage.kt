@@ -93,7 +93,7 @@ object CrateRollStatsStorage {
     }
 
     private val wearableItemIds: Set<String> by lazy {
-        CrateType.WEARABLES.lootPool.possibleItems.map(CrateItem::storedId).toSet()
+        CrateType.COSMETIC_HAT.lootPool.possibleItems.map(CrateItem::storedId).toSet()
     }
 
     private fun isTrackedCollectible(itemId: String): Boolean {

@@ -1,14 +1,11 @@
 package item.crate
 
 import chat.Formatting.allTags
-import item.ItemRarity
-import item.ItemRarity.*
 import item.ItemType
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
-import org.bukkit.Color
 
 /**
  * Crates
@@ -51,13 +48,13 @@ enum class CrateType(
         Material.LIGHT_GRAY_WOOL,
         CrateLootPool.BABY,
     ),
-    WEARABLES(
-        "Wearables Crate",
-        "A crate containing wearables",
+    COSMETIC_HAT(
+        "Cosmetic Crate",
+        "A crate containing cosmetics",
         "#5555FF",
         "crates/blue",
         Material.BLUE_WOOL,
-        CrateLootPool.WEARABLES,
+        CrateLootPool.COSMETIC_HAT,
     ),
     PLAYER(
         "Player Crate",
@@ -113,8 +110,15 @@ enum class CrateType(
         get() = "${name.lowercase()}_crate"
 
     companion object {
+        private val legacyIds = mapOf(
+            "WEARABLES" to COSMETIC_HAT,
+            "WEARABLE" to COSMETIC_HAT,
+        )
+
         fun fromStoredId(storedId: String?): CrateType? {
-            return entries.firstOrNull { it.storedId == storedId }
+            if (storedId == null) return null
+            val normalized = storedId.trim().uppercase()
+            return legacyIds[normalized] ?: entries.firstOrNull { it.storedId == normalized }
         }
     }
 }

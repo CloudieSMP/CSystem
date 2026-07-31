@@ -167,7 +167,7 @@ class Stats {
 
     // ── Crate helpers (ported from CrateStats) ────────────────────────────────
 
-    private val wearableItemIds: Set<String> = CrateType.WEARABLES.lootPool.possibleItems
+    private val wearableItemIds: Set<String> = CrateType.COSMETIC_HAT.lootPool.possibleItems
         .map(CrateItem::storedId)
         .toSet()
 

@@ -48,7 +48,7 @@ object PlushieBoxWindow {
             StorageWindow.FilterOption("✦ All"),  // no pool → toggle unavailable
             filterFor("Plushie Crate",   CrateType.PLUSHIE),
             filterFor("Baby Crate",      CrateType.BABY),
-            filterFor("Wearables Crate", CrateType.WEARABLES),
+            filterFor("Cosmetic Crate", CrateType.COSMETIC_HAT),
             filterFor("Player Crate",    CrateType.PLAYER),
             filterFor("Character Crate", CrateType.CHARACTER),
             filterFor("Sabine Crate",    CrateType.SABINE),

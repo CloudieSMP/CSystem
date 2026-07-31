@@ -19,7 +19,7 @@ enum class CrateLootPool(val possibleItems: List<CrateItem>) {
         AXOLOTL_BLUE,
     )),
     BABY(CrateItem.entries.filter { it.name.endsWith("BABY") }),
-    WEARABLES(listOf(
+    COSMETIC_HAT(listOf(
         CAT_EARS,
         DOG_EARS,
         FOX_EARS,
