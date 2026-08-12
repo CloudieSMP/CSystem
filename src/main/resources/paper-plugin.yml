@@ -3,6 +3,7 @@ description: Cloudie SMP S10 System
 api-version: "26.1.2"
 authors: [Sebiann]
 website: https://sebiann.moe
+github-repo: "CloudieSMP/CSystem"
 
 version: "${version}"
 main: CSystem
