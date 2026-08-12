@@ -92,7 +92,10 @@ tasks {
     }
 
     processResources {
-        val props = mapOf("version" to version)
+        val props = mapOf(
+            "pluginVersion" to version,
+            "apiVersion" to libs.versions.minecraft.get()
+        )
         inputs.properties(props)
         filteringCharset = "UTF-8"
         filesMatching("paper-plugin.yml") {

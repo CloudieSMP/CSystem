@@ -1,11 +1,11 @@
 name: CSystem
 description: Cloudie SMP S10 System
-api-version: "26.1.2"
+api-version: "${apiVersion}"
 authors: [Sebiann]
 website: https://sebiann.moe
 github-repo: "CloudieSMP/CSystem"
 
-version: "${version}"
+version: "${pluginVersion}"
 main: CSystem
 load: STARTUP
 
